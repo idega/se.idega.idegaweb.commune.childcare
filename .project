@@ -19,6 +19,7 @@
     <project>se.idega.util</project>
     <project>se.idega.idegaweb.commune</project>
     <project>se.idega.idegaweb.commune.care</project>
+    <project>se.idega.idegaweb.commune.accounting</project>
   </projects>
   <buildSpec>
     <buildCommand>
