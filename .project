@@ -18,10 +18,7 @@
     <project>se.idega.block.pki</project>
     <project>se.idega.util</project>
     <project>se.idega.idegaweb.commune</project>
-    <project>se.idega.idegaweb.commune.accounting</project>
-    <project>se.idega.idegaweb.commune.provider</project>
-    <project>se.idega.idegaweb.commune.block.importer</project>
-    <project>se.idega.idegaweb.commune.school</project>
+    <project>se.idega.idegaweb.commune.care</project>
   </projects>
   <buildSpec>
     <buildCommand>

@@ -260,42 +260,9 @@
         <eclipse.dependency>true</eclipse.dependency>
       </properties>
     </dependency>
-   <dependency>
+    <dependency>
       <groupId>bundles</groupId>
-      <artifactId>se.idega.idegaweb.commune.accounting</artifactId>
-      <!--<version>1.0</version>-->
-      <version>SNAPSHOT</version>
-      <type>jar</type>
-      <url>http://www.idega.com/</url>
-      <properties>
-        <eclipse.dependency>true</eclipse.dependency>
-      </properties>
-    </dependency>
-   <dependency>
-      <groupId>bundles</groupId>
-      <artifactId>se.idega.idegaweb.commune.provider</artifactId>
-      <!--<version>1.0</version>-->
-      <version>SNAPSHOT</version>
-      <type>jar</type>
-      <url>http://www.idega.com/</url>
-      <properties>
-        <eclipse.dependency>true</eclipse.dependency>
-      </properties>
-    </dependency>
-   <dependency>
-      <groupId>bundles</groupId>
-      <artifactId>se.idega.idegaweb.commune.block.importer</artifactId>
-      <!--<version>1.0</version>-->
-      <version>SNAPSHOT</version>
-      <type>jar</type>
-      <url>http://www.idega.com/</url>
-      <properties>
-        <eclipse.dependency>true</eclipse.dependency>
-      </properties>
-    </dependency>
-  <dependency>
-      <groupId>bundles</groupId>
-      <artifactId>se.idega.idegaweb.commune.school</artifactId>
+      <artifactId>se.idega.idegaweb.commune.care</artifactId>
       <!--<version>1.0</version>-->
       <version>SNAPSHOT</version>
       <type>jar</type>
