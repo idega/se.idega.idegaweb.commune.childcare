@@ -102,6 +102,17 @@
         <url>http://itext.sourceforge.net/</url>
         <properties/>
     </dependency>
+    <!--ujac is already included in the com.idega.block.pdf bundle (this bundle depends on com.idega.block.pdf) -->
+     <dependency>
+        <groupId>ujac</groupId>
+        <artifactId>ujac</artifactId>
+        <version>0.9.18</version>
+        <type>jar</type>
+        <url>http://ujac.sourceforge.net/</url>
+        <properties>
+        <idegaweb.bundle.include>true</idegaweb.bundle.include>
+      </properties>
+    </dependency>
     <dependency>
       <groupId>poi</groupId>
       <artifactId>poi</artifactId>
@@ -276,14 +287,4 @@
       </properties>
     </dependency>
   </dependencies>
-  <build>
-    <sourceDirectory>src/java</sourceDirectory>
-    <unitTestSourceDirectory>src/test</unitTestSourceDirectory>
-    <unitTest>
-      <includes>
-        <include>**/*Test.java</include>
-      </includes>
-    </unitTest>
-  </build>
-  <properties/>
 </project>
