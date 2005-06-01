@@ -306,7 +306,7 @@
     <dependency>
       <groupId>bundles</groupId>
       <artifactId>se.idega.idegaweb.commune.accounting</artifactId>
-      <!--ersion>1.0.1</version><!--HELPER-->
+      <!--HELPER--><version>1.0.1</version><!--HELPER-->
       <!--HELPERversion>SNAPSHOT</versionHELPER-->
 
       <type>jar</type>
