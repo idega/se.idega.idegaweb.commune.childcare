@@ -19,7 +19,7 @@
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/nexus-pki/jars/nbs-server-1.0.jar">
   </classpathentry>
-  <classpathentry kind="var" path="MAVEN_REPO/itext/jars/itext-xml-0.99.jar">
+  <classpathentry kind="var" path="MAVEN_REPO/itext/jars/itext-xml-1.02.jar">
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/ujac/jars/ujac-0.9.18.jar">
   </classpathentry>
