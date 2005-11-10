@@ -1,7 +1,6 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.FamilyLogic;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,12 +20,9 @@ import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.presentation.ChildCareAdmin;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
-import se.idega.idegaweb.commune.care.business.CareConstants;
-import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.business.SchoolBusinessBean;
-
 import com.idega.block.school.data.School;
+import com.idega.block.school.data.SchoolClassMember;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWResourceBundle;
