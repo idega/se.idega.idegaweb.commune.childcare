@@ -245,9 +245,8 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                     ChildCareBusiness ccbb = getChildCareBusiness(iwc);                 	
                 	if (childId.equals(siblingId)) {
                 		continue;
-                	} else {                              
-                		if((ccbb.getPendingApplications(siblingId.intValue())!=null)&&
-                     			(ccbb.getActivePlacement(siblingId.intValue())!=null)) {
+                	} else {                                         		
+                		if(ccbb.getActivePlacement(siblingId.intValue())!=null) {
                 			if(siblingcounter>=1) {                			                			
                     			row = sheet.createRow((short) cellRow++);
                     		}
@@ -267,10 +266,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                             }                         	
                          	Integer providerId = (Integer)prov.getPrimaryKey();
                          	SchoolBusinessBean schoolBean = new SchoolBusinessBean();
-                         	SchoolClassMember schoolClassMember = schoolBean.getSchoolClassMemberHome().findLatestByUserAndSchool(siblingId.intValue(), providerId.intValue());
-                         /*	System.out.println("sibling "+schoolClassMember.getNotes());
-                         	System.out.println("provider "+providerId.intValue());
-                         	System.out.println("out date is " + schoolClassMember.getRemovedDate());*/
+                         	SchoolClassMember schoolClassMember = schoolBean.getSchoolClassMemberHome().findLatestByUserAndSchool(siblingId.intValue(), providerId.intValue());                         
                          	if(schoolClassMember.getRemovedDate()!=null) { 
 	                         	IWCalendar splacementEndDate = new IWCalendar(iwc.getCurrentLocale(), schoolClassMember.getRemovedDate());                     	
 	                         	if (splacementEndDate != null) {
