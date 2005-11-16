@@ -251,14 +251,24 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                     			row = sheet.createRow((short) cellRow++);
                     		}
                     		Name childname = new Name(sibling.getFirstName(), sibling
-                                    .getMiddleName(), sibling.getLastName());            			
-                    		row.createCell((short) 0).setCellValue(name.getName(locale, true));
-                            row.createCell((short) 1).setCellValue(PersonalIDFormatter.format(child.getPersonalID(),locale));
-                            row.createCell((short) 2).setCellValue(childname.getName(locale, true));
-                         	row.createCell((short) 3).setCellValue(PersonalIDFormatter.format(sibling.getPersonalID(),locale));                         	
-                         	ChildCareApplication app = ccbb.getActivePlacement(siblingId.intValue());
+                                    .getMiddleName(), sibling.getLastName());
+                    		if(name.getName(locale, true)!=null) {
+                    			row.createCell((short) 0).setCellValue(name.getName(locale, true));
+                    		}
+                    		if(child.getPersonalID()!=null) {
+                    			row.createCell((short) 1).setCellValue(PersonalIDFormatter.format(child.getPersonalID(),locale));
+                    		}
+                    		if(childname.getName(locale, true)!=null) {
+                    			row.createCell((short) 2).setCellValue(childname.getName(locale, true));
+                    		}
+                    		if(sibling.getPersonalID()!=null) {
+                    			row.createCell((short) 3).setCellValue(PersonalIDFormatter.format(sibling.getPersonalID(),locale));                         	
+                    		}
+                    		ChildCareApplication app = ccbb.getActivePlacement(siblingId.intValue());
                          	School prov = ccbb.getCurrentProviderByPlacement(siblingId.intValue());
-                         	row.createCell((short) 4).setCellValue(prov.getName());
+                         	if(prov.getName()!=null) {
+                         		row.createCell((short) 4).setCellValue(prov.getName());
+                         	}
                          	IWCalendar splacementDate = new IWCalendar(iwc.getCurrentLocale(), app.getFromDate());                     	
                          	if (splacementDate != null) {
                                 row.createCell((short) 5).setCellValue(
