@@ -245,8 +245,11 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                     ChildCareBusiness ccbb = getChildCareBusiness(iwc);                 	
                 	if (childId.equals(siblingId)) {
                 		continue;
-                	} else {                                         		
-                		if(ccbb.getActivePlacement(siblingId.intValue())!=null) {
+                	} else {                		
+                		/*ccbb.getActivePlacement(siblingId.intValue())!=null*/
+                		School prov = ccbb.getCurrentProviderByPlacement(siblingId.intValue());
+            			//if(prov==null) { System.out.println("Provider is null?? wtf??!?"); }
+                		if( ccbb.hasActiveNotRemovedPlacements(siblingId.intValue())&&(prov!=null) ) {
                 			if(siblingcounter>=1) {                			                			
                     			row = sheet.createRow((short) cellRow++);
                     		}
@@ -264,28 +267,36 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                     		if(sibling.getPersonalID()!=null) {
                     			row.createCell((short) 3).setCellValue(PersonalIDFormatter.format(sibling.getPersonalID(),locale));                         	
                     		}
-                    		ChildCareApplication app = ccbb.getActivePlacement(siblingId.intValue());
-                         	School prov = ccbb.getCurrentProviderByPlacement(siblingId.intValue());
-                         	if(prov.getName()!=null) {
-                         		row.createCell((short) 4).setCellValue(prov.getName());
-                         	}
-                         	IWCalendar splacementDate = new IWCalendar(iwc.getCurrentLocale(), app.getFromDate());                     	
-                         	if (splacementDate != null) {
-                                row.createCell((short) 5).setCellValue(
-                                        splacementDate.getLocaleDate(IWCalendar.SHORT));
-                            }                         	
-                         	Integer providerId = (Integer)prov.getPrimaryKey();
-                         	SchoolBusinessBean schoolBean = new SchoolBusinessBean();
-                         	SchoolClassMember schoolClassMember = schoolBean.getSchoolClassMemberHome().findLatestByUserAndSchool(siblingId.intValue(), providerId.intValue());                         
-                         	if(schoolClassMember.getRemovedDate()!=null) { 
-	                         	IWCalendar splacementEndDate = new IWCalendar(iwc.getCurrentLocale(), schoolClassMember.getRemovedDate());                     	
-	                         	if (splacementEndDate != null) {
-	                                row.createCell((short) 6).setCellValue(
-	                                        splacementEndDate.getLocaleDate(IWCalendar.SHORT));
-	                            }
-                         	} else {
-                         	    row.createCell((short) 6).setCellValue("");
-                         	}
+                    		try {                    			                    			
+                    			Integer providerId = (Integer)prov.getPrimaryKey();
+                    			if(prov.getName()!=null) {
+                             		row.createCell((short) 4).setCellValue(prov.getName());
+                             		//System.out.println("Provider name is : "+ prov.getName());
+                             	} else {
+                             		row.createCell((short) 4).setCellValue("");
+                             	}
+                    			ChildCareApplication app = ccbb.getActivePlacement(siblingId.intValue());
+                    			IWCalendar splacementDate = new IWCalendar(iwc.getCurrentLocale(), app.getFromDate());                     	
+                    			if (splacementDate != null) {
+                    				  row.createCell((short) 5).setCellValue(
+                    				          splacementDate.getLocaleDate(IWCalendar.SHORT));
+                    			}
+                    			SchoolBusinessBean schoolBean = new SchoolBusinessBean();
+                             	SchoolClassMember schoolClassMember = schoolBean.getSchoolClassMemberHome().findLatestByUserAndSchool(siblingId.intValue(), providerId.intValue());                         
+                             	if(schoolClassMember.getRemovedDate()!=null) { 
+    	                         	IWCalendar splacementEndDate = new IWCalendar(iwc.getCurrentLocale(), schoolClassMember.getRemovedDate());                     	
+    	                         	if (splacementEndDate != null) {
+    	                                row.createCell((short) 6).setCellValue(
+    	                                        splacementEndDate.getLocaleDate(IWCalendar.SHORT));
+    	                            } else {
+    	                         	    row.createCell((short) 6).setCellValue("");
+    	                         	}
+                             	} else {
+                             	    row.createCell((short) 6).setCellValue("");
+                             	}                             	
+                    		} catch(NullPointerException e) {
+                    			//lalalalala
+                    		}    
                     		siblingcounter++;
                      	}
                 	}
