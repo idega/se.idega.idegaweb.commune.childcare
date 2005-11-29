@@ -4717,20 +4717,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public boolean hasActiveNotRemovedPlacements(int childId) {
 		try {
-			System.out.println("----------------------------------- ||||||||||||| --------------------------------");
-			//ejbFindNotTerminatedByStudent
-			Collection members = (Collection)this.getSchoolClassMemberHome().findAllNotTerminatedByStudent(childId);
+			Collection members = this.getSchoolClassMemberHome().findAllNotTerminatedByStudent(childId);
 			if(!members.isEmpty()&&(members!=null)) {
 				return true;				
-			} else { return false; }
-			/*Iterator i = members.iterator();
-			while (i.hasNext()) {
-				SchoolClassMember member = (SchoolClassMember) i.next();
-				//if (member.isActive()) { //XXX
-					return true;
-				//}
 			}
-			return false;*/
+			else {
+				return false;
+			}
 		}
 		catch (FinderException ex) {
 			return false;
