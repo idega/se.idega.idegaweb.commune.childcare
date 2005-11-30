@@ -515,10 +515,10 @@ public class ChildCareAdmin extends ChildCareBlock {
 		Form form = new Form();
 		form.setAction(iwc.getIWMainApplication().getMediaServletURI());
 		form.addParameter(DownloadWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareSiblingListWriter.class));		
-		form.addParameter(ChildCareQueueWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
-		form.addParameter(ChildCareQueueWriter.PARAMETER_SORT_BY, getSession().getSortBy());
-		form.addParameter(ChildCareQueueWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
-		form.addParameter(ChildCareQueueWriter.PARAMETER_START, _start);
+		form.addParameter(ChildCareSiblingListWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
+		form.addParameter(ChildCareSiblingListWriter.PARAMETER_SORT_BY, getSession().getSortBy());
+		form.addParameter(ChildCareSiblingListWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
+		form.addParameter(ChildCareSiblingListWriter.PARAMETER_START, _start);
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.sibling_list", "See sibling list"),
 		PARAMETER_CLEAN_QUEUE,		
 		Boolean.TRUE.toString()));
