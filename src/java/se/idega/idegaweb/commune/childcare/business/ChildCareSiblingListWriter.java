@@ -213,18 +213,12 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
             
             ChildCareApplication application;
             User child;          
-            IWCalendar placementDate;
             
             Iterator iter = applications.iterator();
             while (iter.hasNext()) {
                 row = sheet.createRow((short) cellRow++);
                 application = (ChildCareApplication) iter.next();
                 child = application.getChild();
-
-                placementDate = new IWCalendar(iwc.getCurrentLocale(),
-                        application.getFromDate());
-                School provider = getChildCareBusiness(iwc)
-                        .getCurrentProviderByPlacement(application.getChildId());              
 
                 Name name = new Name(child.getFirstName(), child
                         .getMiddleName(), child.getLastName());
