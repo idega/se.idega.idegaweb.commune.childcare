@@ -6,11 +6,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
+import se.idega.idegaweb.commune.care.data.ChildCareContractHome;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolClassMemberHome;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
 import com.idega.data.IDOLookup;
+import com.idega.data.IDOLookupException;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
@@ -19,7 +25,12 @@ import com.idega.util.IWTimestamp;
 
 public class ContractAndPlacementChangesExportWriter {
 	public static final String SEPARATOR = ";";
+	
+	IWContext iwc;
+	
 	public boolean createExportFile(IWContext iwc, ICFile folder) {
+		
+		this.iwc = iwc;
 		
 		Date firstDate = getFirstDateOfCurrentMonth();
 		Date lastDate = getLastDateOfCurrentMonth();		
@@ -129,5 +140,51 @@ public class ContractAndPlacementChangesExportWriter {
 			return "";
 		}
 	}
+	
+	private void testing()  {
+		try {
+			//get all placements
+			Collection placements = getSchoolClassMemberHome().findAllByCategory(getSchoolBusiness().getCategoryChildcare());
+			
+			//retrieve the placements we need
+			//... and add them to the ubercolection
+			
+			
+			
+			//get all contracts
+			Collection contracts = getChildCareContractHome().findChangedBetween(new java.sql.Date(1111), new java.sql.Date(1111));
+			//retrieve the contracts we need
+			//... and add them to the ubercollection
+			
+			
+			
+			
+			
+			//reshuffle the ubercollection so it is in correct order
+			
+		}
+		catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	
+	
+	private SchoolClassMemberHome getSchoolClassMemberHome() throws IDOLookupException {
+		return (SchoolClassMemberHome) IDOLookup.getHome(SchoolClassMember.class);
+	}
+
+	private SchoolBusiness getSchoolBusiness() throws IBOLookupException{
+		return (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);   
+	}
+	
+	private ChildCareContractHome getChildCareContractHome() throws IDOLookupException {
+		return (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
+	}
+	
+	
 	
 }
