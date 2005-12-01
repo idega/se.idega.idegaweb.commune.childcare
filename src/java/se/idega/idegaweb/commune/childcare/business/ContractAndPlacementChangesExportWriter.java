@@ -172,9 +172,6 @@ public class ContractAndPlacementChangesExportWriter {
 		Date firstDateOfCurrentMonth = this.getFirstDateOfCurrentMonth();
 		Date lastDateOfCurrentMonth = this.getLastDateOfCurrentMonth();
 		
-		IWTimestamp stamp = new IWTimestamp(lastDateOfCurrentMonth);
-		String s = stamp.getDateString("yyyy-MM-dd");
-		
 		try {
 			//get all placements
 			//retrieve the placements we need
