@@ -24,7 +24,7 @@ public class ContractAndPlacementChangesExport extends ChildCareBlock {
 	private boolean exportCreated = false;	
 	
 	public void init(IWContext iwc) throws Exception {		
-		setIwc(iwc);
+		setIwc(iwc); 
 		
 		parseAction();			
 		createGui();
