@@ -120,6 +120,9 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 				hasActivePlacement = false;
 			}
 		}
+		else {
+			return;
+		}
 
 		switch (parseAction(iwc)) {
 			case ACTION_PHASE_1:
