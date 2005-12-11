@@ -109,10 +109,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 	private School currentProvider;
 	private boolean hasActivePlacement = false;
 	
-	/* (non-Javadoc)
-	 * @see se.idega.idegaweb.commune.school.presentation.SchoolBlock#init(com.idega.presentation.IWContext)
-	 */
-	public void present(IWContext iwc) throws Exception {
+	public void init(IWContext iwc) throws Exception {
 		if (getSession().getChild() != null) {
 			try {
 				currentProvider = getBusiness().getCurrentProviderByPlacement(((Integer) getSession().getChild().getPrimaryKey()).intValue());
