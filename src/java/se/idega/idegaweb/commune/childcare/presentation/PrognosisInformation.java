@@ -61,7 +61,8 @@ public class PrognosisInformation extends ChildCareBlock {
 		table.add(getSmallHeader(String.valueOf(prognosis.getThreeMonthsPrognosis())), 2, 3);	
 		table.add(getSmallHeader(String.valueOf(prognosis.getOneYearPrognosis())), 2, 4);
 		
-		if (prognosis.getThreeMonthsPriority() != -1 && prognosis.getOneYearPriority() != -1) {
+		boolean showPriorities = getBusiness().showPriorities();
+		if (showPriorities && prognosis.getThreeMonthsPriority() != -1 && prognosis.getOneYearPriority() != -1) {
 			table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.there_of", "there of") + Text.NON_BREAKING_SPACE), 2, 3);
 			table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.there_of", "there of") + Text.NON_BREAKING_SPACE), 2, 4);
 			table.add(getSmallHeader(String.valueOf(prognosis.getThreeMonthsPriority())), 2, 3);

@@ -1458,10 +1458,17 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (prognosis != null && prognosis.getThreeMonthsPriority() != -1)
 			threeMonthsPriority.setContent(String.valueOf(prognosis.getThreeMonthsPriority()));
 
+		boolean showPriorities = getBusiness().showPriorities();
+
 		table.add(getSmallText(localize("child_care.three_months_prognosis", "Three months prognosis") + ":"), 1, row);
 		table.add(threeMonths, 2, row);
-		table.add(getSmallText(localize("child_care.thereof_priority", "there of priority") + ":"), 3, row);
-		table.add(threeMonthsPriority, 4, row++);
+		if (showPriorities) {
+			table.add(getSmallText(localize("child_care.thereof_priority", "there of priority") + ":"), 3, row);
+			table.add(threeMonthsPriority, 4, row++);
+		}
+		else {
+			row++;
+		}
 
 		TextInput oneYear = (TextInput) getStyledInterface(new TextInput(PARAMETER_ONE_YEAR_PROGNOSIS));
 		oneYear.setLength(3);
@@ -1476,12 +1483,17 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		oneYearPriority.setAsIntegers(localize("child_care.only_integers_allowed", "Not a valid prognosis."));
 		if (prognosis != null && prognosis.getOneYearPriority() != -1)
 			oneYearPriority.setContent(String.valueOf(prognosis.getOneYearPriority()));
-
+		
 		table.add(getSmallText(localize("child_care.one_year_prognosis", "Twelve months prognosis") + ":"), 1, row);
 		table.add(oneYear, 2, row);
-		table.add(getSmallText(localize("child_care.thereof_priority", "there of priority") + ":"), 3, row);
-		table.add(oneYearPriority, 4, row++);
-
+		if (showPriorities) {
+			table.add(getSmallText(localize("child_care.thereof_priority", "there of priority") + ":"), 3, row);
+			table.add(oneYearPriority, 4, row++);
+		}
+		else {
+			row++;
+		}
+		
 		// //////////////// added provider capacity 040402 Malin
 		table.mergeCells(1, row, 4, row);
 		table.add(getSmallHeader(localize("child_care.capacity_information", "Enter the provider capacity.")), 1, row++);
@@ -2319,11 +2331,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 
 	private void updatePrognosis(IWContext iwc) throws RemoteException {
+		boolean showPriorities = getBusiness().showPriorities();
+		
 		int vacancies = -1;
 		int threeMonths = Integer.parseInt(iwc.getParameter(PARAMETER_THREE_MONTHS_PROGNOSIS));
 		int oneYear = Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PROGNOSIS));
-		int threeMonthsPriority = Integer.parseInt(iwc.getParameter(PARAMETER_THREE_MONTHS_PRIORITY));
-		int oneYearPriority = Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PRIORITY));
+		int threeMonthsPriority = showPriorities ? Integer.parseInt(iwc.getParameter(PARAMETER_THREE_MONTHS_PRIORITY)) : 0;
+		int oneYearPriority = showPriorities ? Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PRIORITY)) : 0;
 		int providerCapacity = Integer.parseInt(iwc.getParameter(PARAMETER_PROVIDER_CAPACITY));
 		if (iwc.isParameterSet(PARAMETER_VACANCIES))
 			vacancies = Integer.parseInt(iwc.getParameter(PARAMETER_VACANCIES));
