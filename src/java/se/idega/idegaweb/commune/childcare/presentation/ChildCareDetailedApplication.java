@@ -241,7 +241,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 			}
 
 			applicationTable.add(fromText, 1, iRow);
-			applicationTable.add(date, 3, iRow++);
+			applicationTable.add(date, 2, iRow++);
 			applicationTable.setHeight(iRow++, 12);
 		}
 		
@@ -828,8 +828,8 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 
 		for (int a = 1; a < iNumberOfApplications; a++) {
 			String provider = iwc.getParameter(PARAMETER_PROVIDER + "_" + a);
-			if (provider != null) {
-				School school = getBusiness().getSchoolBusiness().getSchool(provider);
+			School school = getBusiness().getSchoolBusiness().getSchool(provider);
+			if (school != null) {
 				verifyTable.add(getSmallHeader(localize(PARAM_PROVIDER, "Provider") + " " + a + ":"), 1, iRow);
 				verifyTable.add(getSmallText(school.getSchoolName()), 2, iRow++);
 				
