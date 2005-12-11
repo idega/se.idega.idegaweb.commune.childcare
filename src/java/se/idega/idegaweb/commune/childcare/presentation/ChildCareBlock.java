@@ -3,18 +3,16 @@ package se.idega.idegaweb.commune.childcare.presentation;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
-
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.data.CareTime;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.business.ChildCareBusiness;
 import se.idega.idegaweb.commune.childcare.business.ChildCareSession;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
-
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
@@ -23,13 +21,20 @@ import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.business.ICApplicationBindingBusiness;
+import com.idega.core.contact.data.Email;
+import com.idega.core.contact.data.Phone;
+import com.idega.core.location.data.Address;
+import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.util.SelectorUtility;
+import com.idega.user.business.NoEmailFoundException;
+import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
+import com.idega.util.PersonalIDFormatter;
 
 /**
  * @author laddi
@@ -39,6 +44,7 @@ public class ChildCareBlock extends CommuneBlock {
 	private CareBusiness careBusiness;
 	private ChildCareBusiness business;
 	protected ChildCareSession session;
+	private CommuneUserBusiness userBusiness;
 	private int _childCareID = -1;
 	private boolean checkRequired;
 	private boolean usePredefinedCareTimeValues;
@@ -69,6 +75,7 @@ public class ChildCareBlock extends CommuneBlock {
 		business = getChildCareBusiness(iwc);
 		session = getChildCareSession(iwc);
 		careBusiness = getCareBusiness(iwc);
+		userBusiness = getUserBusiness(iwc);
 		checkRequired = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_CHECK_REQUIRED, Boolean.TRUE.toString())).booleanValue();
 		usePredefinedCareTimeValues = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, Boolean.FALSE.toString())).booleanValue();
 		allowChangeGroupFromToday = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY, Boolean.TRUE.toString())).booleanValue();
@@ -103,6 +110,9 @@ public class ChildCareBlock extends CommuneBlock {
 		return (CareBusiness) IBOLookup.getServiceInstance(iwc, CareBusiness.class);
 	}
 	
+	private CommuneUserBusiness getUserBusiness(IWContext iwc) throws RemoteException {
+		return (CommuneUserBusiness) IBOLookup.getServiceInstance(iwc, CommuneUserBusiness.class);
+	}
 	
 	/**
 	 * @return CareBusiness
@@ -124,6 +134,10 @@ public class ChildCareBlock extends CommuneBlock {
 	 */
 	public ChildCareSession getSession() {
 		return session;
+	}
+	
+	public CommuneUserBusiness getUserBusiness() {
+		return userBusiness;
 	}
 
 	/**
@@ -439,5 +453,81 @@ public class ChildCareBlock extends CommuneBlock {
 		catch (IBOLookupException ibe) {
 			throw new IBORuntimeException(ibe);
 		}
+	}
+
+	protected Table getPersonInfoTable(IWContext iwc, User user) throws RemoteException {
+		Table table = new Table();
+		table.setCellpadding(getCellpadding());
+		table.setCellspacing(0);
+		table.setColumns(5);
+		table.setWidth(3, 12);
+		table.setWidth(Table.HUNDRED_PERCENT);
+		int row = 1;
+		
+		Address address = getUserBusiness().getUsersMainAddress(user);
+		PostalCode postal = null;
+		if (address != null) {
+			postal = address.getPostalCode();
+		}
+		Phone phone = null;
+		try {
+			phone = getUserBusiness().getUsersHomePhone(user);
+		}
+		catch (NoPhoneFoundException npfe) {
+			phone = null;
+		}
+		Phone mobile = null;
+		try {
+			mobile = getUserBusiness().getUsersMobilePhone(user);
+		}
+		catch (NoPhoneFoundException npfe) {
+			mobile = null;
+		}
+		Email email = null;
+		try {
+			email = getUserBusiness().getUsersMainEmail(user);
+		}
+		catch (NoEmailFoundException nefe) {
+			email = null;
+		}
+		
+		table.add(getSmallHeader(localize("name", "Name")), 1, row);
+		table.add(getSmallText(user.getName()), 2, row);
+		
+		table.add(getSmallHeader(localize("personal_id", "Personal ID")), 4, row);
+		table.add(getSmallText(PersonalIDFormatter.format(user.getPersonalID(), iwc.getCurrentLocale())), 5, row++);
+		
+		table.add(getSmallHeader(localize("address", "Address")), 1, row);
+		table.add(getSmallHeader(localize("zip_code", "Postal code")), 4, row);
+		if (address != null) {
+			table.add(getSmallText(address.getStreetAddress()), 2, row);
+		}
+		if (postal != null) {
+			table.add(getSmallText(postal.getPostalAddress()), 5, row);
+		}
+		row++;
+		
+		table.add(getSmallHeader(localize("home_phone", "Home phone")), 1, row);
+		table.add(getSmallHeader(localize("mobile_phone", "Mobile phone")), 4, row);
+		if (phone != null && phone.getNumber() != null) {
+			table.add(getSmallText(phone.getNumber()), 2, row);
+		}
+		if (mobile != null && mobile.getNumber() != null) {
+			table.add(getSmallText(mobile.getNumber()), 5, row);
+		}
+		row++;
+		
+		table.add(getSmallHeader(localize("email", "E-mail")), 1, row);
+		if (email != null && email.getEmailAddress() != null) {
+			table.add(getSmallText(email.getEmailAddress()), 2, row);
+		}
+		row++;
+		
+		table.setHeight(row, 6);
+		table.mergeCells(1, row, table.getColumns(), row);
+		table.setBottomCellBorder(1, row++, 1, "#D7D7D7", "solid");
+		table.setHeight(row++, 6);
+		
+		return table;
 	}
 }

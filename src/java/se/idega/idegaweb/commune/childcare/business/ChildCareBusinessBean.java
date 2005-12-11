@@ -15,6 +15,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -139,6 +140,9 @@ import com.lowagie.text.xml.XmlPeer;
  * @version 1.0
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness, CaseBusiness, EmploymentTypeFinderBusiness, ManagementTypeFinderBusiness {
+
+	public static final String METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE = "can_display_child_care_image";
+	public static final String METADATA_OTHER_INFORMATION = "child_care_information";
 
 	private static String PROP_OUTSIDE_SCHOOL_AREA = "not_in_commune_school_area";
 
@@ -386,6 +390,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean insertApplications(User user, int provider[], String[] dates, String message, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
+		return insertApplications(user, provider, dates, message, null, null, checkId, childId, subject, body, freetimeApplication, sendMessages, queueDates, hasPriority);
+	}
+	
+	public boolean insertApplications(User user, int provider[], String[] dates, String message, Time fromTime, Time toTime, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 
@@ -466,6 +474,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						appl.setCreated(stamp.getTimestamp());
 						appl.setQueueOrder(((Integer) appl.getPrimaryKey()).intValue());
 						appl.setApplicationStatus(getStatusSentIn());
+						
+						if (fromTime != null) {
+							IWTimestamp from = new IWTimestamp(fromTime);
+							appl.setFromTime(from.getTimestamp());
+						}
+						if (toTime != null) {
+							IWTimestamp to = new IWTimestamp(toTime);
+							appl.setToTime(to.getTimestamp());
+						}
 
 						if (hasPriority != null)
 							appl.setHasQueuePriority(hasPriority[i]);
@@ -5913,4 +5930,22 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
         return contracts;
     }
     
+  	public boolean canDisplayChildCareImages(User child) {
+  		String meta = child.getMetaData(METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE);
+  		if (meta != null) {
+  			return new Boolean(meta).booleanValue();
+  		}
+  		return false;
+  	}
+  	
+  	public String getChildareOtherInformation(User child) {
+  		return child.getMetaData(METADATA_OTHER_INFORMATION);
+  	}
+  	
+  	public void storeChildCareInformation(User child, boolean canDisplayImage, String otherAfterSchoolCareInformation) {
+  		child.setMetaData(METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE, String.valueOf(canDisplayImage));
+  		child.setMetaData(METADATA_OTHER_INFORMATION, otherAfterSchoolCareInformation);
+  		child.store();
+  	}
+
 }

@@ -11,6 +11,7 @@ package se.idega.idegaweb.commune.childcare.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Locale;
@@ -161,6 +162,13 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	public boolean insertApplications(User user, int[] provider, String[] dates, String message, int checkId,
 			int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates,
 			boolean[] hasPriority) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#insertApplications
+	 */
+	public boolean insertApplications(User user, int[] provider, String[] dates, String message, Time fromTime,
+			Time toTime, int checkId, int childId, String subject, String body, boolean freetimeApplication,
+			boolean sendMessages, Date[] queueDates, boolean[] hasPriority) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#sendMessageToOtherParent
@@ -1510,4 +1518,20 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 */
 	public Collection getChildCareContractsByProviderAndClassMemberDates(Integer schoolId, Date startFrom, Date startTo,
 			Date endFrom, Date endTo) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#canDisplayChildCareImages
+	 */
+	public boolean canDisplayChildCareImages(User child) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getChildareOtherInformation
+	 */
+	public String getChildareOtherInformation(User child) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#storeChildCareInformation
+	 */
+	public void storeChildCareInformation(User child, boolean canDisplayImage, String otherAfterSchoolCareInformation)
+			throws java.rmi.RemoteException;
 }

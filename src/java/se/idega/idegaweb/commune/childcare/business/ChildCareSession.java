@@ -1,27 +1,33 @@
 /*
- * Created on 2005-maj-17
+ * $Id: ChildCareSession.java,v 1.14 2005/12/11 16:24:15 laddi Exp $
+ * Created on Dec 11, 2005
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package se.idega.idegaweb.commune.childcare.business;
 
 import java.rmi.RemoteException;
-
-
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
-
 import com.idega.block.school.data.School;
 import com.idega.business.IBOSession;
+import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 
+
 /**
- * @author Malin
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * <p>
+ * TODO laddi Describe Type ChildCareSession
+ * </p>
+ *  Last modified: $Date: 2005/12/11 16:24:15 $ by $Author: laddi $
+ * 
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
+ * @version $Revision: 1.14 $
  */
 public interface ChildCareSession extends IBOSession {
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#getCommuneUserBusiness
 	 */
@@ -45,8 +51,7 @@ public interface ChildCareSession extends IBOSession {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#setHasPrognosis
 	 */
-	public void setHasPrognosis(boolean hasPrognosis)
-			throws java.rmi.RemoteException;
+	public void setHasPrognosis(boolean hasPrognosis) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#hasOutdatedPrognosis
@@ -56,8 +61,7 @@ public interface ChildCareSession extends IBOSession {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#setHasOutdatedPrognosis
 	 */
-	public void setHasOutdatedPrognosis(boolean hasOutdatedPrognosis)
-			throws java.rmi.RemoteException;
+	public void setHasOutdatedPrognosis(boolean hasOutdatedPrognosis) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#getChildCareID
@@ -135,6 +139,11 @@ public interface ChildCareSession extends IBOSession {
 	public int getChildID() throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#getChild
+	 */
+	public User getChild() throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#getUniqueID
 	 */
 	public String getUniqueID() throws java.rmi.RemoteException;
@@ -147,8 +156,7 @@ public interface ChildCareSession extends IBOSession {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#setApplicationID
 	 */
-	public void setApplicationID(int applicationID)
-			throws java.rmi.RemoteException;
+	public void setApplicationID(int applicationID) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#setChildID
@@ -223,14 +231,12 @@ public interface ChildCareSession extends IBOSession {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#setFromTimestamp
 	 */
-	public void setFromTimestamp(String timestamp)
-			throws java.rmi.RemoteException;
+	public void setFromTimestamp(String timestamp) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#setToTimestamp
 	 */
-	public void setToTimestamp(String timestamp)
-			throws java.rmi.RemoteException;
+	public void setToTimestamp(String timestamp) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#getSchoolTypeID
@@ -271,5 +277,4 @@ public interface ChildCareSession extends IBOSession {
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareSessionBean#setCaseCode
 	 */
 	public void setCaseCode(String caseCode) throws java.rmi.RemoteException;
-
 }

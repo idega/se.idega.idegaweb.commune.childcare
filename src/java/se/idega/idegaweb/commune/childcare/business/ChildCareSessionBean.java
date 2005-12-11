@@ -7,6 +7,7 @@ import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
+import com.idega.business.IBORuntimeException;
 import com.idega.business.IBOSessionBean;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
@@ -47,6 +48,8 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	protected boolean _outDatedPrognosis = false;
 	protected String _status;
 	protected String _caseCode;
+	
+	private User _child;
 
 	public CommuneUserBusiness getCommuneUserBusiness() throws RemoteException {
 		return (CommuneUserBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), CommuneUserBusiness.class);
@@ -245,6 +248,36 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public int getChildID() {
 		return _childID;
+	}
+
+	public User getChild() {
+		try {
+			if (_child == null && _childID != -1) {
+				_child = getUserBusiness().getUser(new Integer(_childID));
+			}
+			else if (_child == null && _uniqueID != null) {
+				try {
+					_child = getUserBusiness().getUserByUniqueId(_uniqueID);
+				}
+				catch (FinderException fe) {
+					fe.printStackTrace();
+					_child = null;
+				}
+			}
+		}
+		catch (RemoteException re) {
+			_child = null;
+		}
+		return _child;
+	}
+	
+	private CommuneUserBusiness getUserBusiness() {
+		try {
+			return (CommuneUserBusiness) this.getServiceInstance(CommuneUserBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
 	}
 
 	/**
