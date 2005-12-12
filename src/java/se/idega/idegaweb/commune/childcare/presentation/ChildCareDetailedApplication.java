@@ -305,7 +305,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 
 		TimeInput fromTime = (TimeInput) getStyledInterface(new TimeInput(PARAMETER_FROM_TIME));
 		fromTime.keepStatusOnAction(true);
-		fromTime.setFromHour(8);
+		fromTime.setFromHour(7);
 		fromTime.setToHour(17);
 		fromTime.setMinuteInterval(15);
 		applicationTable.add(getSmallHeader(localize("application.from_time", "From time")), 1, 1);
@@ -313,7 +313,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		
 		TimeInput toTime = (TimeInput) getStyledInterface(new TimeInput(PARAMETER_TO_TIME));
 		toTime.keepStatusOnAction(true);
-		toTime.setFromHour(8);
+		toTime.setFromHour(6);
 		toTime.setToHour(17);
 		toTime.setMinuteInterval(15);
 		applicationTable.add(getSmallHeader(localize("application.to_time", "To time")), 1, 2);
