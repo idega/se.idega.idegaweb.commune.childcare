@@ -1313,7 +1313,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 			if (langs != null) {
 				for (Iterator iter = langs.iterator(); iter.hasNext();) {
 					ICLanguage aLang = (ICLanguage) iter.next();
-					drop.addMenuElement(aLang.getName(), aLang.getName());
+					drop.addMenuElement(aLang.getPrimaryKey().toString(), aLang.getName());
 				}
 			}
 		}
