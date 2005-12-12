@@ -50,6 +50,7 @@ import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
+import com.idega.util.text.TextSoap;
 
 /**
  * Last modified: $Date$ by $Author$
@@ -964,7 +965,10 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		if (language != null) {
 			table.setHeight(iRow++, 6);
 			table.mergeCells(1, iRow, table.getColumns(), iRow);
-			table.add(getTextAreaTable(getSmallHeader(localize("child.language_info", "Language")), language.getName()), 1, iRow++);
+			table.add(Text.getNonBrakingSpace(), 1, iRow);
+			table.add(getSmallHeader(localize("child.language_info", "Language") + ":"), 1, iRow);
+			table.add(Text.getNonBrakingSpace(), 1, iRow);
+			table.add(getSmallText(language.getName()), 1, iRow++);
 		}
 			
 		table.setHeight(iRow++, 6);
@@ -991,6 +995,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 				table.setHeight(iRow++, 6);
 				table.mergeCells(1, iRow, table.getColumns(), iRow);
 				table.add(getSmallHeader(localize("custodian.study_start_info", "Study start") + ":"), 1, iRow);
+				table.add(Text.getNonBrakingSpace(), 1, iRow);
 				table.add(start.toString(), 1, iRow++);
 			}
 
@@ -998,6 +1003,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 				table.setHeight(iRow++, 6);
 				table.mergeCells(1, iRow, table.getColumns(), iRow);
 				table.add(getSmallHeader(localize("custodian.study_end_info", "Study end") + ":"), 1, iRow);
+				table.add(Text.getNonBrakingSpace(), 1, iRow);
 				table.add(end.toString(), 1, iRow++);
 			}
 		}
@@ -1200,7 +1206,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 			if (getResponsePage() != null)
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
 			else
-				add(new Text(localize(APPLICATION_INSERTED, "Application submitted")));
+				add(new Text(TextSoap.formatText(localize(APPLICATION_INSERTED, "Application submitted"))));
 		}
 		else {
 			add(getErrorText(localize("application.save_failed", "Save failed, contact the community office")));
