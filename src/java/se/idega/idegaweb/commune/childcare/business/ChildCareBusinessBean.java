@@ -107,6 +107,8 @@ import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
+import com.idega.core.localisation.data.ICLanguage;
+import com.idega.core.localisation.data.ICLanguageHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
@@ -141,6 +143,12 @@ import com.lowagie.text.xml.XmlPeer;
  */
 public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCareBusiness, CaseBusiness, EmploymentTypeFinderBusiness, ManagementTypeFinderBusiness {
 
+	public static final String METADATA_MULTI_LANGUAGE_HOME = "multi_language_home";
+	public static final String METADATA_LANGUAGES = "multi_languages";
+	public static final String METADATA_HAS_CUSTODIAN_STUDIES = "has_studies";
+	public static final String METADATA_CUSTODIAN_STUDY = "studies";
+	public static final String METADATA_CUSTODIAN_STUDY_START = "study_start";
+	public static final String METADATA_CUSTODIAN_STUDY_END = "study_end";
 	public static final String METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE = "can_display_child_care_image";
 	public static final String METADATA_OTHER_INFORMATION = "child_care_information";
 
@@ -5942,10 +5950,76 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
   		return child.getMetaData(METADATA_OTHER_INFORMATION);
   	}
   	
-  	public void storeChildCareInformation(User child, boolean canDisplayImage, String otherAfterSchoolCareInformation) {
+  	public boolean hasMultiLanguageHome(User child) {
+  		String meta = child.getMetaData(METADATA_MULTI_LANGUAGE_HOME);
+  		if (meta != null) {
+  			return new Boolean(meta).booleanValue();
+  		}
+  		return false;
+  	}
+  	
+  	public ICLanguage getLanguage(User child) {
+  		String meta = child.getMetaData(METADATA_LANGUAGES);
+  		if (meta != null) {
+  			try {
+  				ICLanguageHome languageHome = (ICLanguageHome) IDOLookup.getHome(ICLanguage.class);
+    			return languageHome.findByPrimaryKey(new Integer(meta));
+  			}
+  			catch (IDOLookupException ile) {
+  				throw new IBORuntimeException(ile);
+  			}
+  			catch (FinderException fe) {
+  				fe.printStackTrace();
+  			}
+  		}
+  		return null;
+  	}
+  	
+  	public void storeChildCareInformation(User child, boolean canDisplayImage, String otherAfterSchoolCareInformation, boolean multiLanguageHome, String language) {
   		child.setMetaData(METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE, String.valueOf(canDisplayImage));
   		child.setMetaData(METADATA_OTHER_INFORMATION, otherAfterSchoolCareInformation);
+  		child.setMetaData(METADATA_MULTI_LANGUAGE_HOME, String.valueOf(multiLanguageHome));
+  		child.setMetaData(METADATA_LANGUAGES, language);
   		child.store();
   	}
-
+  	
+  	public boolean hasStudies(User custodian) {
+  		String meta = custodian.getMetaData(METADATA_HAS_CUSTODIAN_STUDIES);
+  		if (meta != null) {
+  			return new Boolean(meta).booleanValue();
+  		}
+  		return false;
+  	}
+  	
+  	public String getStudies(User custodian) {
+  		return custodian.getMetaData(METADATA_CUSTODIAN_STUDY);
+  	}
+  	
+  	public Date getStudyStart(User custodian) {
+  		String meta = custodian.getMetaData(METADATA_CUSTODIAN_STUDY_START);
+  		if (meta != null) {
+  			return new IWTimestamp(meta).getDate();
+  		}
+  		return null;
+  	}
+  	
+  	public Date getStudyEnd(User custodian) {
+  		String meta = custodian.getMetaData(METADATA_CUSTODIAN_STUDY_END);
+  		if (meta != null) {
+  			return new IWTimestamp(meta).getDate();
+  		}
+  		return null;
+  	}
+  	
+  	public void storeCustodianInformation(User custodian, boolean hasStudies, String studies, Date studyStart, Date studyEnd) {
+  		custodian.setMetaData(METADATA_HAS_CUSTODIAN_STUDIES, String.valueOf(hasStudies));
+  		custodian.setMetaData(METADATA_CUSTODIAN_STUDY, studies);
+  		if (studyStart != null) {
+  			custodian.setMetaData(METADATA_CUSTODIAN_STUDY_START, studyStart.toString());
+  		}
+  		if (studyEnd != null) {
+  			custodian.setMetaData(METADATA_CUSTODIAN_STUDY_END, studyEnd.toString());
+  		}
+  		custodian.store();
+  	}
 }

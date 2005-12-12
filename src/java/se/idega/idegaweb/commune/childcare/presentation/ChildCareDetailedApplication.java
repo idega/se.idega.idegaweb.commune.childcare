@@ -25,8 +25,11 @@ import com.idega.block.school.data.SchoolArea;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
+import com.idega.core.localisation.data.ICLanguage;
+import com.idega.core.localisation.data.ICLanguageHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
+import com.idega.data.IDOLookup;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -91,6 +94,13 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 	protected static final String PARAMETER_OTHER_INFORMATION = "prm_other_information";
 	protected static final String PARAMETER_CAN_DISPLAY_IMAGES = "prm_can_display_images";
 	protected static final String PARAMETER_CHILD_CARE_INFORMATION = "prm_child_care_information";
+	protected static final String PARAMETER_HAS_MULTI_LANGUAGE_HOME = "prm_multi_language_home";
+	protected static final String PARAMETER_LANGUAGE= "prm_language";
+
+	protected static final String PARAMETER_CUSTODIAN_HAS_STUDIES = "prm_custodian_has_studies";
+	protected static final String PARAMETER_CUSTODIAN_STUDIES = "prm_custodian_studies";
+	protected static final String PARAMETER_CUSTODIAN_STUDY_START = "prm_custodian_study_start";
+	protected static final String PARAMETER_CUSTODIAN_STUDY_END = "prm_custodian_study_end";
 
 	private final static String PARAM_PROVIDER = "cca_provider";
 	private final static String CARE_FROM = "cca_care_from";
@@ -676,7 +686,8 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(getHeader(localize("application.child_information", "Child information")), 1, row++);
 		table.setHeight(row++, 6);
 		
-		Table applicationTable = new Table(4, 9);
+		Table applicationTable = new Table();
+		applicationTable.setColumns(4);
 		applicationTable.setCellpadding(3);
 		applicationTable.setCellspacing(0);
 		table.add(applicationTable, 1, row++);
@@ -686,9 +697,63 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		applicationTable.add(getSmallHeader(localize("no", "No")), 3, aRow);
 		applicationTable.add(getSmallHeader(localize("no_answer", "Won't answer")), 4, aRow++);
 		
+		applicationTable.add(getSmallHeader(localize("child.multi_language_home", "Multi language home")), 1, aRow);
+		RadioButton yes = getRadioButton(PARAMETER_HAS_MULTI_LANGUAGE_HOME, Boolean.TRUE.toString());
+		RadioButton no = getRadioButton(PARAMETER_HAS_MULTI_LANGUAGE_HOME, Boolean.FALSE.toString());
+		boolean hasMultiLanguageHome = getBusiness().hasMultiLanguageHome(getSession().getChild());
+		if (hasMultiLanguageHome) {
+			yes.setSelected(true);
+		}
+		else {
+			no.setSelected(true);
+		}
+		applicationTable.add(yes, 2, aRow);
+		applicationTable.add(no, 3, aRow++);
+
+		applicationTable.add(getSmallHeader(localize("child.other_native_language", "Other native language") + ":"), 1, aRow);
+		applicationTable.add(Text.getNonBrakingSpace(), 1, aRow);
+		applicationTable.add(getNativeLanguagesDropdown(getBusiness().getLanguage(getSession().getChild())), 1, aRow++);
+		
+		applicationTable.setHeight(aRow++, 12);
+		
+		applicationTable.add(getSmallHeader(localize("custodian.has_studies", "Has studies")), 1, aRow);
+		yes = getRadioButton(PARAMETER_CUSTODIAN_HAS_STUDIES, Boolean.TRUE.toString());
+		no = getRadioButton(PARAMETER_CUSTODIAN_HAS_STUDIES, Boolean.FALSE.toString());
+		boolean hasStudies = getBusiness().hasStudies(iwc.getCurrentUser());
+		if (hasStudies) {
+			yes.setSelected(true);
+		}
+		else {
+			no.setSelected(true);
+		}
+		applicationTable.add(yes, 2, aRow);
+		applicationTable.add(no, 3, aRow++);
+		
+		applicationTable.add(getSmallHeader(localize("custodian.studies", "Studies")), 1, aRow);
+		applicationTable.add(new Break(), 1, aRow);
+		applicationTable.add(getTextArea(PARAMETER_CUSTODIAN_STUDIES, getBusiness().getStudies(iwc.getCurrentUser())), 1, aRow++);
+
+		applicationTable.add(getSmallHeader(localize("custodian.studies_start", "Studies start") + ":"), 1, aRow);
+		applicationTable.add(Text.getNonBrakingSpace(), 1, aRow);
+		DateInput date = new DateInput(PARAMETER_CUSTODIAN_STUDY_START);
+		if (getBusiness().getStudyStart(iwc.getCurrentUser()) != null) {
+			date.setDate(getBusiness().getStudyStart(iwc.getCurrentUser()));
+		}
+		applicationTable.add(date, 1, aRow++);
+
+		applicationTable.add(getSmallHeader(localize("custodian.studies_end", "Studies end") + ":"), 1, aRow);
+		applicationTable.add(Text.getNonBrakingSpace(), 1, aRow);
+		date = new DateInput(PARAMETER_CUSTODIAN_STUDY_END);
+		if (getBusiness().getStudyEnd(iwc.getCurrentUser()) != null) {
+			date.setDate(getBusiness().getStudyEnd(iwc.getCurrentUser()));
+		}
+		applicationTable.add(date, 1, aRow++);
+
+		applicationTable.setHeight(aRow++, 12);
+
 		applicationTable.add(getSmallHeader(localize("child.has_growth_deviation", "Has growth deviation")), 1, aRow);
-		RadioButton yes = getRadioButton(PARAMETER_GROWTH_DEVIATION, Boolean.TRUE.toString());
-		RadioButton no = getRadioButton(PARAMETER_GROWTH_DEVIATION, Boolean.FALSE.toString());
+		yes = getRadioButton(PARAMETER_GROWTH_DEVIATION, Boolean.TRUE.toString());
+		no = getRadioButton(PARAMETER_GROWTH_DEVIATION, Boolean.FALSE.toString());
 		RadioButton noAnswer = getRadioButton(PARAMETER_GROWTH_DEVIATION, "");
 		Boolean hasGrowthDeviation = getCareBusiness().hasGrowthDeviation(getSession().getChild());
 		if (hasGrowthDeviation != null) {
@@ -860,7 +925,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 			verifyTable.setHeight(iRow++, 6);
 		}
 		
-		iRow = addChildInformation(verifyTable, getSession().getChild(), iRow);
+		iRow = addChildInformation(verifyTable, getSession().getChild(), iwc.getCurrentUser(), iRow);
 		
 		boolean canDisplaySchoolImages = getBusiness().canDisplayChildCareImages(getSession().getChild());
 		verifyTable.mergeCells(1, iRow, verifyTable.getColumns(), iRow);
@@ -889,7 +954,59 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		add(form);
 	}
 	
-	protected int addChildInformation(Table table, User child, int iRow) throws RemoteException {
+	protected int addChildInformation(Table table, User child, User custodian, int iRow) throws RemoteException {
+		boolean multiLanguageHome = getBusiness().hasMultiLanguageHome(child);
+		ICLanguage language = getBusiness().getLanguage(child);
+		
+		table.mergeCells(1, iRow, table.getColumns(), iRow);
+		table.add(getBooleanTable(getSmallHeader(localize("child.has_multi_language_info", "Has multi language")), multiLanguageHome), 1, iRow++);
+
+		if (language != null) {
+			table.setHeight(iRow++, 6);
+			table.mergeCells(1, iRow, table.getColumns(), iRow);
+			table.add(getTextAreaTable(getSmallHeader(localize("child.language_info", "Language")), language.getName()), 1, iRow++);
+		}
+			
+		table.setHeight(iRow++, 6);
+		table.mergeCells(1, iRow, table.getColumns(), iRow);
+		table.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		table.setHeight(iRow++, 6);
+		
+		boolean hasStudies = getBusiness().hasStudies(custodian);
+		String studies = getBusiness().getStudies(custodian);
+		Date start = getBusiness().getStudyStart(custodian);
+		Date end = getBusiness().getStudyEnd(custodian);
+		
+		table.mergeCells(1, iRow, table.getColumns(), iRow);
+		table.add(getBooleanTable(getSmallHeader(localize("custodian.has_studies_info", "Has studies")), hasStudies), 1, iRow++);
+
+		if (hasStudies) {
+			if (studies != null) {
+				table.setHeight(iRow++, 6);
+				table.mergeCells(1, iRow, table.getColumns(), iRow);
+				table.add(getTextAreaTable(getSmallHeader(localize("custodian.studies_info", "Studies")), studies), 1, iRow++);
+			}
+			
+			if (start != null) {
+				table.setHeight(iRow++, 6);
+				table.mergeCells(1, iRow, table.getColumns(), iRow);
+				table.add(getSmallHeader(localize("custodian.study_start_info", "Study start") + ":"), 1, iRow);
+				table.add(start.toString(), 1, iRow++);
+			}
+
+			if (end != null) {
+				table.setHeight(iRow++, 6);
+				table.mergeCells(1, iRow, table.getColumns(), iRow);
+				table.add(getSmallHeader(localize("custodian.study_end_info", "Study end") + ":"), 1, iRow);
+				table.add(end.toString(), 1, iRow++);
+			}
+		}
+			
+		table.setHeight(iRow++, 6);
+		table.mergeCells(1, iRow, table.getColumns(), iRow);
+		table.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
+		table.setHeight(iRow++, 6);
+		
 		Boolean hasGrowthDeviation = getCareBusiness().hasGrowthDeviation(child);
 		String growthDeviation = getCareBusiness().getGrowthDeviationDetails(child);
 		Boolean hasAllergies = getCareBusiness().hasAllergies(child);
@@ -1094,17 +1211,25 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		Boolean growthDeviation = iwc.isParameterSet(PARAMETER_GROWTH_DEVIATION) ? new Boolean(iwc.getParameter(PARAMETER_GROWTH_DEVIATION)) : null;
 		Boolean allergies = iwc.isParameterSet(PARAMETER_ALLERGIES) ? new Boolean(iwc.getParameter(PARAMETER_ALLERGIES)) : null;
 		
-		boolean canContactLastProvider = iwc.isParameterSet(PARAMETER_CAN_CONTACT_LAST_PROVIDER);
-		boolean canDisplayImages = iwc.isParameterSet(PARAMETER_CAN_DISPLAY_IMAGES);
+		Boolean canContactLastProvider = new Boolean(iwc.getParameter(PARAMETER_CAN_CONTACT_LAST_PROVIDER));
+		Boolean canDisplayImages = new Boolean(iwc.getParameter(PARAMETER_CAN_DISPLAY_IMAGES));
+		Boolean hasMultiLanguageHome = new Boolean(iwc.getParameter(PARAMETER_HAS_MULTI_LANGUAGE_HOME));
 		String otherChildCareInformation = iwc.getParameter(PARAMETER_CHILD_CARE_INFORMATION);
+		String language = iwc.getParameter(PARAMETER_LANGUAGE);
 		
 		String growthDeviationDetails = iwc.getParameter(PARAMETER_GROWTH_DEVIATION_DETAILS);
 		String allergiesDetails = iwc.getParameter(PARAMETER_ALLERGIES_DETAILS);
 		String lastCareProvider = iwc.getParameter(PARAMETER_LAST_CARE_PROVIDER);
 		String otherInformation = iwc.getParameter(PARAMETER_OTHER_INFORMATION);
 		
-		getCareBusiness().storeChildInformation(getSession().getChild(), growthDeviation, growthDeviationDetails, allergies, allergiesDetails, lastCareProvider, canContactLastProvider, otherInformation);
-		getBusiness().storeChildCareInformation(getSession().getChild(), canDisplayImages, otherChildCareInformation);
+		Boolean custodianHasStudies = new Boolean(iwc.getParameter(PARAMETER_CUSTODIAN_HAS_STUDIES));
+		String custodianStudies = iwc.getParameter(PARAMETER_CUSTODIAN_STUDIES);
+		Date custodianStudyStart = iwc.isParameterSet(PARAMETER_CUSTODIAN_STUDY_START) ? new IWTimestamp(iwc.getParameter(PARAMETER_CUSTODIAN_STUDY_START)).getDate() : null;
+		Date custodianStudyEnd = iwc.isParameterSet(PARAMETER_CUSTODIAN_STUDY_END) ? new IWTimestamp(iwc.getParameter(PARAMETER_CUSTODIAN_STUDY_END)).getDate() : null;
+
+		getCareBusiness().storeChildInformation(getSession().getChild(), growthDeviation, growthDeviationDetails, allergies, allergiesDetails, lastCareProvider, canContactLastProvider.booleanValue(), otherInformation);
+		getBusiness().storeChildCareInformation(getSession().getChild(), canDisplayImages.booleanValue(), otherChildCareInformation, hasMultiLanguageHome.booleanValue(), language);
+		getBusiness().storeCustodianInformation(iwc.getCurrentUser(), custodianHasStudies.booleanValue(), custodianStudies, custodianStudyStart, custodianStudyEnd);
 	}
 	
 	protected void saveCustodianInfo(IWContext iwc, boolean storeRelatives) throws RemoteException {
@@ -1177,6 +1302,33 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		relations.addMenuElement(CareConstants.RELATION_OTHER, localize("relation.other", "Other"));
 		
 		return relations;
+	}
+	
+	private DropdownMenu getNativeLanguagesDropdown(ICLanguage selected) {
+		DropdownMenu drop = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_LANGUAGE));
+		drop.addMenuElement("-1", localize("application.choose_language", "Choose languge"));
+		try {
+			ICLanguageHome languageHome = (ICLanguageHome) IDOLookup.getHome(ICLanguage.class);
+			Collection langs = languageHome.findAll();
+			if (langs != null) {
+				for (Iterator iter = langs.iterator(); iter.hasNext();) {
+					ICLanguage aLang = (ICLanguage) iter.next();
+					drop.addMenuElement(aLang.getName(), aLang.getName());
+				}
+			}
+		}
+		catch (RemoteException re) {
+			re.printStackTrace();
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		if (selected != null) {
+			drop.setSelectedElement(selected.getPrimaryKey().toString());
+		}
+		drop.keepStatusOnAction(true);
+		
+		return drop;
 	}
 	
 	protected ICPage getHomePage() {
