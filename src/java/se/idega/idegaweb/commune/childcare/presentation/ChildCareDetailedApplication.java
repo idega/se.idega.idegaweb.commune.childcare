@@ -39,6 +39,7 @@ import com.idega.presentation.ui.CheckBox;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
+import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
 import com.idega.presentation.ui.RadioButton;
 import com.idega.presentation.ui.SubmitButton;
@@ -265,8 +266,13 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(messageArea, 1, row++);
 		table.setHeight(row++, 18);
 		
+		GenericButton showPrognosis = getButton(new GenericButton("show_prognosis", localize("child_care.view_prognosis", "View prognosis")));
+		showPrognosis.setWindowToOpen(ChildCarePrognosisWindow.class);
+		
 		SubmitButton next = (SubmitButton) getButton(new SubmitButton(localize("next", "Next"), PARAMETER_ACTION, String.valueOf(ACTION_PHASE_2)));
 		
+		table.add(showPrognosis, 1, row);
+		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(getHelpButton("help_child_care_application_phase_1"), 1, row);
