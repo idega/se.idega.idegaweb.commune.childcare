@@ -61,7 +61,9 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 	}
 	
 	private Table getProviderStatTable(IWContext iwc) throws RemoteException{
-		Table table = getTable(10);
+		boolean showPriorities = getBusiness().showPriorities();
+
+		Table table = getTable(showPriorities ? 10 : 8);
 		table.setWidth(Table.HUNDRED_PERCENT);
 		int row = 2;
 		int column = 3;
@@ -71,10 +73,14 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 			table.add(getLocalizedSmallHeader("child_care.total_vacancies","Vacancies"), column++, 1);
 		
 		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), column++, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_3m","Priority (3M)"), column++, 1);
+		if (showPriorities) {
+			table.add(getLocalizedSmallHeader("child_care.prognosis_priority_3m","Priority (3M)"), column++, 1);
+		}
 		table.add(getLocalizedSmallHeader("child_care.prognosis_queue3months","Within (3M)"), column++, 1);
 		table.add(getLocalizedSmallHeader("child_care.prognosis_12m","Prognosis (12M)"), column++, 1);
-		table.add(getLocalizedSmallHeader("child_care.prognosis_priority_12m","Priority (12M)"), column++, 1);
+		if (showPriorities) {
+			table.add(getLocalizedSmallHeader("child_care.prognosis_priority_12m","Priority (12M)"), column++, 1);
+		}
 		table.add(getLocalizedSmallHeader("child_care.prognosis_queue12months","Within (12M)"), column++, 1);
 		table.add(getLocalizedSmallHeader("child_care.last_updated","Last updated"), column++, 1);
 
@@ -113,21 +119,23 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 					if (useVacancies)
 						table.add(getSmallText(String.valueOf(stat.getVacancies())), column++, row);
 					table.add(getSmallText(String.valueOf(stat.getThreeMonthsPrognosis())), column++, row);
-					if (stat.getThreeMonthsPriority().intValue() != -1)
-						table.add(getSmallText(String.valueOf(stat.getThreeMonthsPriority())), column++, row);
-					else
-						table.add(getSmallText("-"), column++, row);
-					
+					if (showPriorities) {
+						if (stat.getThreeMonthsPriority().intValue() != -1)
+							table.add(getSmallText(String.valueOf(stat.getThreeMonthsPriority())), column++, row);
+						else
+							table.add(getSmallText("-"), column++, row);
+					}					
 					queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(stat.getProviderID().intValue(), 3, false);
 					
 					table.add(getSmallText(String.valueOf(queueWithin3Months)), column++, row);
 					
 					table.add(getSmallText(String.valueOf(stat.getOneYearPrognosis())), column++, row);
-					if (stat.getOneYearPriority().intValue() != -1)
-						table.add(getSmallText(String.valueOf(stat.getOneYearPriority())), column++, row);
-					else
-						table.add(getSmallText("-"), column++, row);
-					
+					if (showPriorities) {
+						if (stat.getOneYearPriority().intValue() != -1)
+							table.add(getSmallText(String.valueOf(stat.getOneYearPriority())), column++, row);
+						else
+							table.add(getSmallText("-"), column++, row);
+					}					
 					queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(stat.getProviderID().intValue(), 12, false);
 					table.add(getSmallText(String.valueOf(queueWithin12Months)), column++, row);
 					
@@ -136,8 +144,10 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 					
 				}
 				else {
-					table.add(getSmallText("-"), column++, row);
-					table.add(getSmallText("-"), column++, row);
+					if (showPriorities) {
+						table.add(getSmallText("-"), column++, row);
+						table.add(getSmallText("-"), column++, row);
+					}
 					table.add(getSmallText("-"), column++, row);
 					table.add(getSmallText("-"), column++, row);
 					table.add(getSmallText("-"), column++, row);
