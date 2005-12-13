@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.111 2005/12/12 16:51:59 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.112 2005/12/13 17:10:22 dainis Exp $
  * @since 12.2.2003 
  */
 
@@ -252,18 +252,37 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	}
 
 	private void throwOutApplicationsAcceptedByUser(IWContext iwc, Collection applications) throws RemoteException {
+		int acceptedChoiceNumber = 0;
+		
 		List listOfDecisions = (List) iwc.getSessionAttribute(LIST_OF_USER_DECISIONS);
-		Iterator iter = listOfDecisions.iterator();
+		Iterator iter = listOfDecisions.iterator();		
 		while (iter.hasNext()) {
 			AcceptedStatus status = (AcceptedStatus) iter.next();
 
 			if (status.isDefined()) {
 				ChildCareApplication applicationToBeRemoved = childCarebusiness.getApplicationByPrimaryKey(status._appid);
 				if (status.isAccepted()) {
+					acceptedChoiceNumber = applicationToBeRemoved.getChoiceNumber();
 					applications.remove(applicationToBeRemoved);
 				}
 			}
 		}
+		
+		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
+		if (!canKeepAllChoices) {
+			//If choice 1 accepted, choice 2 shall not be deleted, unless it is already an accepted offer
+			int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;			
+			for (Iterator i = listOfDecisions.iterator();i.hasNext();) {
+				AcceptedStatus status = (AcceptedStatus) i.next();
+				ChildCareApplication app = childCarebusiness.getApplicationByPrimaryKey(status._appid);
+				int choiceNumber = app.getChoiceNumber();
+				
+				if (choiceNumber > deleteFromChoice) {
+					applications.remove(app);
+				}				
+			}
+		}
+		
 	}
 
 	/**
