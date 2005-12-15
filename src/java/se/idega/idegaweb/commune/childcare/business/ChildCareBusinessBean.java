@@ -5,7 +5,6 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.NoCustodianFound;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,14 +30,12 @@ import java.util.StringTokenizer;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.logging.Level;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeFinderBusiness;
 import se.idega.idegaweb.commune.accounting.regulations.business.ManagementTypeFinderBusiness;
@@ -74,7 +71,6 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
-
 import com.idega.block.contract.business.ContractService;
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractTag;
@@ -2713,14 +2709,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
 			}
 		}
-		catch (RemoveException re) {
+		catch (IOException re) {
 			re.printStackTrace();
-		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
-		}
-		catch (CreateException ce) {
-			ce.printStackTrace();
 		}
 		return defaultValue;
 	}

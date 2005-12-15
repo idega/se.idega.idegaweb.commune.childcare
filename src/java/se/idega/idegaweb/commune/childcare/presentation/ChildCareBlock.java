@@ -1,11 +1,10 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
-import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.data.CareTime;
@@ -434,14 +433,8 @@ public class ChildCareBlock extends CommuneBlock {
 				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
 			}
 		}
-		catch (RemoveException re) {
+		catch (IOException re) {
 			re.printStackTrace();
-		}
-		catch (RemoteException re) {
-			throw new IBORuntimeException(re);
-		}
-		catch (CreateException ce) {
-			ce.printStackTrace();
 		}
 		return defaultValue;
 	}
