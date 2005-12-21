@@ -2712,6 +2712,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (IOException re) {
 			re.printStackTrace();
 		}
+		catch (CreateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (RemoveException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		return defaultValue;
 	}
 
@@ -4818,8 +4827,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public ChildCareContract getLatestTerminatedContract(int childID) {
 		try {
-			IWTimestamp stamp = new IWTimestamp();
-			return getChildCareContractArchiveHome().findLatestTerminatedContractByChild(childID, stamp.getDate());
+			//IWTimestamp stamp = new IWTimestamp();
+			//return getChildCareContractArchiveHome().findLatestTerminatedContractByChild(childID, stamp.getDate());			
+			return getChildCareContractArchiveHome().findLatestTerminatedContractByChild(childID, null);
 		}
 		catch (FinderException e) {
 			return null;
