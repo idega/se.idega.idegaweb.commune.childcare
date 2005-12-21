@@ -2712,11 +2712,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (IOException re) {
 			re.printStackTrace();
 		}
-		catch (CreateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (RemoveException e) {
+		catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
