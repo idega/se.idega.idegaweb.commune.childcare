@@ -99,7 +99,6 @@ import com.idega.block.school.data.SchoolUser;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.file.data.ICFile;
 import com.idega.core.file.data.ICFileHome;
@@ -116,7 +115,7 @@ import com.idega.data.IDORuntimeException;
 import com.idega.data.IDOStoreException;
 import com.idega.exception.IWBundleDoesNotExist;
 import com.idega.idegaweb.IWBundle;
-import com.idega.idegaweb.IWMainApplication;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.io.MemoryFileBuffer;
 import com.idega.io.MemoryInputStream;
 import com.idega.io.MemoryOutputStream;
@@ -2699,34 +2698,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	private String getPropertyValue(IWBundle iwb, String propertyName, String defaultValue) {
-		try {
-			String value = getBindingBusiness().get(propertyName);
-			if (value != null) {
-				return value;
-			}
-			else {
-				value = iwb.getProperty(propertyName);
-				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
-			}
+		IWMainApplicationSettings settings = getIWMainApplication().getSettings();
+		String value = settings.getProperty(propertyName);
+		if (value != null) {
+			return value;
 		}
-		catch (IOException re) {
-			re.printStackTrace();
-		}
-		catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		value = iwb.getProperty(propertyName);
+		settings.setProperty(propertyName, value != null ? value : defaultValue);
 		return defaultValue;
-	}
-
-	private ICApplicationBindingBusiness getBindingBusiness() {
-		try {
-			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(IWMainApplication.getDefaultIWApplicationContext(), ICApplicationBindingBusiness.class);
-		}
-		catch (IBOLookupException ibe) {
-			throw new IBORuntimeException(ibe);
-		}
 	}
 
 	public boolean assignContractToApplication(String ids[], User user, Locale locale) {
