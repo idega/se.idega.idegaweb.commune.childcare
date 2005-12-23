@@ -1,6 +1,5 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -17,15 +16,14 @@ import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
-import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
-import com.idega.core.business.ICApplicationBindingBusiness;
 import com.idega.core.contact.data.Email;
 import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWBundle;
+import com.idega.idegaweb.IWMainApplicationSettings;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.ui.DropdownMenu;
@@ -423,29 +421,21 @@ public class ChildCareBlock extends CommuneBlock {
 	 * @return
 	 */
 	private String getPropertyValue(IWBundle iwb, String propertyName, String defaultValue) {
-		try {
-			String value = getBindingBusiness().get(propertyName);
-			if (value != null) {
-				return value;
-			}
-			else {
-				value = iwb.getProperty(propertyName);
-				getBindingBusiness().put(propertyName, value != null ? value : defaultValue);
-			}
+		IWMainApplicationSettings settings = getSettings();
+		String value = settings.getProperty(propertyName);
+		if (value != null) {
+			return value;
 		}
-		catch (IOException re) {
-			re.printStackTrace();
+		else {
+			value = iwb.getProperty(propertyName);
+			settings.setProperty(propertyName, value != null ? value : defaultValue);
 		}
+
 		return defaultValue;
 	}
 	
-	private ICApplicationBindingBusiness getBindingBusiness() {
-		try {
-			return (ICApplicationBindingBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ICApplicationBindingBusiness.class);
-		}
-		catch (IBOLookupException ibe) {
-			throw new IBORuntimeException(ibe);
-		}
+	private IWMainApplicationSettings getSettings() {
+		return getIWApplicationContext().getApplicationSettings();
 	}
 
 	protected Table getPersonInfoTable(IWContext iwc, User user) throws RemoteException {
