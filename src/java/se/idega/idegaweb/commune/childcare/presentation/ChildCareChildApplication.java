@@ -471,7 +471,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		//	else Nacka doesn't want the dates to be set by default
 		//		date.setToCurrentDate();
 			if (isAdmin)
-				date.setYearRange(stamp.getYear() - 5, stamp.getYear() + 5);
+				date.setYearRange(stamp.getYear() - 7, stamp.getYear() + 5);
 			inputTable.add(fromText, 1, row);
 			inputTable.add(date, 3, row++);
 			
