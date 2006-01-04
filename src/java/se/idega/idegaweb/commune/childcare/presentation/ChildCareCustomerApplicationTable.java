@@ -42,7 +42,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.113 2005/12/27 10:00:48 igors Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.114 2006/01/04 12:27:08 igors Exp $
  * @since 12.2.2003 
  */
 
@@ -953,6 +953,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		ChildCareBusiness b = getChildCareBusiness(iwc);
 		b.deleteOffer(applicationId, iwc.getCurrentUser());
 		ChildCareApplication app = b.getApplication(applicationId);
+		
+		app.setChoiceNumber(5);   // Igors 2006.01.04
+		app.setContractId(null);  //
+		app.store();              //
+		
 		User child = app.getChild();
 		DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 		Date today = new Date(System.currentTimeMillis());
