@@ -290,7 +290,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 		
 		try {
-			boolean hasPlacement = getBusiness().hasSchoolPlacement(child);
+			//boolean hasPlacement = getBusiness().hasSchoolPlacement(child);
 			int numberOfApplications = canKeepAllChoices ? 4 : 1;
 			if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 			
