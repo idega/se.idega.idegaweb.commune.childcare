@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.business.Relative;
+import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
+import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+import se.idega.idegaweb.commune.care.data.ChildCareContract;
+import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
 
 import com.idega.block.school.data.SchoolClassMember;
@@ -99,11 +103,11 @@ public class AfterSchoolCareGroupWriter extends DownloadWriter implements
 
 	private final static String XML_CHOICES = "Choices";
 
-	private final static String XML_CHOICE = "Choice";
+//	private final static String XML_CHOICE = "Choice";
 
 	private final static String XML_NUMBER = "Number";
 
-	private final static String XML_DISTRICT = "District";
+//	private final static String XML_DISTRICT = "District";
 
 	private final static String XML_OTHER_INFO = "OtherInfo";
 
@@ -359,8 +363,10 @@ public class AfterSchoolCareGroupWriter extends DownloadWriter implements
 						}
 						elCustodian.addContent(XML_MOBILE_PHONE, phoneNumber);
 
-						elCustodian.addContent(XML_RELATION_TO_CHILD, getCareBusiness(iwc).getUserRelation(student, custodian));
-						
+						elCustodian.addContent(XML_RELATION_TO_CHILD,
+								getCareBusiness(iwc).getUserRelation(student,
+										custodian));
+
 						emailAddress = "";
 						if (email != null) {
 							emailAddress = email.getEmailAddress();
@@ -369,7 +375,7 @@ public class AfterSchoolCareGroupWriter extends DownloadWriter implements
 					}
 
 				}
-				
+
 				List contacts = getCareBusiness(iwc).getRelatives(student);
 				if (!contacts.isEmpty()) {
 					XMLElement elContacts = new XMLElement(XML_CONTACTS);
@@ -384,13 +390,69 @@ public class AfterSchoolCareGroupWriter extends DownloadWriter implements
 						elContact.addContent(XML_SSN, "");
 						elContact.addContent(XML_NAME, contact.getName());
 						elContact.addContent(XML_PHONE, contact.getHomePhone());
-						elContact.addContent(XML_MOBILE_PHONE, contact.getMobilePhone());
+						elContact.addContent(XML_MOBILE_PHONE, contact
+								.getMobilePhone());
 						elContact.addContent(XML_EMAIL, contact.getEmail());
-						elContact.addContent(XML_RELATION_TO_CHILD, contact.getRelation());
+						elContact.addContent(XML_RELATION_TO_CHILD, contact
+								.getRelation());
 					}
 
 				}
- 				 
+
+				XMLElement elOtherInfo = new XMLElement(XML_OTHER_INFO);
+				elStudent.addContent(elOtherInfo);
+				elOtherInfo.addContent(XML_DISABILITY, getCareBusiness(iwc)
+						.hasGrowthDeviation(student).toString());
+				elOtherInfo
+						.addContent(XML_DISABILITY_INFO, getCareBusiness(iwc)
+								.getGrowthDeviationDetails(student));
+				elOtherInfo.addContent(XML_ALLERGY, getCareBusiness(iwc)
+						.hasAllergies(student).toString());
+				elOtherInfo.addContent(XML_ALLERGY_INFO, getCareBusiness(iwc)
+						.getAllergiesDetails(student));
+				elOtherInfo.addContent(XML_LAST_DAY_CARE, getCareBusiness(iwc)
+						.getLastCareProvider(student));
+				elOtherInfo.addContent(XML_CAN_CONTACT_LAST_DAY_CARE, getCareBusiness(iwc)
+						.canContactLastCareProvider(student).toString());
+				elOtherInfo.addContent(XML_OTHER_INFO, getCareBusiness(iwc)
+						.getOtherInformation(student));
+				elOtherInfo.addContent(XML_CAN_SHOW_IMAGE, Boolean.toString(getChildCareBusiness(iwc).canDisplayChildCareImages(student)));
+				
+				ChildCareContract contract = getChildCareBusiness(iwc).getChildCareContractBySchoolClassMember(studentMember);
+				if (contract != null) {
+					ChildCareApplication application = contract.getApplication();
+					if (application != null) {
+						AfterSchoolChoice afterSchoolChoice = getChildCareBusiness(iwc).getAfterSchoolBusiness().getAfterSchoolChoice(application.getPrimaryKey());
+						if (afterSchoolChoice != null) {
+							Collection days = getChildCareBusiness(iwc).getAfterSchoolBusiness().getDays(afterSchoolChoice);
+							if (!days.isEmpty()) {
+								XMLElement elAfterSchoolCare = new XMLElement(XML_AFTER_SCHOOL_CARE);
+								elStudent.addContent(elAfterSchoolCare);
+								elAfterSchoolCare.addContent(XML_SCHOOL_NAME, schoolName);
+								
+								XMLElement elInfo = new XMLElement(XML_INFO);
+								elAfterSchoolCare.addContent(elInfo);
+								elInfo.addContent(XML_OTHER_INFO, getCareBusiness(iwc)
+										.getOtherInformation(student));
+								elInfo.addContent(XML_CAN_SHOW_IMAGE, Boolean.toString(getChildCareBusiness(iwc).canDisplayChildCareImages(student)));
+								
+								XMLElement elCareTime = new XMLElement(XML_CARE_TIME);
+								elAfterSchoolCare.addContent(elCareTime);
+								
+								Iterator it3 = days.iterator();
+								while (it3.hasNext()) {
+									AfterSchoolCareDays day = (AfterSchoolCareDays) it3.next();
+									XMLElement elDay = new XMLElement(XML_DAY);
+									elCareTime.addContent(elDay);
+									
+									elDay.addContent(XML_NUMBER, Integer.toString(day.getDayOfWeek()));
+									elDay.addContent(XML_STAY_UNTIL, day.getTimeOfDeparture().toString());
+									elDay.addContent(XML_IS_PICKED_UP, Boolean.toString(day.isPickedUp()));
+								}
+							}
+						}
+					}
+				}
 			}
 
 			XMLOutput output = new XMLOutput(" ", true);

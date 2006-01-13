@@ -5912,6 +5912,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
         }
         return contracts;
     }
+
+    public ChildCareContract getChildCareContractBySchoolClassMember(SchoolClassMember member) {
+        ChildCareContractHome home = getChildCareContractArchiveHome();
+        try {
+			return home.findBySchoolClassMember(member);
+		} catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+    }
+
     
   	public boolean canDisplayChildCareImages(User child) {
   		String meta = child.getMetaData(METADATA_CAN_DISPLAY_CHILD_CARE_IMAGE);
