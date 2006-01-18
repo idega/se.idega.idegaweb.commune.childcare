@@ -5,27 +5,28 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
-
 import com.idega.block.school.data.School;
 import com.idega.core.builder.data.ICPage;
-import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.Phone;
 import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
+import com.idega.presentation.Layer;
+import com.idega.presentation.Table2;
+import com.idega.presentation.TableCell2;
+import com.idega.presentation.TableRow;
+import com.idega.presentation.TableRowGroup;
 import com.idega.presentation.text.Link;
+import com.idega.presentation.text.ListItem;
+import com.idega.presentation.text.Lists;
 import com.idega.presentation.text.Text;
 import com.idega.presentation.ui.Form;
 import com.idega.presentation.ui.GenericButton;
 import com.idega.presentation.ui.HiddenInput;
+import com.idega.presentation.ui.Label;
 import com.idega.presentation.ui.SubmitButton;
 import com.idega.presentation.ui.TextArea;
-import com.idega.user.business.NoPhoneFoundException;
 import com.idega.user.data.User;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
@@ -67,78 +68,99 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		if (_canEdit != null)
 			isAdministrator = !_canEdit.booleanValue();
 
-		Table table = new Table(1,7);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setWidth(getWidth());
-		table.setHeight(2, 12);
-		table.setHeight(4, 6);
-		table.setHeight(6, 12);
+		Form form = new Form();
+		form.add(new HiddenInput(PARAMETER_CREATE_CONTRACT, ""));
 		
 		if (getSession().getChildID() != -1) {
-			table.add(getInformationTable(iwc), 1, 1);
-			table.add(getApplicationTable(iwc), 1, 3);
-			table.add(getLegendTable(), 1, 5);
-			table.add(getButtonTable(iwc, !isAdministrator), 1, 7);
-			
-			if (useStyleNames()) {
-				table.setCellpaddingLeft(1, 1, 12);
-				table.setCellpaddingLeft(1, 5, 12);
-				table.setCellpaddingLeft(1, 7, 12);
-				table.setCellpaddingRight(1, 1, 12);
-				table.setCellpaddingRight(1, 5, 12);
-				table.setCellpaddingRight(1, 7, 12);
-			}
+			form.add(getInformation(iwc));
+			form.add(getApplicationTable(iwc));
+			form.add(getLegend());
+			form.add(getButtons(iwc, !isAdministrator));
 		}
 		else {
-			table.add(this.getLocalizedHeader("child_care.no_child_or_application_found","No child or application found."), 1, 1);
-			table.add(getButtonTable(iwc, false), 1, 3);
-
-			if (useStyleNames()) {
-				table.setCellpaddingLeft(1, 1, 12);
-				table.setCellpaddingLeft(1, 3, 12);
-				table.setCellpaddingRight(1, 1, 12);
-				table.setCellpaddingRight(1, 3, 12);
-			}
+			form.add(new Text(localize("child_care.no_child_or_application_found","No child or application found.")));
+			form.add(getButtons(iwc, false));
 		}
 		
-		add(table);
+		add(form);
 	}
 
-	protected Form getInformationTable(IWContext iwc) throws RemoteException {
-		Form form = new Form();
+	private Lists getLegend() {
+		Lists list = new Lists();
+		list.setStyleClass("legend");
 		
-		Table table = new Table();
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setColumns(3);
-		table.setWidth(1, "100");
-		table.setWidth(2, "6");
-		form.add(table);
-		int row = 1;
+		ListItem item = new ListItem();
+		item.setStyleClass("accepted");
+		item.add(new Text(localize("child_care.application_status_accepted", "Accepted")));
+		list.add(item);
+		
+		item = new ListItem();
+		item.setStyleClass("parentAccepted");
+		item.add(new Text(localize("child_care.application_status_parents_accepted", "Parents accepted")));
+		list.add(item);
+
+		item = new ListItem();
+		item.setStyleClass("contract");
+		item.add(new Text(localize("child_care.application_status_contract", "Contract")));
+		list.add(item);
+		
+		return list;
+	}
+
+	protected Layer getInformation(IWContext iwc) throws RemoteException {
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass("formSection");
 		
 		child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
 		if (child != null) {
-			Address address = getBusiness().getUserBusiness().getUsersMainAddress(child);
-			Collection parents = getBusiness().getUserBusiness().getParentsForChild(child);
-			
-			table.add(getLocalizedSmallHeader("child_care.child","Child"), 1, row);
 			Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
-			table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, row);
-			table.add(getSmallText(" - "), 3, row);
-			table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
+			Address address = getBusiness().getUserBusiness().getUsersMainAddress(child);
 			
+			Layer formItem = new Layer(Layer.DIV);
+			formItem.setStyleClass("formItem");
+			Label label = new Label();
+			label.add(new Text(localize("child_care.child", "Child")));
+			Layer span = new Layer(Layer.SPAN);
+			span.add(new Text(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)));
+			formItem.add(label);
+			formItem.add(span);
+			layer.add(formItem);
+
+			formItem = new Layer(Layer.DIV);
+			formItem.setStyleClass("formItem");
+			label = new Label();
+			label.add(new Text(localize("child_care.personal_id", "Personal ID")));
+			span = new Layer(Layer.SPAN);
+			span.add(new Text(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())));
+			formItem.add(label);
+			formItem.add(span);
+			layer.add(formItem);
+
 			if (address != null) {
-				table.add(getLocalizedSmallHeader("child_care.address","Address"), 1, row);
-				table.add(getSmallText(address.getStreetAddress()), 3, row);
-				if (address.getPostalAddress() != null)
-					table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
-				row++;
+				formItem = new Layer(Layer.DIV);
+				formItem.setStyleClass("formItem");
+				label = new Label();
+				label.add(new Text(localize("child_care.address", "Address")));
+				span = new Layer(Layer.SPAN);
+				span.add(new Text(address.getStreetAddress()));
+				formItem.add(label);
+				formItem.add(span);
+				layer.add(formItem);
+
+				if (address.getPostalAddress() != null) {
+					formItem = new Layer(Layer.DIV);
+					formItem.setStyleClass("formItem");
+					label = new Label();
+					label.add(new Text(localize("child_care.postal", "Postal code")));
+					span = new Layer(Layer.SPAN);
+					span.add(new Text(address.getPostalAddress()));
+					formItem.add(label);
+					formItem.add(span);
+					layer.add(formItem);
+				}
 			}
 			
-			table.setHeight(row++, 12);
-			
+			/*Collection parents = getBusiness().getUserBusiness().getParentsForChild(child);
 			if (parents != null) {
 				table.add(getLocalizedSmallHeader("child_care.parents","Parents"), 1, row);
 				Phone phone = null;
@@ -204,86 +226,116 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					
 					table.setHeight(row++, 12);
 				}
-			}
+			}*/
 		 
 			School provider = getBusiness().getCurrentProviderByPlacement(getSession().getChildID());
 			String school = null;
 			if (provider != null){
 				school = provider.getName();				
-			} else {
+			}
+			else {
 				school = localize("child_care.no_current_provider", "No current provider");
 			}
-				
 			
-			if (school != null){
-				table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-				table.add(getLocalizedSmallHeader("child_care.current_provider","Current provider"), 1, row);
-				table.add(getSmallText(school), 3, row++);
-				table.setHeight(row++, 12);	
-			}
-			
+			formItem = new Layer(Layer.DIV);
+			formItem.setStyleClass("formItem");
+			label = new Label();
+			label.add(new Text(localize("child_care.current_provider", "Current provider")));
+			span = new Layer(Layer.SPAN);
+			span.add(new Text(school));
+			formItem.add(label);
+			formItem.add(span);
+			layer.add(formItem);
 			
 			if (getSession().getApplicationID() != -1 && !isAdministrator) {
 				application = getBusiness().getApplication(getSession().getApplicationID());
 				if (application != null) {
 					if (application.getMessage() != null) {
-						table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-						table.add(getLocalizedSmallHeader("child_care.message","Message"), 1, row);
-						table.add(getSmallText(application.getMessage()), 3, row++);
-						table.setHeight(row++, 12);
+						formItem = new Layer(Layer.DIV);
+						formItem.setStyleClass("formItem");
+						label = new Label();
+						label.add(new Text(localize("child_care.message", "Message")));
+						span = new Layer(Layer.SPAN);
+						span.add(new Text(application.getMessage()));
+						formItem.add(label);
+						formItem.add(span);
+						layer.add(formItem);
 					}
 					
 					if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
 						IWTimestamp validUntil = new IWTimestamp(application.getOfferValidUntil());
-						table.add(getLocalizedSmallHeader("child_care.reply_date","Reply date"), 1, row);
-						table.add(getSmallText(validUntil.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row++);
-						table.setHeight(row++, 12);
+
+						formItem = new Layer(Layer.DIV);
+						formItem.setStyleClass("formItem");
+						label = new Label();
+						label.add(new Text(localize("child_care.reply_date", "Reply date")));
+						span = new Layer(Layer.SPAN);
+						span.add(new Text(validUntil.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)));
+						formItem.add(label);
+						formItem.add(span);
+						layer.add(formItem);
 					}
 				
-					table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
-					table.add(getLocalizedSmallHeader("child_care.comments","Comments"), 1, row);
-				
 					TextArea comments = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENTS));
-					comments.setWidth(Table.HUNDRED_PERCENT);
-					comments.setRows(4);
-					if (application.getPresentation() != null)
+					comments.setStyleClass("textarea");
+					if (application.getPresentation() != null) {
 						comments.setContent(application.getPresentation());
-					table.add(comments, 3, row++);
-					SubmitButton saveComments = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.save_comments","Save comments")));
-					table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
-					table.add(saveComments, 3, row);
+					}
+					SubmitButton saveComments = new SubmitButton(localize("child_care.save_comments","Save comments"));
+					saveComments.setStyleClass("indentedButton");
+
+					formItem = new Layer(Layer.DIV);
+					formItem.setStyleClass("formItem");
+					label = new Label(localize("child_care.comments", "Comments"), comments);
+					formItem.add(label);
+					formItem.add(comments);
+					layer.add(formItem);
 				}
 			}
 		}
 		
-		return form;
+		Layer clearLayer = new Layer(Layer.DIV);
+		clearLayer.setStyleClass("Clear");
+		layer.add(clearLayer);
+		
+		return layer;
 	}
 	
-	protected Table getApplicationTable(IWContext iwc) throws RemoteException {
-		Table table = new Table();
-		table.setWidth(Table.HUNDRED_PERCENT);
-		table.setCellpadding(getCellpadding());
-		table.setCellspacing(getCellspacing());
-		table.setColumns(5);
-		if (useStyleNames()) {
-			table.setRowStyleClass(1, getHeaderRowClass());
-		}
-		else {
-			table.setRowColor(1, getHeaderColor());
-		}
-		int row = 1;
-		int column = 1;
+	protected Table2 getApplicationTable(IWContext iwc) throws RemoteException {
+		Table2 table = new Table2();
+		table.setStyleClass("adminTable");
+		table.setStyleClass("ruler");
+		table.setWidth("100%");
+		table.setCellpadding(0);
+		table.setCellspacing(0);
+		
+		TableRowGroup group = table.createHeaderRowGroup();
+		TableRow row = group.createRow();
+		TableCell2 cell = row.createHeaderCell();
+		cell.setStyleClass("firstColumn");
+		cell.setStyleClass("provider");
+		cell.add(new Text(localize("child_care.provider","Provider")));
+
+		cell = row.createHeaderCell();
+		cell.setStyleClass("status");
+		cell.add(new Text(localize("child_care.status","Status")));
+
+		cell = row.createHeaderCell();
+		cell.setStyleClass("phone");
+		cell.add(new Text(localize("child_care.phone","Phone")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("queueDate");
+		cell.add(new Text(localize("child_care.queue_date","Queue date")));
+		
+		cell = row.createHeaderCell();
+		cell.setStyleClass("lastColumn");
+		cell.setStyleClass("placementDate");
+		cell.add(new Text(localize("child_care.placement_date","Placement date")));
 			
-		if (useStyleNames()) {
-			table.setCellpaddingLeft(1, row, 12);
-			table.setCellpaddingRight(table.getColumns(), row, 12);
-		}
-		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.queue_date","Queue date"), column++, row);
-		table.add(getLocalizedSmallHeader("child_care.placement_date","Placement date"), column, row++);
-			
+		group = table.createBodyRowGroup();
+		int iRow = 1;
+
 		ChildCareApplication application;
 		String phone;
 		IWTimestamp queueDate;
@@ -294,7 +346,6 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		Collection applications = getBusiness().getApplicationsForChild(child, getSession().getCaseCode());
 		Iterator iter = applications.iterator();
 		while (iter.hasNext()) {
-			column = 1;
 			application = (ChildCareApplication) iter.next();
 			phone = getBusiness().getSchoolBusiness().getSchoolPhone(application.getProviderId());
 			queueDate = new IWTimestamp(application.getQueueDate());
@@ -304,79 +355,77 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			else
 				isCurrentProvider = false;
 				
-			if (useStyleNames()) {
-				if (row % 2 == 0) {
-					table.setRowStyleClass(row, getDarkRowClass());
-				}
-				else {
-					table.setRowStyleClass(row, getLightRowClass());
-				}
-				table.setCellpaddingLeft(1, row, 12);
-				table.setCellpaddingRight(table.getColumns(), row, 12);
-			}
-
-			if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
-				table.setRowColor(row, ACCEPTED_COLOR);
-			}
-			else if (application.getApplicationStatus() == getBusiness().getStatusParentsAccept()) {
-				table.setRowColor(row, PARENTS_ACCEPTED_COLOR);
-			}
-			else if (application.getApplicationStatus() == getBusiness().getStatusContract()) {
-				table.setRowColor(row, CONTRACT_COLOR);
+			if (iRow % 2 == 0) {
+				row.setStyleClass("evenRow");
 			}
 			else {
-				if (!useStyleNames()) {
-					if (row % 2 == 0)
-						table.setRowColor(row, getZebraColor1());
-					else
-						table.setRowColor(row, getZebraColor2());
-				}
+				row.setStyleClass("oddRow");
+			}
+			if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
+				row.setStyleClass("accepted");
+			}
+			else if (application.getApplicationStatus() == getBusiness().getStatusParentsAccept()) {
+				row.setStyleClass("parentAccepted");
+			}
+			else if (application.getApplicationStatus() == getBusiness().getStatusContract()) {
+				row.setStyleClass("contract");
+			}
+			if (isCurrentProvider) {
+				row.setStyleClass("currentProvider");
 			}
 
+			cell = row.createCell();
+			cell.setStyleClass("firstColumn");
+			cell.setStyleClass("provider");
 			if (contractsPage != null) {
 				Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
-				archive = getLink(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true),isCurrentProvider);
+				archive = new Link(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true));
 				archive.setEventListener(ChildCareEventListener.class);
 				archive.addParameter(getSession().getParameterUserID(), application.getChildId());
 				archive.addParameter(getSession().getParameterApplicationID(), ((Integer)application.getPrimaryKey()).intValue());
 				archive.setPage(getResponsePage());
-				table.add(archive, column++, row);
+				cell.add(archive);
 			}
-			else
-				table.add(getText(application.getProvider().getSchoolName(), isCurrentProvider), column++, row);
-			table.add(getText(getStatusString(application), isCurrentProvider), column++, row);
-			if (phone != null)
-				table.add(getText(phone, isCurrentProvider), column, row);
-			column++;
-			table.add(getText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isCurrentProvider), column++, row);
-			table.add(getText(placementDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isCurrentProvider), column++, row++);
+			else {
+				cell.add(new Text(application.getProvider().getSchoolName()));
+			}
+			
+			cell = row.createCell();
+			cell.setStyleClass("status");
+			cell.add(new Text(getStatusString(application)));
+			
+			cell = row.createCell();
+			cell.setStyleClass("phone");
+			if (phone != null) {
+				cell.add(new Text(phone));
+			}
+			else {
+				cell.add(new Text("-"));
+			}
+			
+			cell = row.createCell();
+			cell.setStyleClass("queueDate");
+			cell.add(getText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)));
+			
+			cell = row.createCell();
+			cell.setStyleClass("lastColumn");
+			cell.setStyleClass("placementDate");
+			cell.add(new Text(placementDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)));
 		}
-		table.setColumnAlignment(4, Table.HORIZONTAL_ALIGN_CENTER);
-		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		
 		return table;
 	}
 	
-	protected Form getButtonTable(IWContext iwc, boolean showAllButtons) throws RemoteException {
-		Form form = new Form();
-		form.add(new HiddenInput(PARAMETER_CREATE_CONTRACT, ""));
-		
-		Table table = new Table();
-		table.setColumns(7);
-		table.setCellpadding(0);
-		table.setCellspacing(0);
-		table.setWidth(2, "4");
-		table.setWidth(4, "4");
-		table.setWidth(6, "4");
-		table.setWidth(7, "100%");
-		form.add(table);
+	protected Layer getButtons(IWContext iwc, boolean showAllButtons) throws RemoteException {
+		Layer layer = new Layer(Layer.DIV);
+		layer.setStyleClass("buttonLayer");
 		
 		String dateWarning = null;
 		List logicMessages = new ArrayList();
 		
-		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
+		GenericButton back = new GenericButton("back",localize("back","Back"));
 		back.setPageToOpen(getResponsePage());
-		table.add(back, 1, 1);
+		layer.add(back);
 		
 		if (showAllButtons) {
 			int numberInQueue = 1;
@@ -397,13 +446,11 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 
 			//if (status == getBusiness().getStatusSentIn() && !instantContract) {
 			if (status == getBusiness().getStatusSentIn()) {
-				int column = 3;
 				if (numberInQueue == 1 || hasPriority) {
 					GenericButton changeDate = getButton("change_date", localize("child_care.change_date","Change date"), ChildCareAdminWindow.METHOD_CHANGE_DATE);
-					table.add(changeDate, column++, 1);
-					column++;
+					layer.add(changeDate);
 
-					GenericButton offer = (GenericButton) getStyledInterface(new GenericButton("offer", localize("child_care.offer_placing","Offer placing")));
+					GenericButton offer = new GenericButton("offer", localize("child_care.offer_placing","Offer placing"));
 					if (application.getHasDateSet()) {
 						offer.setWindowToOpen(ChildCareWindow.class);
 						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
@@ -416,52 +463,48 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						offer.setToolTip(localize("child_care.tooltip.button.offerplacing.date_not_yet_set","Date has not been set"));
 						logicMessages.add(localize("child_care.contracting.offer_button_disabled_no_date_has_been_set","Offer button is disabled, application has no date set"));
 					}
-					table.add(offer, column++, 1);
+					layer.add(offer);
 				}
 				else {
 					GenericButton priority = getButton("priority", localize("child_care.grant_priority","Grant priority"), ChildCareAdminWindow.METHOD_GRANT_PRIORITY);
-					table.add(priority, column++, 1);
+					layer.add(priority);
 				}
-				column++;
 
 				if (isAfterSchoolApplication) {
-					GenericButton reject = (GenericButton) getStyledInterface(new GenericButton("reject", localize("child_care.reject_application","Reject application")));
+					GenericButton reject = new GenericButton("reject", localize("child_care.reject_application","Reject application"));
 					reject.setWindowToOpen(ChildCareWindow.class);
 					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
 					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_REJECT_APPLICATION);
 					reject.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-					table.add(reject, column++, 1);
+					layer.add(reject);
 				}
 			}
 			else if (status == getBusiness().getStatusAccepted()) {
-				int column = 3;
 				if (showParentsAgree) {
 					GenericButton parentsAgree = getButton("parents_agree", localize("child_care.parents_agree","Parents agree"), -1);
 					parentsAgree.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_PARENTS_AGREE);
-					table.add(parentsAgree, column++, 1);
-					column++;
+					layer.add(parentsAgree);
 				}
 				
 				IWTimestamp dateNow = new IWTimestamp();
 				IWTimestamp validUntil = new IWTimestamp(application.getOfferValidUntil());
 				if (dateNow.isLaterThanOrEquals(validUntil)) {
-					GenericButton offer = (GenericButton) getStyledInterface(new GenericButton("change_offer", localize("child_care.change_offer_date","Change offer date")));
+					GenericButton offer = new GenericButton("change_offer", localize("child_care.change_offer_date","Change offer date"));
 					offer.setWindowToOpen(ChildCareWindow.class);
 					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
 					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CHANGE_OFFER);
 					offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-					table.add(offer, column++, 1);
-					column++;
+					layer.add(offer);
 					
-					GenericButton removeFromQueue = (GenericButton) getStyledInterface(new GenericButton("remove_from_queue", localize("child_care.remove_from_queue","Remove from queue")));
+					GenericButton removeFromQueue = new GenericButton("remove_from_queue", localize("child_care.remove_from_queue","Remove from queue"));
 					removeFromQueue.setWindowToOpen(ChildCareWindow.class);
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_RETRACT_OFFER);
 					removeFromQueue.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
-					table.add(removeFromQueue, column, 1);
+					layer.add(removeFromQueue);
 				}
 			}
 			else if (status == getBusiness().getStatusParentsAccept() || instantContract) {
@@ -509,13 +552,13 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					
 				if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
 				  if (getBusiness().hasFutureActivePlacementsNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), application.getFromDate())) {
-						table.add(changeDate, 3, 1);
-						table.add(createContract, 5, 1);
+						layer.add(changeDate);
+						layer.add(createContract);
 						dateWarning = localize("child_care.child_has_future_active_contract", "Child has an active future contract");
 				  }
 				  else {
 						disabledCreateContract.setToolTip(localize("child_care.tooltip.button.create_contract.active_placement_at_other_provider","Has an active placement at other provider"));
-						table.add(disabledCreateContract, 3, 1);
+						layer.add(disabledCreateContract);
 						dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
 				  }
 				}
@@ -533,50 +576,46 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 								terminationDate.addDays(1);
 								dateWarning = localize("child_care.earliest_possible_placement_date", "Earliest possible placement date") + ": " + terminationDate.getLocaleDate(iwc.getLocale(), IWTimestamp.SHORT);
 								changeDate.addParameterToWindow(ChildCareAdminWindow.PARAMETER_EARLIEST_DATE, terminationDate.toString());
-								table.add(changeDate, 3, 1);
+								layer.add(changeDate);
 								disabledCreateContract.setToolTip(localize("child_care.tooltip.button.create_contract.startdate_is_before_latest_termination","Start date is before latest termination date"));
-								table.add(disabledCreateContract, 5, 1);
+								layer.add(disabledCreateContract);
 								logicMessages.add(localize("child_care.contracting.creation_button_disabled_startdate_is_before_latest_termination","Contract creation button is disabled, start date is before latest termination"));
 							}
 							else {
-								table.add(changeDate, 3, 1);
-								table.add(createContract, 5, 1);
+								layer.add(changeDate);
+								layer.add(createContract);
 							}
 						}
 						else {
-							table.add(changeDate, 3, 1);
-							table.add(createContract, 5, 1);
+							layer.add(changeDate);
+							layer.add(createContract);
 						}
 					}
 					else {
-						table.add(changeDate, 3, 1);
-						table.add(createContract, 5, 1);
+						layer.add(changeDate);
+						layer.add(createContract);
 					}
 				}
 			}
 			else if (status == getBusiness().getStatusContract()) {
-				int column = 3;
-
-				GenericButton viewContract = (GenericButton) getStyledInterface(new GenericButton("view_contract", localize("child_care.view_contract","View contract")));
+				GenericButton viewContract = new GenericButton("view_contract", localize("child_care.view_contract","View contract"));
 				viewContract.setFileToOpen(application.getContractFileId());
-				table.add(viewContract, column++, 1);
-				column++;
+				layer.add(viewContract);
 
 				if (showRecreateContract) {
 					GenericButton recreateContract = getButton("recreate_contract", localize("child_care.recreate_contract", "Recreate contract"), -1);
 					recreateContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
-					table.add(recreateContract, column++, 1);
-					column++;
+					layer.add(recreateContract);
 				}
 				
 				GenericButton placeInGroup = null;
 
 				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
 					if (! application.getContract().isSigned()) {
-						placeInGroup = (GenericButton) getStyledInterface(new GenericButton("place_in_group", localize("child_care.place_in_group","Place in group")));
+						placeInGroup = new GenericButton("place_in_group", localize("child_care.place_in_group","Place in group"));
 						placeInGroup.setDisabled(true);
 						placeInGroup.setToolTip(localize("child_care.tooltip.button.place_in_group.contract_unsigned","Contract is unsigned"));
-						table.add(placeInGroup, column, 1);
+						layer.add(placeInGroup);
 						logicMessages.add(localize("child_care.contracting.group_placing_button_disabled_unsigned_contract","Place in group button is disabled, contract still not signed by parents"));
 					}
 					else {
@@ -588,8 +627,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 						}
 						placeInGroup.setOnClick("this.style.display='none';");
 						
-						table.add(placeInGroup, column, 1);
-						
+						layer.add(placeInGroup);
 					}
 				}
 				else {
@@ -601,12 +639,12 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					}
 					placeInGroup.setOnClick("this.style.display='none';");
 					
-					table.add(placeInGroup, column, 1);
+					layer.add(placeInGroup);
 				}
 			}
 		}
 		
-		if (dateWarning != null) {
+		/*if (dateWarning != null) {
 			table.setHeight(2, 6);
 			table.mergeCells(1, 3, table.getColumns(), 3);
 			table.add(getSmallErrorText(dateWarning), 1, 3);
@@ -620,13 +658,13 @@ public class ChildCareAdminApplication extends ChildCareBlock {
                 table.mergeCells(1,row,table.getColumns(),row);
                 row++;
             }
-		}
+		}*/
 		
-		return form;
+		return layer;
 	}
 	
 	protected GenericButton getButton(String name, String value, int method)  throws RemoteException {
-		GenericButton button = (GenericButton) getStyledInterface(new GenericButton(name, value));
+		GenericButton button = new GenericButton(name, value);
 		button.setWindowToOpen(ChildCareWindow.class);
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
@@ -634,20 +672,6 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		button.addParameterToWindow(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 				
 		return button;
-	}
-	
-	protected Text getText(String text, boolean isCurrentProvider) {
-		if (isCurrentProvider)
-			return getSmallHeader(text);
-		else
-			return getSmallText(text);
-	}
-	
-	protected Link getLink(String text, boolean isCurrentProvider) {
-		if (isCurrentProvider)
-			return this.getSmallHeaderLink(text);
-		else
-			return getSmallLink(text);
 	}
 	
 	private void parse(IWContext iwc) throws RemoteException {
