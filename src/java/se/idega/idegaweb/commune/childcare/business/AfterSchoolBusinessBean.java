@@ -114,7 +114,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	
 	public AfterSchoolChoice findChoiceByChild(User child, SchoolSeason season, int choiceNumber) throws FinderException {
 		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusReady().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusInactive().getStatus() };
-		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason((Integer) child.getPrimaryKey(), new Integer(choiceNumber), (Integer) season.getPrimaryKey(), caseStatus);
+		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(new Integer(child.getPrimaryKey().toString()), new Integer(choiceNumber), new Integer(season.getPrimaryKey().toString()), caseStatus);
 	}
 
 	public boolean acceptAfterSchoolChoice(Object afterSchoolChoiceID, User performer) {
