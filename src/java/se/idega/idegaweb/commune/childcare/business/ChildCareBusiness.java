@@ -19,6 +19,7 @@ import se.idega.idegaweb.commune.accounting.regulations.business.EmploymentTypeF
 import se.idega.idegaweb.commune.accounting.regulations.business.ManagementTypeFinderBusiness;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.care.business.AlreadyCreatedException;
+import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.CareTime;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
@@ -57,7 +58,7 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness,
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getBundleIdentifier
 	 */
 	public String getBundleIdentifier() throws java.rmi.RemoteException;
-
+	public CareBusiness getCareBusiness() throws RemoteException;
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getChildCarePrognosisHome
 	 */
