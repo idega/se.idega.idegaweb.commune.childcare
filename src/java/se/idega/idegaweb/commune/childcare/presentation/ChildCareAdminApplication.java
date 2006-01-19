@@ -346,6 +346,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		Collection applications = getBusiness().getApplicationsForChild(child, getSession().getCaseCode());
 		Iterator iter = applications.iterator();
 		while (iter.hasNext()) {
+			row = group.createRow();
+			
 			application = (ChildCareApplication) iter.next();
 			phone = getBusiness().getSchoolBusiness().getSchoolPhone(application.getProviderId());
 			queueDate = new IWTimestamp(application.getQueueDate());
