@@ -2034,50 +2034,55 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication application = home.findByPrimaryKey(new Integer(applicationId));
+	
+			return rejectOffer(application, user);
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
+		catch (IDOLookupException ile) {
+			throw new IBORuntimeException(ile);
+		}
+		return false;
+	}
+	
+	public boolean rejectOffer(ChildCareApplication application, User user) {
+		UserTransaction t = getSessionContext().getUserTransaction();
+		try {
+			t.begin();
+			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
+			IWTimestamp now = new IWTimestamp();
+			application.setRejectionDate(now.getDate());
+			application.setApplicationStatus(getStatusRejected());
+			caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
 
-			UserTransaction t = getSessionContext().getUserTransaction();
-			try {
-				t.begin();
-				CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
-				IWTimestamp now = new IWTimestamp();
-				application.setRejectionDate(now.getDate());
-				application.setApplicationStatus(getStatusRejected());
-				caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
+			String subject = getLocalizedString("child_care.rejected_offer_subject", "A placing offer replied to.");
+			String body = getLocalizedString("child_care.rejected_offer_body", "Custodian for {0}, {5} rejects an offer for placing at {1}.");
+			sendMessageToProvider(application, subject, body);
 
-				String subject = getLocalizedString("child_care.rejected_offer_subject", "A placing offer replied to.");
-				String body = getLocalizedString("child_care.rejected_offer_body", "Custodian for {0}, {5} rejects an offer for placing at {1}.");
-				sendMessageToProvider(application, subject, body);
-
-				if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
-					Iterator iter = application.getChildrenIterator();
-					while (iter.hasNext()) {
-						Case element = (Case) iter.next();
-						if (element instanceof ChildCareApplication) {
-							application = (ChildCareApplication) element;
-							application.setApplicationStatus(getStatusSentIn());
-							caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
-						}
+			if (isAfterSchoolApplication(application) && application.getChildCount() > 0) {
+				Iterator iter = application.getChildrenIterator();
+				while (iter.hasNext()) {
+					Case element = (Case) iter.next();
+					if (element instanceof ChildCareApplication) {
+						application = (ChildCareApplication) element;
+						application.setApplicationStatus(getStatusSentIn());
+						caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
 					}
 				}
-
-				t.commit();
-
-				return true;
 			}
-			catch (Exception e) {
-				try {
-					t.rollback();
-				}
-				catch (SystemException ex) {
-					ex.printStackTrace();
-				}
-				e.printStackTrace();
+
+			t.commit();
+
+			return true;
+		}
+		catch (Exception e) {
+			try {
+				t.rollback();
 			}
-		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
+			catch (SystemException ex) {
+				ex.printStackTrace();
+			}
 			e.printStackTrace();
 		}
 
@@ -2289,6 +2294,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 		String applicationStatus[] = { String.valueOf(getStatusRejected()), String.valueOf(getStatusTimedOut()), String.valueOf(getStatusDenied()) };
 		return getChildCareApplicationHome().findApplicationsByProviderAndStatus(providerID, applicationStatus, fromDateOfBirth != null ? new IWTimestamp(fromDateOfBirth).getDate() : null, toDateOfBirth != null ? new IWTimestamp(toDateOfBirth).getDate() : null, fromDate != null ? new IWTimestamp(fromDate).getDate() : null, toDate != null ? new IWTimestamp(toDate).getDate() : null);
+	}
+	
+	public void parentsAgree(ChildCareApplication application, User user) {
+		String subject = getLocalizedString("child_care.accepted_offer_subject", "A placing offer replied to.");
+		String body = getLocalizedString("child_care.accepted_offer_body", "Custodian for {0}, {5} accepts an offer for placing at {1}.");
+		parentsAgree(application, user, subject, body);
 	}
 
 	public void parentsAgree(int applicationID, User user, String subject, String message) {
