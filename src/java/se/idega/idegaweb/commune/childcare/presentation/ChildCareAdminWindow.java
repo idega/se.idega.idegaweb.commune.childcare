@@ -11,11 +11,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-
 import se.idega.block.pki.business.NBSLoginBusinessBean;
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
@@ -26,7 +24,6 @@ import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
-
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractHome;
 import com.idega.block.contract.data.ContractTag;
@@ -390,6 +387,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		contentTable.setHeight(Table.HUNDRED_PERCENT);
 		table.add(contentTable, 2, 4);
 
+		
 		//close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
 		//close.setPageToOpen(getParentPageID());
 		//close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
@@ -2262,6 +2260,28 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		close();
 	}
 
+	private void sendExtraMessage(IWContext iwc,ChildCareApplication application,IWTimestamp date) throws RemoteException {
+		
+		User ch = application.getChild(); 
+		IWTimestamp stamp = new IWTimestamp();
+		String messageBody,messageSubject;
+		
+		messageBody =  localize("ccecw_encon_extra_message_part1","Contract for"); 
+		messageBody += " "+ch.getName()+", ";
+		messageBody += PersonalIDFormatter.format(ch.getPersonalID(), iwc.getCurrentLocale())+" ";
+		messageBody += localize("ccecw_encon_extra_message_part2","has been ended from");
+		messageBody += " "+date.getDateString("yyyy-MM-dd")+". "; 
+		messageBody += localize("ccecw_encon_extra_message_part3","You will receive the termination contract in regular mail in a couple of days. Please sign it and return it to the provider as soon as possible. Your placement won’t be completely ended until it is returned.");  
+		messageBody += "\r\n";
+		messageBody += "\r\n";
+		messageBody += localize("ccecw_encon_extra_message_part4","Best regards \n ");
+		messageBody += "\r\n";
+		messageBody += application.getProvider().getSchoolName();
+		
+		messageSubject = localize("ccecw_encon_extra_message_part0", "Extra message:End of contract");
+		getBusiness().sendMessageToParents(application, messageSubject,messageBody);
+	}	
+
 	private void cancelContract(IWContext iwc) throws RemoteException {
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(_userID, getSession().getChildCareID());
 		if (application != null) {
@@ -2292,6 +2312,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				//getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 				//getParentPage().close();
 				isEndDateSet = true;
+				sendExtraMessage(iwc,application,date);  
+				
 			}
 			else if (application.getApplicationStatus() == getBusiness().getStatusWaiting()) {
 				IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
@@ -2345,13 +2367,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String providerComments = iwc.getParameter(PARAMETER_PROVIDER_COMMENTS);
 		getBusiness().updatePrognosis(getSession().getChildCareID(), threeMonths, oneYear, threeMonthsPriority, oneYearPriority, providerCapacity, vacancies, providerComments);
 
-		getSession().setHasPrognosis(true);
+		getSession().setHasPrognosis(true); 
 		getSession().setHasOutdatedPrognosis(false);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
 	}
-
 	private void sendEndContractRequest(IWContext iwc) throws RemoteException {
 		IWTimestamp stamp = new IWTimestamp(iwc.getParameter(PARAMETER_CHANGE_DATE));
 		boolean parentalLeave = new Boolean(iwc.getParameter(PARAMETER_CANCEL_REASON)).booleanValue();
