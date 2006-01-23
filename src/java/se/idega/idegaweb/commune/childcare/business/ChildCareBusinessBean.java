@@ -5869,15 +5869,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return markChildrenOutsideCommune;
 	}
 
-	public Map getCaseParameters(Case theCase) {
-		ChildCareApplication application = (ChildCareApplication) theCase;
-		
-		Map map = new HashMap();
-		map.put("cc_user_id", String.valueOf(application.getChildId()));
-		
-		return null;
-	}
-	
 	public Class getEventListener() {
 		return ChildCareEventListener.class;
 	}
