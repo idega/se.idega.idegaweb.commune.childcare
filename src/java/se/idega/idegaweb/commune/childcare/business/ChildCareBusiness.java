@@ -620,6 +620,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication
 	 */
+	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication
+	 */
 	public boolean assignContractToApplication(String[] ids, User user, Locale locale) throws java.rmi.RemoteException;
 
 	/**

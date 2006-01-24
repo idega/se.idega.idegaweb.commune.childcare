@@ -2560,11 +2560,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				if (changeStatus) {
 					application.setApplicationStatus(getStatusContract());
 					changeCaseStatus(application, getCaseStatusContract().getStatus(), user);
-					createMessagesForParentsOnContractCreation(application, locale, hasBankId);
+					if (sendMessages)
+						createMessagesForParentsOnContractCreation(application, locale, hasBankId);
 				}
 				else {
 					changeCaseStatus(application, application.getCaseStatus().getStatus(), user);
-					createMessagesForParentsOnContractCareTimeAlter(application, locale, hasBankId);
+					if (sendMessages)
+						createMessagesForParentsOnContractCareTimeAlter(application, locale, hasBankId);
 				}
 			}
 
