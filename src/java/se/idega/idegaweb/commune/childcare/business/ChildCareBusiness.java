@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 Jan 21, 2006 laddi Exp $
- * Created on Jan 21, 2006
+ * $Id: ChildCareBusiness.java 1.1 Jan 24, 2006 laddi Exp $
+ * Created on Jan 24, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -171,6 +171,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#changePlacingDate
 	 */
 	public void changePlacingDate(int applicationID, Date placingDate, String preSchool) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#changePlacingDate
+	 */
+	public void changePlacingDate(ChildCareApplication application, Date placingDate, String preSchool) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#sendMessageToProvider
@@ -371,6 +376,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#placeApplication
 	 */
 	public boolean placeApplication(int applicationID, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#placeApplication
+	 */
+	public boolean placeApplication(ChildCareApplication application, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#alterValidFromDate
@@ -601,6 +611,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication
 	 */
 	public ICFile assignContractToApplication(int applicationID, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication
+	 */
+	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication
@@ -1416,11 +1431,6 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getMarkChildrenOutsideCommune
 	 */
 	public boolean getMarkChildrenOutsideCommune() throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getCaseParameters
-	 */
-	public Map getCaseParameters(Case theCase) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getEventListener

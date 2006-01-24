@@ -663,15 +663,21 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void changePlacingDate(int applicationID, Date placingDate, String preSchool) {
 		try {
 			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			changePlacingDate(application, placingDate, preSchool);
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void changePlacingDate(ChildCareApplication application, Date placingDate, String preSchool) {
+		try {
 			application.setHasDateSet(true);
 			application.setFromDate(placingDate);
 			application.setPreSchool(preSchool);
 			application.store();
 		}
 		catch (IDOStoreException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
 			e.printStackTrace();
 		}
 	}
@@ -1213,10 +1219,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean placeApplication(int applicationID, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			placeApplication(application, subject, body, childCareTime, groupID, schoolTypeID, employmentTypeID, terminationDate, user, locale);
+			
+			return true;
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+		
+		return false;
+	}
+	
+	public boolean placeApplication(ChildCareApplication application, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) {
 		UserTransaction t = super.getSessionContext().getUserTransaction();
 		try {
 			t.begin();
-			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 			if (terminationDate != null) {
 				application.setRejectionDate(terminationDate.getDate());
@@ -1264,15 +1283,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			} catch (Exception e) {}
 			t.commit();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-			try {
-				t.rollback();
-			}
-			catch (Exception e1) {
-				e1.printStackTrace();
-			}
 		}
 		catch (NoPlacementFoundException e) {
 			e.printStackTrace();
@@ -2452,12 +2462,23 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 		}		
 	}
-	
+
 	public ICFile assignContractToApplication(int applicationID, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
+		try {
+			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
+			return assignContractToApplication(application, archiveID, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId);
+		}
+		catch (FinderException fe) {
+			fe.printStackTrace();
+		}
+
+		return null;
+	}
+	
+	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
-			ChildCareApplication application = getChildCareApplicationHome().findByPrimaryKey(new Integer(applicationID));
 			application.setCareTime(childCareTime);
 
 			if (validFrom == null)
