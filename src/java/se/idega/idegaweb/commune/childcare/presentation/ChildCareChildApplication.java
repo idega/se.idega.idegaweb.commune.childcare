@@ -262,7 +262,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	
 	private void submitForm(IWContext iwc) {
 		boolean done = false;
-		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);
 
 		boolean inProcess = false;
 		try {
@@ -287,7 +286,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 		
 		try {
-			boolean hasPlacement = getBusiness().hasSchoolPlacement(child);
 			int numberOfApplications = 4;	
 			if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 			
@@ -460,7 +458,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		
 		
 	     
-		boolean canKeepAllChoices = this.getBundle().getBooleanProperty(PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT, true);		
 		int numberOfApplications = 4;		
 		if ((!hasActivePlacement)&&(!inProcess)) numberOfApplications = 5;
 
