@@ -2474,8 +2474,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 		return null;
 	}
-	
+
 	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
+		return assignContractToApplication(application, archiveID, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId, true);
+	}
+	
+	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
