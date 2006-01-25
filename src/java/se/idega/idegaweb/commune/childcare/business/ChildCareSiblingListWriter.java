@@ -148,7 +148,9 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
         MemoryOutputStream mos = new MemoryOutputStream(buffer);
         if (!applications.isEmpty()) {
             HSSFWorkbook wb = new HSSFWorkbook();
-            HSSFSheet sheet = wb.createSheet(schoolName);
+            // title of excel's sheet cannot be longer than 31 char
+            String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, schoolName.length());
+            HSSFSheet sheet = wb.createSheet(sheetTitle);
             sheet.setColumnWidth((short) 0, (short) (30 * 256));
             sheet.setColumnWidth((short) 1, (short) (14 * 256));
             sheet.setColumnWidth((short) 2, (short) (30 * 256));
