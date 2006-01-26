@@ -287,7 +287,7 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 				datatable.addCell(cell);
 
 				String phoneNumber = "";
-				if (phone != null)
+				if (phone != null && phone.getNumber() != null)
 					phoneNumber = phone.getNumber();
 				cell = new Cell(new Phrase(phoneNumber, new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
