@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 Jan 24, 2006 laddi Exp $
- * Created on Jan 24, 2006
+ * $Id: ChildCareBusiness.java 1.1 Jan 26, 2006 laddi Exp $
+ * Created on Jan 26, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -34,6 +34,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosisHome;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
 import se.idega.idegaweb.commune.childcare.data.ChildCareQueueHome;
 import se.idega.idegaweb.commune.message.business.CommuneMessageBusiness;
+import com.idega.block.pdf.business.PrintingContext;
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.business.SchoolBusiness;
@@ -621,6 +622,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication
 	 */
 	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication
+	 */
+	public ICFile assignContractToApplication(PrintingContext printingContext, ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#assignContractToApplication

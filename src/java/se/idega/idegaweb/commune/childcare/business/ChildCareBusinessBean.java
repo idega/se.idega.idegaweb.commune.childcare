@@ -2478,8 +2478,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId) {
 		return assignContractToApplication(application, archiveID, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId, true);
 	}
-	
+
 	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) {
+		return assignContractToApplication(null, application, archiveID, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId, sendMessages);
+	}
+	
+	public ICFile assignContractToApplication(PrintingContext printingContext, ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
@@ -2550,10 +2554,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
 			
 			ICFile contractFile = null;
-			if (!useAlternativePDFGenerationMethod) { // let's use old method
+			if (!useAlternativePDFGenerationMethod || printingContext == null) { // let's use old method
 				contractFile = createContractContentToApplication(application, locale, validFrom, changeStatus, hasBankId);
 			} else { // bundle property tells us to use new method
-				contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus, hasBankId);
+				if (printingContext != null) {
+					contractFile = createContractContentToApplicationAlternativeMethod(application, locale, validFrom, changeStatus, hasBankId);
+				}
+				else {
+					contractFile = createContractContentToApplicationAlternativeMethod(printingContext, application, locale, validFrom, changeStatus, hasBankId);
+				}
 			}
 			
 			if (createNew && contractFile != null) {
@@ -2662,11 +2671,15 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 	
 	private ICFile createContractContentToApplicationAlternativeMethod(ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
+    PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, !changeStatus);
+    return createContractContentToApplicationAlternativeMethod(pcx, application, locale, validFrom, changeStatus, hasBankId);
+	}
+	
+	private ICFile createContractContentToApplicationAlternativeMethod(PrintingContext pcx, ChildCareApplication application, Locale locale, IWTimestamp validFrom, boolean changeStatus, boolean hasBankId) {
 		MemoryFileBuffer buffer = new MemoryFileBuffer();
         OutputStream mos = new MemoryOutputStream(buffer);
         InputStream mis = new MemoryInputStream(buffer);
 
-        PrintingContext pcx = new ChildCareContractFormContext(getIWApplicationContext(), application, locale, !changeStatus);
         pcx.setDocumentStream(mos);
         
         ICFile contractFile = null;
