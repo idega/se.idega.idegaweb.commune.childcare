@@ -302,14 +302,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			String[] dates = new String[numberOfApplications];
 			Date[] queueDates = new Date[numberOfApplications];
 			
-			IWTimestamp stamp = new IWTimestamp();
-			IWTimestamp stamp1 = new IWTimestamp();
-			IWTimestamp tomorrow = new IWTimestamp();
-			DateInput dateInput = (DateInput) getStyledInterface(new DateInput("cc_offer_valid_until"));
-			dateInput.setEarliestPossibleDate(tomorrow.getDate(), localize("child_care.cant_choose_earlier_date", "You can't choose a date back in time."));
-			dateInput.setDate(stamp.getDate());			
-			
-			
 			for (int i = 0; i < numberOfApplications; i++) {
 					try{
 				    providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
