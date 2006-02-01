@@ -2,20 +2,15 @@ package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
-import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
-
 import javax.ejb.FinderException;
-
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
-
-
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
@@ -275,7 +270,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			ChildCareApplication app=null;
 			app = null;
 			
-			boolean dateIsCorrect=true;
+			//boolean dateIsCorrect=true;
 			app = getBusiness().getAcceptedApplicationsByChild(((Integer)child.getPrimaryKey()).intValue());
 			if(app!=null){
 					char c = app.getApplicationStatus();
