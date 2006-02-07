@@ -1,6 +1,6 @@
 /*
- * $Id: AfterSchoolBusiness.java,v 1.16 2006/01/22 08:40:23 laddi Exp $
- * Created on Jan 22, 2006
+ * $Id: AfterSchoolBusiness.java,v 1.17 2006/02/07 15:53:09 laddi Exp $
+ * Created on Feb 7, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -35,10 +35,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO laddi Describe Type AfterSchoolBusiness
  * </p>
- *  Last modified: $Date: 2006/01/22 08:40:23 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/02/07 15:53:09 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.16 $
+ * @version $Revision: 1.17 $
  */
 public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
 
@@ -66,6 +66,11 @@ public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#hasOpenApplication
 	 */
 	public boolean hasOpenApplication(User child, SchoolSeason season, int choiceNumber) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#hasCancelledApplication
+	 */
+	public boolean hasCancelledApplication(User child, SchoolSeason season) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#findChoiceByChild

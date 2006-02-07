@@ -112,6 +112,17 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		}
 	}
 	
+	public boolean hasCancelledApplication(User child, SchoolSeason season) {
+		String[] caseStatus = { getCaseStatusCancelled().getStatus() };
+		try{
+			getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason((Integer) child.getPrimaryKey(), new Integer(1), (Integer) season.getPrimaryKey(), caseStatus);
+			return false;
+		}
+		catch (FinderException fe) {
+			return true;
+		}
+	}
+	
 	public AfterSchoolChoice findChoiceByChild(User child, SchoolSeason season, int choiceNumber) throws FinderException {
 		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusReady().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusInactive().getStatus() };
 		return getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason(new Integer(child.getPrimaryKey().toString()), new Integer(choiceNumber), new Integer(season.getPrimaryKey().toString()), caseStatus);
