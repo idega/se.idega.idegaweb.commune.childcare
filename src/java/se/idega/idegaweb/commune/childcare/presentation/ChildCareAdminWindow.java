@@ -1068,7 +1068,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			dateInput.setDate(date.getDate());
 		}
 				
-		try {
+		try { // admins can enter dates backwards in time
 			if (isAdministrator(iwc)) {				
 				IWTimestamp eigthYearsAgo = new IWTimestamp(stamp); // minus 8 years
 				eigthYearsAgo.addYears(-8);
