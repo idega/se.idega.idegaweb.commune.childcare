@@ -2212,6 +2212,18 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		catch (FinderException e) {
 			return null;
 		}
+	}	
+	
+	public ChildCareApplication getAcceptedChildCareApplicationByChild(int childID){
+		try {
+			String caseStatus[] = { getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus() };
+
+			return getChildCareApplicationHome().findActiveApplicationByChildAndStatusAndCaseCode(childID, caseStatus,
+					CareConstants.CASE_CODE_KEY);
+		}
+		catch (FinderException e) {
+			return null;
+		}
 	}
 
 	public Collection getApplicationsByProvider(int providerId) {
@@ -5718,7 +5730,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		if (application.getCode().equals(CareConstants.AFTER_SCHOOL_CASE_CODE_KEY))
 			return true;
 		return false;
-	}
+	}	
+
 
 	public ChildCareApplication getApplication(int applicationID) {
 		try {
