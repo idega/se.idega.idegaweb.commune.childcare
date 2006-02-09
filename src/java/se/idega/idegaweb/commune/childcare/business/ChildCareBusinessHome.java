@@ -1,9 +1,16 @@
-/**
- * 
+/*
+ * $Id: ChildCareBusinessHome.java 1.1 Feb 9, 2006 laddi Exp $
+ * Created on Feb 9, 2006
+ *
+ * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
+ *
+ * This software is the proprietary information of Idega hf.
+ * Use is subject to license terms.
  */
 package se.idega.idegaweb.commune.childcare.business;
 
 import com.idega.business.IBOHome;
+import com.idega.core.localisation.data.ICLanguageHome;
 import com.idega.core.location.data.Address;
 import com.idega.core.location.data.PostalCode;
 import com.idega.data.IDOAddRelationshipException;
@@ -33,11 +40,11 @@ import com.lowagie.text.xml.XmlPeer;
 
 /**
  * <p>
- * TODO Dainis Describe Type ChildCareBusinessHome
+ * TODO laddi Describe Type ChildCareBusinessHome
  * </p>
- *  Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: Dainis $
+ *  Last modified: $Date: 2004/06/28 09:09:50 $ by $Author: laddi $
  * 
- * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @author <a href="mailto:laddi@idega.com">laddi</a>
  * @version $Revision: 1.1 $
  */
 public interface ChildCareBusinessHome extends IBOHome {

@@ -5,6 +5,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import is.idega.block.family.business.NoCustodianFound;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -1231,8 +1232,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		
 		return false;
 	}
-	
+
 	public boolean placeApplication(ChildCareApplication application, String subject, String body, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) {
+		return placeApplication(application, subject, body, null, childCareTime, groupID, schoolTypeID, employmentTypeID, terminationDate, user, locale);
+	}
+	
+	public boolean placeApplication(ChildCareApplication application, String subject, String body, File attachment, String childCareTime, int groupID, int schoolTypeID, int employmentTypeID, IWTimestamp terminationDate, User user, Locale locale) {
 		UserTransaction t = super.getSessionContext().getUserTransaction();
 		try {
 			t.begin();
@@ -1245,7 +1250,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				IWTimestamp endDate = application.getRejectionDate() != null ? new IWTimestamp(application.getRejectionDate()) : null;
 				SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), endDate != null ? endDate.getTimestamp() : null, ((Integer) user.getPrimaryKey()).intValue(), null);
 				getSchoolBusiness().addToSchoolClassMemberLog(member, member.getSchoolClass(), fromDate.getDate(), endDate != null ? endDate.getDate() : null, user);
-				sendMessageToParents(application, subject, body);
+				sendMessageToParents(application, subject, body, attachment);
 			}
 			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
 			application.setApplicationStatus(getStatusReady());
@@ -5680,6 +5685,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body) {
 		sendMessageToParents(application, subject, body, false);
 	}
+	
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body, File attachment) {
+		sendMessageToParents(application, subject, body, body, attachment, false, true);
+	}
 
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, boolean alwaysSendLetter) {
 		sendMessageToParents(application, subject, body, body, alwaysSendLetter, true);
@@ -5690,6 +5699,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter, boolean sendToOtherParent) {
+	}
+	
+	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) {
 		try {
 			User child = application.getChild();
 			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "" };
