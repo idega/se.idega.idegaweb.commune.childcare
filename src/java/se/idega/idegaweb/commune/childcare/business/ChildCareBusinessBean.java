@@ -4840,9 +4840,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean hasTerminationInFutureNotWithProvider(int childID, int providerID) {
+	public boolean hasTerminationInFutureNotWithProvider(int childID, int providerID, IWTimestamp stamp) {
 		try {
-			IWTimestamp stamp = new IWTimestamp();
 			int numberOfPlacings = getChildCareContractArchiveHome().getNumberOfTerminatedLaterNotWithProvider(childID, providerID, stamp.getDate());
 			if (numberOfPlacings > 0)
 				return true;
@@ -4854,7 +4853,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean hasTerminationInFuture(int childID) {
-		return hasTerminationInFutureNotWithProvider(childID, -1);
+		return hasTerminationInFutureNotWithProvider(childID, -1, new IWTimestamp());
 	}
 
 	public Date getEarliestPossiblePlacementDate(int childID) {
