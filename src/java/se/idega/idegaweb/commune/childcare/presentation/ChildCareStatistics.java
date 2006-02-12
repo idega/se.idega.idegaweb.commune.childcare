@@ -180,8 +180,10 @@ public class ChildCareStatistics extends ChildCareBlock {
 						Iterator tmp_iter = types.iterator();
 						while (tmp_iter.hasNext()) {
 							type = (SchoolType) tmp_iter.next();
-							if (type.getSchoolCategory() == ELEMENTARY_SCHOOL_TYPE)
+					        if (type.getSchoolCategory().matches(ELEMENTARY_SCHOOL_TYPE)){
 								isElementary = true;
+								break;
+							}	
 						}
 					}
 				}
