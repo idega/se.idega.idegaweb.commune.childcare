@@ -25,13 +25,17 @@ import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDaysHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
-
+import com.idega.block.process.business.CaseBusiness;
+import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
 import com.idega.block.school.data.SchoolType;
+import com.idega.business.IBOLookup;
+import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCreateException;
@@ -48,7 +52,7 @@ import com.idega.util.IWTimestamp;
  * @author aron
  * @version 1.0
  */
-public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements ChildCareBusiness, AfterSchoolBusiness {
+public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBusiness, AfterSchoolBusiness {
 	
 	private AfterSchoolChoiceHome getAfterSchoolChoiceHome() {
 		try {
@@ -180,7 +184,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			SchoolSeason season, String subject, String body, boolean isFClassAndPrio) throws CreateException, RemoteException {
 		if (season == null) {
 			try {
-				season = getCareBusiness().getCurrentSeason();
+				season = getChildCareBusiness().getCareBusiness().getCurrentSeason();
 			}
 			catch (FinderException fex) {
 				season = null;
@@ -216,10 +220,10 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		stamp.addSeconds(1 - choiceNumber.intValue());
 		choice.setCreated(stamp.getTimestamp());
 		choice.setCaseStatus(caseStatus);
-		choice.setApplicationStatus(getStatusSentIn());
+		choice.setApplicationStatus(getChildCareBusiness().getStatusSentIn());
 		choice.setHasPriority(true);
 		if (caseStatus.equals(getCaseStatusPreliminary())) {
-			sendMessageToParents(choice, subject, body);
+			getChildCareBusiness().sendMessageToParents(choice, subject, body);
 		}
 		if (parentCase != null)
 			choice.setParentCase(parentCase);
@@ -227,8 +231,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		if(isFClassAndPrio){
 			choice.setFClass(true);			
 			
-			School provider = getSchoolBusiness().getSchool(providerID);
-			User applyingChild = getUserBusiness().getUser(childID);
+			School provider = getChildCareBusiness().getSchoolBusiness().getSchool(providerID);
+			User applyingChild = getChildCareBusiness().getUserBusiness().getUser(childID);
 			SchoolChoiceBusiness scb = getSchoolChoiceBusiness();
 			
 			if(scb.hasPriority(provider, choice.getOwner(), applyingChild))	{		
@@ -301,7 +305,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 
 	private boolean isFamilyFreetime(Integer providerID) {
 		try {
-			School provider = getSchoolBusiness().getSchool(providerID);
+			School provider = getChildCareBusiness().getSchoolBusiness().getSchool(providerID);
 			Collection types = provider.findRelatedSchoolTypes();
 			Iterator iter = types.iterator();
 			while (iter.hasNext()) {
@@ -320,7 +324,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		return false;
 	}
 
-	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale) {
+	public Collection createContractsForChildrenWithSchoolPlacement(int providerId, User user, Locale locale) throws RemoteException {
 		Collection users = new ArrayList();
 		Collection applications = findChoicesByProvider(providerId, "c.QUEUE_DATE");
 		Iterator iter = applications.iterator();
@@ -328,15 +332,15 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			ChildCareApplication application = (ChildCareApplication) iter.next();
 			boolean hasSchoolPlacement = false;
 			try {
-				hasSchoolPlacement = getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId,
-						getSchoolBusiness().getCategoryElementarySchool());
+				hasSchoolPlacement = getChildCareBusiness().getSchoolBusiness().hasActivePlacement(application.getChildId(), providerId,
+						getChildCareBusiness().getSchoolBusiness().getCategoryElementarySchool());
 			}
 			catch (RemoteException e) {
 			}
-			if (hasSchoolPlacement && (application.getApplicationStatus() == getStatusSentIn())) {
+			if (hasSchoolPlacement && (application.getApplicationStatus() == getChildCareBusiness().getStatusSentIn())) {
 				Date date = application.getFromDate();
 				try {
-					PlacementHelper helper = getPlacementHelper((Integer) application.getPrimaryKey());
+					PlacementHelper helper = getChildCareBusiness().getPlacementHelper((Integer) application.getPrimaryKey());
 					java.util.Date earliestDate = helper.getEarliestPlacementDate();
 					if (earliestDate != null) {
 						date = new Date(earliestDate.getTime());
@@ -361,7 +365,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 				else {
 					continue;
 				}
-				ICFile contractFile = assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user,
+				ICFile contractFile = getChildCareBusiness().assignContractToApplication(((Integer) application.getPrimaryKey()).intValue(), -1, null, null, -1, user,
 						locale, true);
 				if (contractFile != null) {
 					try {
@@ -372,7 +376,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 						message.setBody("");
 						message.setMessageData(contractFile);
 						message.store();
-						getMessageBusiness().flagMessageAsPrinted(user, message);
+						getChildCareBusiness().getMessageBusiness().flagMessageAsPrinted(user, message);
 					}
 					catch (CreateException ce) {
 						ce.printStackTrace();
@@ -444,8 +448,8 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 
 	public SchoolClass getDefaultGroup(Object schoolPK, Object seasonPK) {
 		try {
-			School school = getSchoolBusiness().getSchool(schoolPK);
-			SchoolSeason season = getSchoolBusiness().getSchoolSeason(seasonPK);
+			School school = getChildCareBusiness().getSchoolBusiness().getSchool(schoolPK);
+			SchoolSeason season = getChildCareBusiness().getSchoolBusiness().getSchoolSeason(seasonPK);
 			return getDefaultGroup(school, season);
 		}
 		catch (RemoteException re) {
@@ -456,7 +460,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 	public SchoolClass getDefaultGroup(School school, SchoolSeason season) {
 		try {
 			try {
-				Collection groups = getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeason(school, season);
+				Collection groups = getChildCareBusiness().getSchoolBusiness().getSchoolClassHome().findBySchoolAndSeason(school, season);
 				if (!groups.isEmpty()) {
 					Iterator iter = groups.iterator();
 					while (iter.hasNext()) {
@@ -467,7 +471,7 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 			}
 			catch (FinderException fe) {
 				try {
-					SchoolClass group = getSchoolBusiness().getSchoolClassHome().create();
+					SchoolClass group = getChildCareBusiness().getSchoolBusiness().getSchoolClassHome().create();
 					group.setSchool(school);
 					group.setSchoolSeason(season);
 					group.setValid(true);
@@ -519,6 +523,15 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		}
 	}
 	
+	public SchoolBusiness getSchoolBusiness() {
+		try {
+			return (SchoolBusiness) this.getServiceInstance(SchoolBusiness.class);
+		}
+		catch (RemoteException e) {
+			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
 	public SchoolChoiceBusiness getSchoolChoiceBusiness() {
 		try {
 			return (SchoolChoiceBusiness) this.getServiceInstance(SchoolChoiceBusiness.class);
@@ -526,5 +539,15 @@ public class AfterSchoolBusinessBean extends ChildCareBusinessBean implements Ch
 		catch (RemoteException e) {
 			throw new IBORuntimeException(e.getMessage());
 		}
-	}	
+	}
+	
+	protected ChildCareBusiness getChildCareBusiness() {
+		try {
+			return (ChildCareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ChildCareBusiness.class);
+		}
+		catch (IBOLookupException e) {
+			throw new IBORuntimeException();
+		}
+	}
+	
 }

@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolBusiness.java,v 1.17 2006/02/07 15:53:09 laddi Exp $
+ * $Id: AfterSchoolBusiness.java,v 1.18 2006/02/13 15:01:39 gimmi Exp $
  * Created on Feb 7, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -20,8 +20,10 @@ import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
+import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.data.Case;
 import com.idega.block.process.data.CaseStatus;
+import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolClass;
 import com.idega.block.school.data.SchoolSeason;
@@ -35,12 +37,12 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO laddi Describe Type AfterSchoolBusiness
  * </p>
- *  Last modified: $Date: 2006/02/07 15:53:09 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/02/13 15:01:39 $ by $Author: gimmi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.17 $
+ * @version $Revision: 1.18 $
  */
-public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
+public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getAfterSchoolChoice
@@ -151,4 +153,6 @@ public interface AfterSchoolBusiness extends IBOService, ChildCareBusiness {
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getSchoolChoiceBusiness
 	 */
 	public SchoolChoiceBusiness getSchoolChoiceBusiness() throws java.rmi.RemoteException;
+	
+	public SchoolBusiness getSchoolBusiness();
 }
