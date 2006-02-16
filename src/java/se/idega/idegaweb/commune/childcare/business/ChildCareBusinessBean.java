@@ -5696,9 +5696,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter) {
 		sendMessageToParents(application, subject, body, letterBody, alwaysSendLetter, true);
 	}
-
+	
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, boolean alwaysSendLetter, boolean sendToOtherParent) {
-	}
+		sendMessageToParents(application, subject, body, letterBody, null, alwaysSendLetter, sendToOtherParent);
+	}	
 	
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) {
 		try {
