@@ -1252,7 +1252,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				getSchoolBusiness().addToSchoolClassMemberLog(member, member.getSchoolClass(), fromDate.getDate(), endDate != null ? endDate.getDate() : null, user);
 				sendMessageToParents(application, subject, body, attachment);
 			}
-			alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
+			if (attachment == null) {
+				alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
+			}
 			application.setApplicationStatus(getStatusReady());
 			application.store();
 			try {
