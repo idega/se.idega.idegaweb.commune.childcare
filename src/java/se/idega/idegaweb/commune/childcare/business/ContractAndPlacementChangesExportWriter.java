@@ -143,7 +143,7 @@ public class ContractAndPlacementChangesExportWriter {
 	}
 	*/
 	
-	private String dateToString(Date date) {
+	String dateToString(Date date) {
 		if(date == null) return "";
 		IWTimestamp stamp = new IWTimestamp(date);
 		return stamp.getDateString("yyyy-MM-dd");	
