@@ -16,6 +16,7 @@ import javax.ejb.FinderException;
 import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
@@ -54,6 +55,10 @@ import com.idega.util.IWTimestamp;
  */
 public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBusiness, AfterSchoolBusiness {
 	
+	public String getBundleIdentifier() {
+		return Constants.IW_BUNDLE_IDENTIFIER;
+	}
+
 	private AfterSchoolChoiceHome getAfterSchoolChoiceHome() {
 		try {
 			return (AfterSchoolChoiceHome) IDOLookup.getHome(AfterSchoolChoice.class);
