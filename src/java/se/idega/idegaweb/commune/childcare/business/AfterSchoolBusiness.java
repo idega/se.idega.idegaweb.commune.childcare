@@ -1,5 +1,5 @@
 /*
- * $Id: AfterSchoolBusiness.java,v 1.18 2006/02/13 15:01:39 gimmi Exp $
+ * $Id: AfterSchoolBusiness.java,v 1.19 2006/02/22 08:36:25 laddi Exp $
  * Created on Feb 7, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
@@ -37,14 +37,19 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO laddi Describe Type AfterSchoolBusiness
  * </p>
- *  Last modified: $Date: 2006/02/13 15:01:39 $ by $Author: gimmi $
+ *  Last modified: $Date: 2006/02/22 08:36:25 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.18 $
+ * @version $Revision: 1.19 $
  */
 public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getChildCareBusiness
+	 */
+	public ChildCareBusiness getChildCareBusiness() throws RemoteException;
+
+		/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getAfterSchoolChoice
 	 */
 	public AfterSchoolChoice getAfterSchoolChoice(Object afterSchoolChoiceID) throws FinderException, java.rmi.RemoteException;
@@ -142,12 +147,12 @@ public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#storeAfterSchoolCare
 	 */
-	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) throws java.rmi.RemoteException;
+	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#storeAfterSchoolCare
 	 */
-	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, boolean wantsRefreshments, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) throws java.rmi.RemoteException;
+	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, boolean wantsRefreshments, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#getSchoolChoiceBusiness

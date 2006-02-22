@@ -495,11 +495,11 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 	}
 
-	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
+	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		return storeAfterSchoolCare(stamp, user, child, provider, message, season, days, timeOfDeparture, pickedUp, false, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
 	}
 	
-	public boolean storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, boolean wantsRefreshments, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
+	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, boolean wantsRefreshments, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		try {
 			String subject = getLocalizedString("application.after_school_choice_received_subject", "After school care choice received");
 			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application will be processed.");
@@ -517,14 +517,14 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 			storeDays(choice, days, timeOfDeparture, pickedUp);
 
 			// returns false if storing failed else true
-			return true;
+			return choice;
 		}
 		catch (RemoteException re) {
 			throw new IBORuntimeException(re);
 		}
 		catch (CreateException ce) {
 			ce.printStackTrace();
-			return false;
+			return null;
 		}
 	}
 	
@@ -546,7 +546,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 	}
 	
-	protected ChildCareBusiness getChildCareBusiness() {
+	public ChildCareBusiness getChildCareBusiness() {
 		try {
 			return (ChildCareBusiness) IBOLookup.getServiceInstance(getIWApplicationContext(), ChildCareBusiness.class);
 		}
