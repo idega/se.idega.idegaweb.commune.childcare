@@ -13,8 +13,6 @@ import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
-import com.idega.presentation.text.DownloadLink;
-import com.idega.presentation.text.Link;
 import com.idega.presentation.ui.DateInput;
 import com.idega.presentation.ui.DropdownMenu;
 import com.idega.presentation.ui.Form;
@@ -195,30 +193,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 		}
     }
     
-    /**
-     * By clicking on this link user can download results of the query
-     * 
-     * @return
-     * @throws RemoteException
-     */
-	private Link getXLSLink() throws RemoteException {
-		DownloadLink link = new DownloadLink(getBundle().getImage("shared/xls.gif"));
-		link.setMediaWriterClass(ChildCareDatesForChangesWriter.class);
-		link.addParameter(PARAMETER_PROVIDER_ID, this.getProviderId());
-		if (getStartFromTimestamp() != null)
-			link.addParameter(PARAMETER_START_FROM, String.valueOf(getStartFromTimestamp().getDate()));
-		if (getStartToTimestamp() != null)
-			link.addParameter(PARAMETER_START_TO, String.valueOf(getStartToTimestamp().getDate()));
-		if (getEndFromTimestamp() != null)
-			link.addParameter(PARAMETER_END_FROM, String.valueOf(getEndFromTimestamp().getDate()));
-		if (getEndToTimestamp() != null)
-			link.addParameter(PARAMETER_END_TO, String.valueOf(getEndToTimestamp().getDate()));		
-
-		return link;
-	}    
-    
-
-	public IWTimestamp getEndFromTimestamp() {
+    public IWTimestamp getEndFromTimestamp() {
 		return endFromTimestamp;
 	}
 

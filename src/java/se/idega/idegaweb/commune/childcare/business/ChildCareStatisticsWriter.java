@@ -277,8 +277,6 @@ public class ChildCareStatisticsWriter {
 	
 	IWContext iwc;
 	
-	private boolean isDebuggingGoingOn = false;
-	
 	public boolean createExportFile(IWContext iwc, ICFile folder, Date reportDate) {
 		
 		this.iwc = iwc;
@@ -334,33 +332,6 @@ public class ChildCareStatisticsWriter {
 		}
 	}
 
-	
-	private Date getFirstDateOfCurrentMonth() {		
-	    Calendar cal = roundCalendarToDate(new GregorianCalendar());
-	    
-	    //cal.add(Calendar.MONTH, 1); //XXX debug
-	        
-	    int firstDay = cal.getActualMinimum(Calendar.DAY_OF_MONTH); // It will be 1	    
-	    cal.set(Calendar.DAY_OF_MONTH, firstDay);
-	    cal = roundCalendarToDate(cal);
-	    
-	    //return new Date(cal.getTimeInMillis());
-	    return roundDateToDate(cal.getTime());	
-	    
-	}	
-
-	private Date getLastDateOfCurrentMonth() {		
-	    Calendar cal = roundCalendarToDate(new GregorianCalendar());
-	    
-	    //cal.add(Calendar.MONTH, 1); //XXX debug
-	        
-	    int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);	    
-	    cal.set(Calendar.DAY_OF_MONTH, days);
-	    cal = roundCalendarToDate(cal);
-
-	    //return new Date(cal.getTimeInMillis());
-	    return roundDateToDate(cal.getTime());	
-	}
 	
 	private Date getLastDateOfSpecifiedDatesMonth(Date date) {
 		Calendar cal = roundCalendarToDate(new GregorianCalendar());

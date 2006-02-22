@@ -37,13 +37,6 @@ import com.idega.util.IWCalendar;
 import com.idega.util.IWTimestamp;
 import com.idega.util.PersonalIDFormatter;
 import com.idega.util.text.Name;
-import com.lowagie.text.BadElementException;
-import com.lowagie.text.Cell;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.Table;
 
 /**
  * Title:	ChildCareSiblingListWriter
@@ -311,25 +304,6 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 		return service;
 	}
 	
-	private Table getTable(String[] headers, int[] sizes) throws BadElementException, DocumentException {
-		Table datatable = new Table(headers.length);
-		datatable.setPadding(0.0f);
-		datatable.setSpacing(0.0f);
-		datatable.setBorder(Rectangle.NO_BORDER);
-		datatable.setWidth(100);
-		if (sizes != null)
-			datatable.setWidths(sizes);
-		for (int i = 0; i < headers.length; i++) {
-			Cell cell = new Cell(new Phrase(headers[i], new Font(Font.HELVETICA, 12, Font.BOLD)));
-			cell.setBorder(Rectangle.BOTTOM);
-			datatable.addCell(cell);
-		}
-		datatable.setDefaultCellBorderWidth(0);
-		datatable.setDefaultCellBorder(Rectangle.NO_BORDER);
-		datatable.setDefaultRowspan(1);
-		return datatable;
-	}
-
 	private Collection getApplicationCollection(IWContext iwc, int childcareId, int sortBy, int numberPerPage, int start, Date fromDate, Date toDate) throws RemoteException {
 		Collection applications;
         

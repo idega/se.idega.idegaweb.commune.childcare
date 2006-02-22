@@ -511,23 +511,6 @@ public class ChildCareAdmin extends ChildCareBlock {
 		return link;
 	}
 	
-	private Form getSiblingListButton(IWContext iwc) throws RemoteException {
-		Form form = new Form();
-		form.setAction(iwc.getIWMainApplication().getMediaServletURI());
-		form.addParameter(DownloadWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareSiblingListWriter.class));		
-		form.addParameter(ChildCareSiblingListWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
-		form.addParameter(ChildCareSiblingListWriter.PARAMETER_SORT_BY, getSession().getSortBy());
-		form.addParameter(ChildCareSiblingListWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
-		form.addParameter(ChildCareSiblingListWriter.PARAMETER_START, _start);
-		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.sibling_list", "See sibling list"),
-		PARAMETER_CLEAN_QUEUE,		
-		Boolean.TRUE.toString()));
-		form.setToShowLoadingOnSubmit(true);		
-		form.setToDisableOnSubmit(button, true);
-		form.add(button);		
-		return form;
-		}
-
 	protected Link getSiblingListXLSLink() throws RemoteException {
 		DownloadLink link = new DownloadLink(getBundle().getImage("shared/xls.gif"));
 		link.setMediaWriterClass(ChildCareQueueWriter.class);

@@ -58,8 +58,6 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private final static String ADDRESS = "cca_address";
 	private final static String CARE_FROM = "cca_care_from";
 
-	private static final String PROPERTY_CAN_KEEP_ALL_CHOICES_ON_ACCEPT = "can_keep_all_choices_when_acception_offer";
-
 	private final static String APPLICATION_INSERTED = "cca_application_ok";
 	private final static String APPLICATION_FAILURE = "cca_application_failed";
 
