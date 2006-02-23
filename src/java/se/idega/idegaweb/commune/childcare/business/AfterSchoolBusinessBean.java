@@ -227,6 +227,12 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		choice.setCaseStatus(caseStatus);
 		choice.setApplicationStatus(getChildCareBusiness().getStatusSentIn());
 		choice.setHasPriority(true);
+		                                                                        
+
+		String subjectP = getLocalizedString("After_school_care_request_subject", "After school care request");
+		String bodyP = getLocalizedString("After_school_care_request_body", "After school care request from {0}, {3}.");
+		getChildCareBusiness().sendMessageToProvider(choice, subjectP, bodyP);
+		
 		if (caseStatus.equals(getCaseStatusPreliminary())) {
 			getChildCareBusiness().sendMessageToParents(choice, subject, body);
 		}
