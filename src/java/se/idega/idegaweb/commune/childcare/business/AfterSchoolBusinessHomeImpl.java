@@ -1,11 +1,5 @@
-/*
- * $Id: AfterSchoolBusinessHomeImpl.java,v 1.6 2006/02/07 15:53:09 laddi Exp $
- * Created on Feb 7, 2006
- *
- * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
- *
- * This software is the proprietary information of Idega hf.
- * Use is subject to license terms.
+/**
+ * 
  */
 package se.idega.idegaweb.commune.childcare.business;
 
@@ -14,12 +8,12 @@ import com.idega.business.IBOHomeImpl;
 
 /**
  * <p>
- * TODO laddi Describe Type AfterSchoolBusinessHomeImpl
+ * TODO Dainis Describe Type AfterSchoolBusinessHomeImpl
  * </p>
- *  Last modified: $Date: 2006/02/07 15:53:09 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/03/08 17:00:28 $ by $Author: dainis $
  * 
- * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.6 $
+ * @author <a href="mailto:Dainis@idega.com">Dainis</a>
+ * @version $Revision: 1.7 $
  */
 public class AfterSchoolBusinessHomeImpl extends IBOHomeImpl implements AfterSchoolBusinessHome {
 
