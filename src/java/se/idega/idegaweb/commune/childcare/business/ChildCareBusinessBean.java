@@ -1493,21 +1493,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	/**
-	 * this method gets the contract that's after the one supplied as a parameter 
-	 * @param childcareContract
-	 * @return
-	 */	
-	private ChildCareContract getPreviousContract(ChildCareContract childcareContract) {
-		ChildCareContract contract = null;
-		try {
-			contract = getChildCareContractArchiveHome().findPreviousTerminatedContractByContract(childcareContract);
-		}
-		catch (FinderException e) {} //it's normal, that record is not found and there's no need to log that		
-		return contract;
-	}
-	
-
-	/**
 	 * Update contract with new field values, and recreate file attached to it.
 	 * The old file is removed from the contract, and replaced with a new one
 	 * 
