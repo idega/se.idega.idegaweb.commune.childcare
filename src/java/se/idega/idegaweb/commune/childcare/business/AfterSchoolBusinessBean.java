@@ -247,7 +247,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		choice.setChoiceNumber(choiceNumber.intValue());
 		choice.setMessage(message);
 		if (season != null) {
-			Integer seasonId = new Integer((String) season.getPrimaryKey());
+			Integer seasonId = new Integer(season.getPrimaryKey().toString());
 			choice.setSchoolSeasonId(seasonId.intValue());
 		}
 		if (placementDate != null)
