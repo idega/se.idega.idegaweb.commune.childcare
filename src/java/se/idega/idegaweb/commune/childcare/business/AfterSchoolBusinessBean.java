@@ -229,7 +229,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		AfterSchoolChoice choice = null;
 		if (season != null) {
 			try {
-				Integer seasonId = new Integer((String) season.getPrimaryKey());
+				Integer seasonId = new Integer(season.getPrimaryKey().toString());
 				choice = findChoicesByChildAndChoiceNumberAndSeason(childID, choiceNumber.intValue(), seasonId);
 			}
 			catch (FinderException fex) {
