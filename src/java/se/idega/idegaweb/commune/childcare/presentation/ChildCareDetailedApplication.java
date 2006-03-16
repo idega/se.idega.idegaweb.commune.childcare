@@ -274,8 +274,6 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(showPrognosis, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(getHelpButton("help_child_care_application_phase_1"), 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 
@@ -331,8 +329,6 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(getHelpButton("help_child_care_application_phase_2"), 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 
@@ -408,8 +404,6 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(getHelpButton("help_child_care_application_phase_3"), 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 
@@ -666,8 +660,6 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(getHelpButton("help_child_care_application_phase_4"), 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 
@@ -868,8 +860,6 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(getHelpButton("help_child_care_application_phase_5"), 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 		
@@ -950,8 +940,6 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(previous, 1, row);
 		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
 		table.add(next, 1, row);
-		table.add(getSmallText(Text.NON_BREAKING_SPACE), 1, row);
-		table.add(getHelpButton("help_school_application_overview"), 1, row);
 		table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 		table.setCellpaddingRight(1, row, 12);
 		
