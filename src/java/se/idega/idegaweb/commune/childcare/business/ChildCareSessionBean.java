@@ -308,6 +308,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public void setChildID(int childID) {
 		_childID = childID;
+		_child = null;
 	}
 	
 	/**
@@ -316,6 +317,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 */
 	public void setUniqueID(String uniqueID) {
 		_uniqueID = uniqueID;
+		_child = null;
 	}
 
 	/**
