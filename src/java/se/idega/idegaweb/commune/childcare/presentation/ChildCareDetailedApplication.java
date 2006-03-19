@@ -249,6 +249,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 				
 			}
 			else {
+				date.setDate(new IWTimestamp().getDate());
 				date.setEarliestPossibleDate(stamp.getDate(), localize("child_care.no_date_back_in_time", "You cannot set a date back in time"));
 			}
 
