@@ -4,6 +4,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
 import java.rmi.RemoteException;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -101,7 +102,12 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.add(getLocalizedSmallHeader("child_care.created","Created"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row);
 			table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
-			table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row);
+			if (iwc.getApplicationSettings().getBoolean(CCConstants.ATTRIBUTE_SHOW_FEE, false)) {
+				table.add(getLocalizedSmallHeader("child_care.fee","Fee"), column++, row);
+			}
+			else {
+				table.add(getLocalizedSmallHeader("child_care.care_time","Care time"), column++, row);
+			}
 			
 				
 			if(isCommuneAdministrator(iwc))
@@ -293,7 +299,14 @@ public class ChildCareContracts extends ChildCareBlock {
 							else
 								table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
 							column++;
-							table.add(getSmallText(getCareTime(contract.getCareTime())), column++, row);
+							
+							if (iwc.getApplicationSettings().getBoolean(CCConstants.ATTRIBUTE_SHOW_FEE, false)) {
+								NumberFormat format = NumberFormat.getCurrencyInstance(iwc.getCurrentLocale());
+								table.add(getSmallText(format.format(application.getFee())), column++, row);
+							}
+							else {
+								table.add(getSmallText(getCareTime(contract.getCareTime())), column++, row);
+							}
 							
 							
 							if(isCommuneAdministrator(iwc)){

@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -5767,8 +5768,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) {
 		try {
+			NumberFormat format = NumberFormat.getCurrencyInstance(getIWApplicationContext().getApplicationSettings().getDefaultLocale());
 			User child = application.getChild();
-			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "", String.valueOf(application.getFee()) };
+			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "", format.format(application.getFee()) };
 
 			User appParent = application.getOwner();
 			User parent2 = null;
