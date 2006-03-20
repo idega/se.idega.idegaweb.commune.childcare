@@ -1228,7 +1228,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		Date custodianStudyStart = iwc.isParameterSet(PARAMETER_CUSTODIAN_STUDY_START) ? new IWTimestamp(iwc.getParameter(PARAMETER_CUSTODIAN_STUDY_START)).getDate() : null;
 		Date custodianStudyEnd = iwc.isParameterSet(PARAMETER_CUSTODIAN_STUDY_END) ? new IWTimestamp(iwc.getParameter(PARAMETER_CUSTODIAN_STUDY_END)).getDate() : null;
 
-		getCareBusiness().storeChildInformation(getSession().getChild(), growthDeviation, growthDeviationDetails, allergies, allergiesDetails, lastCareProvider, canContactLastProvider.booleanValue(), otherInformation);
+		getCareBusiness().storeChildInformation(getSession().getChild(), growthDeviation, growthDeviationDetails, allergies, allergiesDetails, lastCareProvider, canContactLastProvider.booleanValue(), false, otherInformation);
 		getBusiness().storeChildCareInformation(getSession().getChild(), canDisplayImages.booleanValue(), otherChildCareInformation, hasMultiLanguageHome.booleanValue(), language);
 		getBusiness().storeCustodianInformation(iwc.getCurrentUser(), custodianHasStudies.booleanValue(), custodianStudies, custodianStudyStart, custodianStudyEnd);
 	}
