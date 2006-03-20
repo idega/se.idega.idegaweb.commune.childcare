@@ -1753,13 +1753,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		}
 	}
 
-	public boolean acceptApplication(ChildCareApplication application, IWTimestamp validUntil, String subject, String message, User user) {
+	public boolean acceptApplication(ChildCareApplication application, IWTimestamp validUntil, float fee, String subject, String message, User user) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
 			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 			application.setApplicationStatus(getStatusAccepted());
 			application.setOfferValidUntil(validUntil.getDate());
+			application.setFee(fee);
 			caseBiz.changeCaseStatus(application, getCaseStatusGranted().getStatus(), user);
 
 			sendMessageToParents(application, subject, message);
@@ -2052,12 +2053,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
-	public boolean acceptApplication(int applicationId, IWTimestamp validUntil, String subject, String message, User user) {
+	public boolean acceptApplication(int applicationId, IWTimestamp validUntil, float fee, String subject, String message, User user) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
 			ChildCareApplication appl = home.findByPrimaryKey(new Integer(applicationId));
 
-			return acceptApplication(appl, validUntil, subject, message, user);
+			return acceptApplication(appl, validUntil, fee, subject, message, user);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
@@ -5767,7 +5768,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public void sendMessageToParents(ChildCareApplication application, String subject, String body, String letterBody, File attachment, boolean alwaysSendLetter, boolean sendToOtherParent) {
 		try {
 			User child = application.getChild();
-			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "" };
+			Object[] arguments = { new Name(child.getFirstName(), child.getMiddleName(), child.getLastName()).getName(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), true), application.getProvider().getSchoolName(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()), application.getLastReplyDate() != null ? new IWTimestamp(application.getLastReplyDate()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "xxx", application.getOfferValidUntil() != null ? new IWTimestamp(application.getOfferValidUntil()).getLocaleDate(getIWApplicationContext().getApplicationSettings().getDefaultLocale(), IWTimestamp.SHORT) : "", String.valueOf(application.getFee()) };
 
 			User appParent = application.getOwner();
 			User parent2 = null;

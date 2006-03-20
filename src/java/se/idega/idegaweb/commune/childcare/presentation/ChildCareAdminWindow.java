@@ -144,6 +144,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	
 	public static final String PARAMETER_CLOSE = "cc_close";
 	
+	public static final String PARAMETER_FEE = "cc_fee";
+	
 	// private static final String PROPERTY_RESTRICT_DATES =
 	// "child_care_restrict_alter_date";
 
@@ -585,6 +587,13 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.offer_valid_until", "Offer valid until") + ":"), 1, row++);
 		table.add(dateInput, 1, row++);
 
+		if (iwc.getApplicationSettings().getBoolean(CCConstants.ATTRIBUTE_SHOW_FEE, false)) {
+			TextInput feeInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_FEE));
+	
+			table.add(getSmallHeader(localize("child_care.childcare_fee", "Fee") + ":"), 1, row++);
+			table.add(feeInput, 1, row++);
+		}
+		
 		HiddenInput action = new HiddenInput(PARAMETER_ACTION);
 		action.setValue(String.valueOf(ACTION_OFFER));
 		table.add(action, 1, 1);
@@ -2171,12 +2180,26 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (messageBody.indexOf("$datum$") != -1) {
 			messageBody = TextSoap.findAndReplace(messageBody, "$datum$", "{4}");
 		}
+		if (messageBody.indexOf("fee") != -1) {
+			messageBody = TextSoap.findAndReplace(messageBody, "fee", "{5}");
+		}
 		if (messageBody.indexOf("$link$") != -1) {
 			messageBody = TextSoap.findAndReplace(messageBody, "$link$", link);
 		}
 
 		IWTimestamp validUntil = new IWTimestamp(iwc.getParameter(PARAMETER_OFFER_VALID_UNTIL));
-		getBusiness().acceptApplication(_applicationID, validUntil, messageHeader, messageBody, iwc.getCurrentUser());
+		float fee = 0;
+		if (iwc.isParameterSet(PARAMETER_FEE)) {
+			try {
+				fee = Float.parseFloat(iwc.getParameter(PARAMETER_FEE));
+			}
+			catch (NumberFormatException nfe) {
+				nfe.printStackTrace();
+				fee = 0;
+			}
+		}
+		
+		getBusiness().acceptApplication(_applicationID, validUntil, fee, messageHeader, messageBody, iwc.getCurrentUser());
 
 		close();
 	}
