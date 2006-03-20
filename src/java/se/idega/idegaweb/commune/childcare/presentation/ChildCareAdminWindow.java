@@ -2181,7 +2181,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			messageBody = TextSoap.findAndReplace(messageBody, "$datum$", "{4}");
 		}
 		if (messageBody.indexOf("fee") != -1) {
-			messageBody = TextSoap.findAndReplace(messageBody, "fee", "{5}");
+			messageBody = TextSoap.findAndReplace(messageBody, "$fee$", "{5}");
 		}
 		if (messageBody.indexOf("$link$") != -1) {
 			messageBody = TextSoap.findAndReplace(messageBody, "$link$", link);
