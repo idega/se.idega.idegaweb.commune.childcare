@@ -1393,7 +1393,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		SchoolCategory schcategory = schBuiz.getCategoryChildcare();		
 		
 		try {
-			availableTypes = school.findRelatedSchoolTypesWithFreetime(schcategory); //school.getSchoolTypes();
+			availableTypes = school.findRelatedSchoolTypes(schcategory); //school.getSchoolTypes();
 		}
 		catch (IDORelationshipException ex) {
 			ex.printStackTrace();
