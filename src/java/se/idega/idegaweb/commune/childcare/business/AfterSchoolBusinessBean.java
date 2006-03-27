@@ -40,6 +40,7 @@ import com.idega.business.IBOLookupException;
 import com.idega.business.IBORuntimeException;
 import com.idega.core.file.data.ICFile;
 import com.idega.data.IDOCreateException;
+import com.idega.data.IDOException;
 import com.idega.data.IDOLookup;
 import com.idega.data.IDOLookupException;
 import com.idega.data.IDORelationshipException;
@@ -74,6 +75,17 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 		catch (IDOLookupException e) {
 			throw new IBORuntimeException(e.getMessage());
+		}
+	}
+
+	public int getNumberOfApplications(SchoolSeason season) {
+		try {
+			String[] statuses = { getCaseStatusPreliminary().getStatus(), getCaseStatusReady().getStatus() };
+			return getAfterSchoolChoiceHome().getChoiceStatistics(season, statuses);
+		}
+		catch (IDOException ie) {
+			ie.printStackTrace();
+			return 0;
 		}
 	}
 
