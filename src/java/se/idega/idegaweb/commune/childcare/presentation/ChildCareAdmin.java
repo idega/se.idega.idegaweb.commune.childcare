@@ -16,7 +16,7 @@ import se.idega.idegaweb.commune.childcare.event.ChildCareEventListener;
 import com.idega.block.school.data.School;
 import com.idega.business.IBOLookup;
 import com.idega.idegaweb.IWMainApplication;
-import com.idega.io.DownloadWriter;
+import com.idega.io.MediaWritable;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
 import com.idega.presentation.text.Break;
@@ -515,17 +515,12 @@ public class ChildCareAdmin extends ChildCareBlock {
 		DownloadLink link = new DownloadLink(getBundle().getImage("shared/xls.gif"));
 		link.setMediaWriterClass(ChildCareQueueWriter.class);
 		
-		link.addParameter(DownloadWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareSiblingListWriter.class));		
+		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareSiblingListWriter.class));		
 		link.addParameter(ChildCareSiblingListWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareSiblingListWriter.PARAMETER_SORT_BY, getSession().getSortBy());
 		link.addParameter(ChildCareSiblingListWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
 		link.addParameter(ChildCareSiblingListWriter.PARAMETER_START, _start);
 		
-		
-		/*if (getSession().getFromTimestamp() != null)
-			link.addParameter(ChildCareQueueWriter.PARAMETER_FROM_DATE, String.valueOf(getSession().getFromTimestamp().getDate()));
-		if (getSession().getToTimestamp() != null)
-			link.addParameter(ChildCareQueueWriter.PARAMETER_TO_DATE, String.valueOf(getSession().getToTimestamp().getDate()));*/
 		return link;
 	}
 	

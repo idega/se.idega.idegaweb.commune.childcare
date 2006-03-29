@@ -8,7 +8,7 @@ import java.util.StringTokenizer;
 import com.idega.block.school.data.School;
 import com.idega.idegaweb.IWMainApplication;
 import com.idega.idegaweb.IWResourceBundle;
-import com.idega.io.DownloadWriter;
+import com.idega.io.MediaWritable;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.PresentationObjectContainer;
 import com.idega.presentation.Table;
@@ -71,7 +71,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         Form form = new Form();
         form.setAction(iwc.getIWMainApplication().getMediaServletURI());
         form.setMethod("post");
-        form.addParameter(DownloadWriter.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareDatesForChangesWriter.class));
+        form.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareDatesForChangesWriter.class));
         form.setToShowLoadingOnSubmit(false);        
         
         Table table = new Table(1,3);
