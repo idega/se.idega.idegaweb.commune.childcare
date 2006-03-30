@@ -9,6 +9,11 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import is.idega.block.family.business.NoCustodianFound;
+import is.idega.block.family.data.Child;
+import is.idega.block.family.data.Custodian;
+import is.idega.block.family.data.Relative;
+
 import java.rmi.RemoteException;
 import java.sql.Date;
 import java.util.Collection;
@@ -16,10 +21,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.care.business.CareConstants;
-import se.idega.idegaweb.commune.care.business.Relative;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
+
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
 import com.idega.core.builder.data.ICPage;
@@ -362,18 +369,24 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(applicationTable, 1, row++);
 		int aRow = 1;
 
-		Collection custodians = getUserBusiness(iwc).getParentsForChild(getSession().getChild());
-		Iterator iter = custodians.iterator();
-		while (iter.hasNext()) {
-			User custodian = (User) iter.next();
-			aRow = addParentToTable(iwc, applicationTable, custodian, aRow, false, 0, false);
-			
-			if (iter.hasNext()) {
-				applicationTable.setHeight(aRow++, 6);
-				applicationTable.mergeCells(1, aRow, applicationTable.getColumns(), aRow);
-				applicationTable.add(new HorizontalRule(), 1, aRow++);
-				applicationTable.setHeight(aRow++, 6);
+		Child child = getUserBusiness(iwc).getMemberFamilyLogic().getChild(getSession().getChild());
+		try {
+			Collection custodians = child.getCustodians();
+			Iterator iter = custodians.iterator();
+			while (iter.hasNext()) {
+				Custodian custodian = (Custodian) iter.next();
+				aRow = addParentToTable(iwc, applicationTable, custodian, aRow, false, 0, false);
+				
+				if (iter.hasNext()) {
+					applicationTable.setHeight(aRow++, 6);
+					applicationTable.mergeCells(1, aRow, applicationTable.getColumns(), aRow);
+					applicationTable.add(new HorizontalRule(), 1, aRow++);
+					applicationTable.setHeight(aRow++, 6);
+				}
 			}
+		}
+		catch (NoCustodianFound ncf) {
+			log(ncf);
 		}
 
 		applicationTable.setHeight(aRow++, 6);
@@ -381,13 +394,13 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		applicationTable.add(new HorizontalRule(), 1, aRow++);
 		applicationTable.setHeight(aRow++, 6);
 		
-		User custodian = getCareBusiness().getExtraCustodian(getSession().getChild());
+		Custodian custodian = child.getExtraCustodian();
 		if (iwc.isParameterSet(PARAMETER_PERSONAL_ID)) {
 			saveCustodianInfo(iwc, false);
 			
 			String personalID = iwc.getParameter(PARAMETER_PERSONAL_ID);
 			try {
-				custodian = getUserBusiness().getUser(personalID);
+				custodian = getUserBusiness(iwc).getMemberFamilyLogic().getCustodian(getUserBusiness().getUser(personalID));
 			}
 			catch (FinderException fe) {
 				getParentPage().setAlertOnLoad(localize("no_user_found_with_personal_id", "No user found with personal ID") + ": " + personalID);
@@ -411,7 +424,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		add(form);
 	}
 	
-	private int addParentToTable(IWContext iwc, Table table, User custodian, int row, boolean isExtraCustodian, int number, boolean editable) throws RemoteException {
+	private int addParentToTable(IWContext iwc, Table table, Custodian custodian, int row, boolean isExtraCustodian, int number, boolean editable) throws RemoteException {
 		Address address = null;
 		Phone phone = null;
 		Phone work = null;
@@ -540,10 +553,11 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(mail, 2, row++);
 		table.setHeight(row++, 5);
 		
+		Child child = getUserBusiness(iwc).getMemberFamilyLogic().getChild(getSession().getChild());
 		table.add(getText(localize("relation", "Relation")), 1, row++);
 		DropdownMenu relationMenu = getRelationDropdown(custodian);
 		if (custodian != null) {
-			String relation = getCareBusiness().getUserRelation(getSession().getChild(), custodian);
+			String relation = child.getRelation(custodian);
 			if (relation != null) {
 				relationMenu.setSelectedElement(relation);
 			}
@@ -634,7 +648,8 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.add(applicationTable, 1, row++);
 		int aRow = 1;
 
-		List relatives = getCareBusiness().getRelatives(getSession().getChild());
+		Child child = getUserBusiness(iwc).getMemberFamilyLogic().getChild(getSession().getChild());
+		List relatives = child.getRelatives();
 		for (int a = 1; a <= 2; a++) {
 			Relative relative = null;
 			if (relatives.size() >= a) {
@@ -680,6 +695,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		form.add(table);
 		int row = 1;
 		
+		Child child = getUserBusiness(iwc).getMemberFamilyLogic().getChild(getSession().getChild());
 		table.add(getPersonInfoTable(iwc, getSession().getChild()), 1, row++);
 		table.setHeight(row++, 6);
 		
@@ -755,7 +771,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		yes = getRadioButton(PARAMETER_GROWTH_DEVIATION, Boolean.TRUE.toString());
 		no = getRadioButton(PARAMETER_GROWTH_DEVIATION, Boolean.FALSE.toString());
 		RadioButton noAnswer = getRadioButton(PARAMETER_GROWTH_DEVIATION, "");
-		Boolean hasGrowthDeviation = getCareBusiness().hasGrowthDeviation(getSession().getChild());
+		Boolean hasGrowthDeviation = child.hasGrowthDeviation();
 		if (hasGrowthDeviation != null) {
 			if (hasGrowthDeviation.booleanValue()) {
 				yes.setSelected(true);
@@ -773,13 +789,13 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 
 		applicationTable.add(getSmallHeader(localize("child.growth_deviation_details", "Growth deviation details")), 1, aRow);
 		applicationTable.add(new Break(), 1, aRow);
-		applicationTable.add(getTextArea(PARAMETER_GROWTH_DEVIATION_DETAILS, getCareBusiness().getGrowthDeviationDetails(getSession().getChild())), 1, aRow++);
+		applicationTable.add(getTextArea(PARAMETER_GROWTH_DEVIATION_DETAILS, child.getGrowthDeviationDetails()), 1, aRow++);
 
 		applicationTable.add(getSmallHeader(localize("child.has_allergies", "Has allergies")), 1, aRow);
 		yes = getRadioButton(PARAMETER_ALLERGIES, Boolean.TRUE.toString());
 		no = getRadioButton(PARAMETER_ALLERGIES, Boolean.FALSE.toString());
 		noAnswer = getRadioButton(PARAMETER_ALLERGIES, "");
-		Boolean hasAllergies = getCareBusiness().hasAllergies(getSession().getChild());
+		Boolean hasAllergies = child.hasAllergies();
 		if (hasAllergies != null) {
 			if (hasAllergies.booleanValue()) {
 				yes.setSelected(true);
@@ -797,7 +813,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 
 		applicationTable.add(getSmallHeader(localize("child.allergies_details", "Allergies details")), 1, aRow);
 		applicationTable.add(new Break(), 1, aRow);
-		applicationTable.add(getTextArea(PARAMETER_ALLERGIES_DETAILS, getCareBusiness().getAllergiesDetails(getSession().getChild())), 1, aRow++);
+		applicationTable.add(getTextArea(PARAMETER_ALLERGIES_DETAILS, child.getAllergiesDetails()), 1, aRow++);
 
 		applicationTable.add(getSmallHeader(localize("child.last_care_provider", "Last care provider")), 1, aRow);
 		applicationTable.add(new Break(), 1, aRow);
@@ -923,7 +939,9 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 			verifyTable.setHeight(iRow++, 6);
 		}
 		
-		iRow = addChildInformation(verifyTable, getSession().getChild(), iwc.getCurrentUser(), iRow);
+		Child child = getUserBusiness(iwc).getMemberFamilyLogic().getChild(getSession().getChild());
+		Custodian custodian = getUserBusiness(iwc).getMemberFamilyLogic().getCustodian(iwc.getCurrentUser());
+		iRow = addChildInformation(verifyTable, child, custodian, iRow);
 		
 		boolean canDisplaySchoolImages = getBusiness().canDisplayChildCareImages(getSession().getChild());
 		verifyTable.mergeCells(1, iRow, verifyTable.getColumns(), iRow);
@@ -950,7 +968,7 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		add(form);
 	}
 	
-	protected int addChildInformation(Table table, User child, User custodian, int iRow) throws RemoteException {
+	protected int addChildInformation(Table table, Child child, Custodian custodian, int iRow) throws RemoteException {
 		boolean multiLanguageHome = getBusiness().hasMultiLanguageHome(child);
 		ICLanguage language = getBusiness().getLanguage(child);
 		
@@ -1008,10 +1026,10 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		table.setBottomCellBorder(1, iRow++, 1, "#D7D7D7", "solid");
 		table.setHeight(iRow++, 6);
 		
-		Boolean hasGrowthDeviation = getCareBusiness().hasGrowthDeviation(child);
-		String growthDeviation = getCareBusiness().getGrowthDeviationDetails(child);
-		Boolean hasAllergies = getCareBusiness().hasAllergies(child);
-		String allergies = getCareBusiness().getAllergiesDetails(child);
+		Boolean hasGrowthDeviation = child.hasGrowthDeviation();
+		String growthDeviation = child.getGrowthDeviationDetails();
+		Boolean hasAllergies = child.hasAllergies();
+		String allergies = child.getAllergiesDetails();
 		String lastCareProvider = getCareBusiness().getLastCareProvider(child);
 		Boolean canContactLastProvider = getCareBusiness().canContactLastCareProvider(child);
 		String otherInformation = getCareBusiness().getOtherInformation(child);
@@ -1228,7 +1246,14 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		Date custodianStudyStart = iwc.isParameterSet(PARAMETER_CUSTODIAN_STUDY_START) ? new IWTimestamp(iwc.getParameter(PARAMETER_CUSTODIAN_STUDY_START)).getDate() : null;
 		Date custodianStudyEnd = iwc.isParameterSet(PARAMETER_CUSTODIAN_STUDY_END) ? new IWTimestamp(iwc.getParameter(PARAMETER_CUSTODIAN_STUDY_END)).getDate() : null;
 
-		getCareBusiness().storeChildInformation(getSession().getChild(), growthDeviation, growthDeviationDetails, allergies, allergiesDetails, lastCareProvider, canContactLastProvider.booleanValue(), false, otherInformation);
+		Child child = getUserBusiness(iwc).getMemberFamilyLogic().getChild(getSession().getChild());
+		child.setHasGrowthDeviation(growthDeviation);
+		child.setGrowthDeviationDetails(growthDeviationDetails);
+		child.setHasAllergies(allergies);
+		child.setAllergiesDetails(allergiesDetails);
+		child.store();
+		
+		getCareBusiness().storeChildInformation(getSession().getChild(), lastCareProvider, canContactLastProvider.booleanValue(), false, otherInformation);
 		getBusiness().storeChildCareInformation(getSession().getChild(), canDisplayImages.booleanValue(), otherChildCareInformation, hasMultiLanguageHome.booleanValue(), language);
 		getBusiness().storeCustodianInformation(iwc.getCurrentUser(), custodianHasStudies.booleanValue(), custodianStudies, custodianStudyStart, custodianStudyEnd);
 	}
@@ -1241,6 +1266,8 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 		String[] emails = iwc.getParameterValues(PARAMETER_EMAIL);
 		String[] relations = iwc.getParameterValues(PARAMETER_RELATION);
 		
+		Child child = getUserBusiness(iwc).getMemberFamilyLogic().getChild(getSession().getChild());
+
 		if (userPKs != null) {
 			for (int a = 0; a < userPKs.length; a++) {
 				String userPK = userPKs[a];
@@ -1248,19 +1275,23 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 				
 				if (storeRelatives) {
 					if (userPK.length() > 0) {
-						getCareBusiness().storeRelative(getSession().getChild(), userPK, relations[a], a + 1, homePhones[a], workPhones[a], mobilePhones[a], emails[a]);
+						child.storeRelative(userPK, relations[a], a + 1, homePhones[a], workPhones[a], mobilePhones[a], emails[a]);
 					}
 				}
 				else {
-					User custodian = getUserBusiness().getUser(new Integer(userPK));
-					if (getUserBusiness().getMemberFamilyLogic().isCustodianOf(custodian, getSession().getChild())) {
-						getCareBusiness().updateUserInfo(custodian, homePhones[a], workPhones[a], mobilePhones[a], emails[a]);
+					Custodian custodian = getUserBusiness(iwc).getMemberFamilyLogic().getCustodian(getUserBusiness(iwc).getUser(new Integer(userPK)));
+					custodian.setHomePhone(homePhones[a]);
+					custodian.setWorkPhone(workPhones[a]);
+					custodian.setMobilePhone(mobilePhones[a]);
+					custodian.setEmail(emails[a]);
+
+					if (custodian.isCustodianOf(child)) {
 						if (relation != null && relation.length() > 0) {
-							getCareBusiness().storeUserRelation(getSession().getChild(), custodian, relation);
+							child.setRelation(custodian, relation);
 						}
 					}
 					else {
-						getCareBusiness().storeExtraCustodian(getSession().getChild(), custodian, relation, homePhones[a], workPhones[a], mobilePhones[a], emails[a]);
+						child.setExtraCustodian(custodian, relation);
 					}
 				}
 			}
