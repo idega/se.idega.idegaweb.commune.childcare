@@ -811,7 +811,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			schoolClasses = (SchoolClassDropdownDouble) getStyledInterface(schoolClasses);
 
 			if (!types.isEmpty()) {
-				Map typeGroupMap = getBusiness().getSchoolTypeClassMap(types, helper.getApplication().getProviderId(), getSession().getSeasonID(), null, null, localize("child_care.no_school_classes", "No school classes"));
+				Boolean showNonSeasonGroups = Boolean.TRUE;
+				Map typeGroupMap = getBusiness().getSchoolTypeClassMap(types, helper.getApplication().getProviderId(), getSession().getSeasonID(), null, showNonSeasonGroups, localize("child_care.no_school_classes", "No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
@@ -939,7 +940,8 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (getChildcareID() != -1) {
 
 			if (!types.isEmpty()) {
-				Map typeGroupMap = getBusiness().getSchoolTypeClassMap(types, application.getProviderId(), getSession().getSeasonID(), null, null, localize("child_care.no_school_classes", "No school classes"));
+				Boolean showNonSeasonGroups = Boolean.TRUE;
+				Map typeGroupMap = getBusiness().getSchoolTypeClassMap(types, application.getProviderId(), getSession().getSeasonID(), null, showNonSeasonGroups, localize("child_care.no_school_classes", "No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
