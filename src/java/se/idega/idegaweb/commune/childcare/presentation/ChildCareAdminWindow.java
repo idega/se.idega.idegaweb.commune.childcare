@@ -2412,14 +2412,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
         application.setCancelDateRequested(stamp.getDate());                     
 		application.setRequestedCancelDate(stamp.getDate());        
 		application.setParentalLeave(parentalLeave);
+		application.setPrognosis(String.valueOf( iwc.getCurrentUserId() )); // SAVE UserId who has canceled contract
+		// TODO
+		// 2006/03/30 Igors 
+		// save ContractCanceledUserId using Prognosis field is not right way, but It's all what I can do right now to get userId who canceled contract
+		// for adding methods appilcation.setContractCanceledUserId(int userId) and appilcation.getContractCanceledUserId() 
+
 		application.store();
-
-		User owner = application.getOwner();
+		
+		User owner = iwc.getCurrentUser();
 		com.idega.core.user.data.User child = UserBusiness.getUser(application.getChildId());
-		getBusiness().sendMessageToParents(application, localize("ccecw_encon_par1", "Beg�ran om upps�gning av kontrakt gjord"), localize("ccecw_encon_par2", "Du har skickat en beg�ran om upps�gning av kontrakt f�r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + " " + localize("ccecw_encon_par3", "fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".");
-
-		getBusiness().sendMessageToProvider(application, localize("ccecw_encon_prov1", "Upps�gning av kontrakt"), owner.getName() + " " + localize("ccecw_encon_prov2", "har beg�rt upps�gning av kontrakt f�r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + ". " + localize("ccecw_encon_prov3", "Kontraktet ska upph�ra fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".", application.getOwner());
-
+		getBusiness().sendMessageToParents(application, localize("ccecw_encon_par1", "Beg???ran om upps???gning av kontrakt gjord"), localize("ccecw_encon_par2", "Du har skickat en beg???ran om upps???gning av kontrakt f???r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + " " + localize("ccecw_encon_par3", "fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".");
+		getBusiness().sendMessageToProvider(application, localize("ccecw_encon_prov1", "Upps�gning av kontrakt"), owner.getName() + " " + localize("ccecw_encon_prov2", "har beg�rt upps�gning av kontrakt f�r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + ". " + localize("ccecw_encon_prov3", "Kontraktet ska upph�ra fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".", owner);
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, _pageID));
 		getParentPage().close();
 	}
