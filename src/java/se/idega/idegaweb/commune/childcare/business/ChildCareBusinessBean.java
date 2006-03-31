@@ -5768,78 +5768,103 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			User appParent = application.getOwner();
 			User parent2 = null;
 
-			if (sendToOtherParent) {
+			if(application.getPrognosis()!=null){  
+				// TODO
+				// 2006/03/30 Igors 
+				// getting ContractCanceledUserId from Prognosis field is not right way, but It's all what I can do right now to get userId who canceled contract
+				// for adding methods appilcation.setContractCanceledUserId(int userId) and appilcation.getContractCanceledUserId() 
+				int usrId = new Integer(application.getPrognosis()).intValue();
 				try {
+					appParent=getUser(usrId);
+				}
+				catch (FinderException e) {
+					e.printStackTrace();
+				}
+			}
+
+			
+			try {
+			    if (sendToOtherParent) {
 					Collection parents = getUserBusiness().getMemberFamilyLogic().getCustodiansFor(child);
 					Iterator iter = parents.iterator();
 					while (iter.hasNext()) {
 						User parent = (User) iter.next();
 						if (!parent.equals(appParent)) parent2 = parent;							
-						
 					}
-
-					
 					
 					if(parent2 == null){
-						if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-							Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
+						if((appParent.getEmails() != null) &&(!appParent.getEmails().isEmpty()) ){
+							Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
 							message.setParentCase(application);
-							message.store();
-						}	
+						 	message.store();
+						}
+						else{
+						 	Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+					     	message.setParentCase(application);
+						 	message.store();
+						}				
 					}
 					else{
-						boolean messageWasSended = false;
-						if(appParent.getEmails() != null){
-							if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-								Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
+						if(getUserBusiness().haveSameAddress(parent2, appParent)){                  
+							if((appParent.getEmails() != null) &&(!appParent.getEmails().isEmpty()) ){
+								Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
 								message.setParentCase(application);
-								message.store();
-								messageWasSended = true;
-							}	
-							if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-						}	
-						else{
-							if(parent2.getEmails()!=null){
-								if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-									Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false, alwaysSendLetter);
-									message.setParentCase(application);
-									message.store();
-								}	
-								getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
+							 	message.store();
 							}
 							else{
-								if(getUserBusiness().haveSameAddress(parent2, appParent)){
-									if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-										Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-										message.setParentCase(application);
-										message.store();
-										messageWasSended = true;
-									}	
-									if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-
-								}
-								else{
-									if (getUserBusiness().getMemberFamilyLogic().isChildInCustodyOf(child, appParent)) {
-										Message message = getMessageBusiness().createUserMessage(application, appParent, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-										message.setParentCase(application);
-										message.store();
-										messageWasSended = true;
-									}	
-									if(!messageWasSended) getMessageBusiness().createUserMessage(application, parent2, subject, MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true, alwaysSendLetter);
-									
-								}
+							 	Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+						     	message.setParentCase(application);
+							 	message.store();
 							}
-							
-						}
-							
+							Message message = getMessageBusiness().createUserMessage(application, parent2,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
+							message.setParentCase(application);
+						 	message.store();
+						} 
+						else { // not same address
+							if((appParent.getEmails() != null) &&(!appParent.getEmails().isEmpty()) ){
+								Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
+								message.setParentCase(application);
+							 	message.store();
+							}
+							else{
+							 	Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+						     	message.setParentCase(application);
+							 	message.store();
+							}
+
+							if((parent2.getEmails() != null) &&(!parent2.getEmails().isEmpty()) ){
+								Message message = getMessageBusiness().createUserMessage(application, parent2,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
+								message.setParentCase(application);
+							 	message.store();
+							}
+							else{
+							 	Message message = getMessageBusiness().createUserMessage(application, parent2,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+						     	message.setParentCase(application);
+							 	message.store();
+							}
+
+						} // end not same address
+
+					}	// end parent2!=null
+			    } // end SendToOtherParent
+			    
+				else { // send only for one parent   
+					if((appParent.getEmails() != null) &&(!appParent.getEmails().isEmpty()) ){
+						Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, false,null,false,true); 
+						message.setParentCase(application);
+					 	message.store();
 					}
-					
-					
-				}
-				catch (NoCustodianFound ncf) {
-					ncf.printStackTrace();
+					else{
+					 	Message message = getMessageBusiness().createUserMessage(application, appParent,null,null,subject,MessageFormat.format(body, arguments), MessageFormat.format(letterBody, arguments), attachment, true,null,true,true);
+				     	message.setParentCase(application);
+					 	message.store();
+					}				
 				}
 			}
+			catch (NoCustodianFound ncf) {
+				ncf.printStackTrace();
+			}
+			
 		}
 		catch (RemoteException re) {
 			re.printStackTrace();
