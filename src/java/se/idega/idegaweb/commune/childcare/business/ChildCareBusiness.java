@@ -1,6 +1,6 @@
 /*
- * $Id: ChildCareBusiness.java 1.1 Mar 20, 2006 laddi Exp $
- * Created on Mar 20, 2006
+ * $Id: ChildCareBusiness.java 1.1 Mar 30, 2006 laddi Exp $
+ * Created on Mar 30, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -48,7 +48,6 @@ import com.idega.block.school.data.SchoolClassMember;
 import com.idega.block.school.data.SchoolHome;
 import com.idega.business.IBOService;
 import com.idega.core.file.data.ICFile;
-import com.idega.core.localisation.data.ICLanguage;
 import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDORemoveRelationshipException;
 import com.idega.exception.IWBundleDoesNotExist;
@@ -1497,55 +1496,5 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getChildCareContractBySchoolClassMember
 	 */
 	public ChildCareContract getChildCareContractBySchoolClassMember(SchoolClassMember member) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#canDisplayChildCareImages
-	 */
-	public boolean canDisplayChildCareImages(User child) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getChildareOtherInformation
-	 */
-	public String getChildareOtherInformation(User child) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasMultiLanguageHome
-	 */
-	public boolean hasMultiLanguageHome(User child) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getLanguage
-	 */
-	public ICLanguage getLanguage(User child) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#storeChildCareInformation
-	 */
-	public void storeChildCareInformation(User child, boolean canDisplayImage, String otherAfterSchoolCareInformation, boolean multiLanguageHome, String language) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasStudies
-	 */
-	public boolean hasStudies(User custodian) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getStudies
-	 */
-	public String getStudies(User custodian) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getStudyStart
-	 */
-	public Date getStudyStart(User custodian) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getStudyEnd
-	 */
-	public Date getStudyEnd(User custodian) throws java.rmi.RemoteException;
-
-	/**
-	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#storeCustodianInformation
-	 */
-	public void storeCustodianInformation(User custodian, boolean hasStudies, String studies, Date studyStart, Date studyEnd) throws java.rmi.RemoteException;
 
 }

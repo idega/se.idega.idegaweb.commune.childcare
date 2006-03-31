@@ -9,56 +9,6 @@
  */
 package se.idega.idegaweb.commune.childcare.presentation;
 
-import is.idega.block.family.business.NoCustodianFound;
-import is.idega.block.family.data.Child;
-import is.idega.block.family.data.Custodian;
-import is.idega.block.family.data.Relative;
-
-import java.rmi.RemoteException;
-import java.sql.Date;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import javax.ejb.FinderException;
-
-import se.idega.idegaweb.commune.care.business.CareConstants;
-import se.idega.idegaweb.commune.care.data.ChildCareApplication;
-
-import com.idega.block.school.data.School;
-import com.idega.block.school.data.SchoolArea;
-import com.idega.core.builder.data.ICPage;
-import com.idega.core.contact.data.Email;
-import com.idega.core.contact.data.Phone;
-import com.idega.core.localisation.data.ICLanguage;
-import com.idega.core.localisation.data.ICLanguageHome;
-import com.idega.core.location.data.Address;
-import com.idega.core.location.data.PostalCode;
-import com.idega.data.IDOLookup;
-import com.idega.presentation.IWContext;
-import com.idega.presentation.Table;
-import com.idega.presentation.text.Break;
-import com.idega.presentation.text.HorizontalRule;
-import com.idega.presentation.text.Text;
-import com.idega.presentation.ui.CheckBox;
-import com.idega.presentation.ui.DateInput;
-import com.idega.presentation.ui.DropdownMenu;
-import com.idega.presentation.ui.Form;
-import com.idega.presentation.ui.GenericButton;
-import com.idega.presentation.ui.HiddenInput;
-import com.idega.presentation.ui.RadioButton;
-import com.idega.presentation.ui.SubmitButton;
-import com.idega.presentation.ui.TextArea;
-import com.idega.presentation.ui.TextInput;
-import com.idega.presentation.ui.TimeInput;
-import com.idega.user.business.NoEmailFoundException;
-import com.idega.user.business.NoPhoneFoundException;
-import com.idega.user.data.User;
-import com.idega.util.IWTimestamp;
-import com.idega.util.PersonalIDFormatter;
-import com.idega.util.text.TextSoap;
 
 /**
  * Last modified: $Date$ by $Author$
@@ -68,7 +18,7 @@ import com.idega.util.text.TextSoap;
  */
 public class ChildCareDetailedApplication extends ChildCareBlock {
 
-	protected static final int ACTION_PHASE_1 = 1;
+	/*protected static final int ACTION_PHASE_1 = 1;
 	protected static final int ACTION_PHASE_2 = 2;
 	protected static final int ACTION_PHASE_3 = 3;
 	protected static final int ACTION_PHASE_4 = 4;
@@ -1378,5 +1328,5 @@ public class ChildCareDetailedApplication extends ChildCareBlock {
 	
 	public void setNumberOfApplications(int numberOfApplications) {
 		iNumberOfApplications = numberOfApplications;
-	}
+	}*/
 }
