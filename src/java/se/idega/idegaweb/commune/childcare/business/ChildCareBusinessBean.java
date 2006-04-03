@@ -828,8 +828,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public Collection getUnhandledApplicationsByProvider(int providerId) {
 		try {
 			ChildCareApplicationHome home = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplication.class);
+			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus(), getCaseStatusPreliminary().getStatus(), getCaseStatusContract().getStatus() };
 
-			return home.findAllCasesByProviderAndStatus(providerId, getCaseStatusOpen());
+			return home.findAllCasesByProviderStatus(providerId, caseStatus);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
