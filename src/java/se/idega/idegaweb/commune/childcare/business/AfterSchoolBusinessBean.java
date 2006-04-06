@@ -218,15 +218,15 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 
 	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID,
 			Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate,
-			SchoolSeason season, String subject, String body) throws CreateException, RemoteException {
+			SchoolSeason season, boolean sendMessage, String subject, String body) throws CreateException, RemoteException {
 		return  createAfterSchoolChoice(stamp, user, childID, providerID,
 				choiceNumber, message, caseStatus, parentCase, placementDate,
-				season, subject, body, false);
+				season, sendMessage, subject, body, false);
 	}
 		
 	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID,
 			Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate,
-			SchoolSeason season, String subject, String body, boolean isFClassAndPrio) throws CreateException, RemoteException {
+			SchoolSeason season, boolean sendMessage, String subject, String body, boolean isFClassAndPrio) throws CreateException, RemoteException {
 		if (season == null) {
 			try {
 				season = getChildCareBusiness().getCareBusiness().getCurrentSeason();
@@ -268,22 +268,21 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		choice.setApplicationStatus(getChildCareBusiness().getStatusSentIn());
 		choice.setHasPriority(true);
 
-		try {
-			if (stamp.isEarlierThan(getSchoolChoiceBusiness().getSchoolChoiceStartDate()) || (stamp.isLaterThan(getSchoolChoiceBusiness().getSchoolChoiceEndDate()))) {
-				if(choice.getChoiceNumber()==1){
-				     String subjectP = getLocalizedString("After_school_care_request_subject", "After school care request");
-				     String bodyP = getLocalizedString("After_school_care_request_body", "After school care request from {0}, {3}.");
-				     getChildCareBusiness().sendMessageToProvider(choice, subjectP, bodyP);
-				}	 
+		if (sendMessage) {
+			try {
+				if (stamp.isEarlierThan(getSchoolChoiceBusiness().getSchoolChoiceStartDate()) || (stamp.isLaterThan(getSchoolChoiceBusiness().getSchoolChoiceEndDate()))) {
+					String subjectP = getLocalizedString("After_school_care_request_subject", "After school care request");
+					String bodyP = getLocalizedString("After_school_care_request_body", "After school care request from {0}, {3}.");
+					getChildCareBusiness().sendMessageToProvider(choice, subjectP, bodyP);
+				}
+			}
+			catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			catch (FinderException e) {
+				e.printStackTrace();
 			}
 		}
-		catch (RemoteException e) {
-			e.printStackTrace();
-		}
-		catch (FinderException e) {
-			e.printStackTrace();
-		}
-
 		
 		if (caseStatus.equals(getCaseStatusPreliminary())) {
 			getChildCareBusiness().sendMessageToParents(choice, subject, body);
@@ -357,7 +356,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 								stamp.getDate());
 					}
 					choice = createAfterSchoolChoice(timeNow, user, childId, providerIDs[i], new Integer(i + 1), message, status,
-							choice, stamp.getDate(), computedSeason, subject, body, isFClassAndPrio);
+							choice, stamp.getDate(), computedSeason, true, subject, body, isFClassAndPrio);
 					returnList.add(choice);
 				}
 			}
@@ -578,7 +577,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 			String subject = getLocalizedString("application.after_school_choice_received_subject", "After school care choice received");
 			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application will be processed.");
 
-			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusPreliminary(), null, season.getSchoolSeasonStart(), season, subject, body);
+			AfterSchoolChoice choice = createAfterSchoolChoice(stamp, user, (Integer) child.getPrimaryKey(), (Integer) provider.getPrimaryKey(), new Integer(1), message, getCaseStatusPreliminary(), null, season.getSchoolSeasonStart(), season, false, subject, body);
 			choice.setPayerName(payerName);
 			choice.setPayerPersonalID(payerPersonalID);
 			choice.setCardType(cardType);

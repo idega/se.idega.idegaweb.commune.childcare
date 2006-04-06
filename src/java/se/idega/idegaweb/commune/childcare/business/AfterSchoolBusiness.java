@@ -1,6 +1,6 @@
 /*
- * $Id: AfterSchoolBusiness.java,v 1.24 2006/03/27 15:27:29 laddi Exp $
- * Created on Mar 27, 2006
+ * $Id: AfterSchoolBusiness.java,v 1.25 2006/04/06 11:28:50 laddi Exp $
+ * Created on Apr 6, 2006
  *
  * Copyright (C) 2006 Idega Software hf. All Rights Reserved.
  *
@@ -41,10 +41,10 @@ import com.idega.util.IWTimestamp;
  * <p>
  * TODO laddi Describe Type AfterSchoolBusiness
  * </p>
- *  Last modified: $Date: 2006/03/27 15:27:29 $ by $Author: laddi $
+ *  Last modified: $Date: 2006/04/06 11:28:50 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.24 $
+ * @version $Revision: 1.25 $
  */
 public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 
@@ -111,12 +111,12 @@ public interface AfterSchoolBusiness extends IBOService, CaseBusiness {
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#createAfterSchoolChoice
 	 */
-	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, String subject, String body) throws CreateException, RemoteException;
+	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, boolean sendMessage, String subject, String body) throws CreateException, RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#createAfterSchoolChoice
 	 */
-	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, String subject, String body, boolean isFClassAndPrio) throws CreateException, RemoteException;
+	public AfterSchoolChoice createAfterSchoolChoice(IWTimestamp stamp, User user, Integer childID, Integer providerID, Integer choiceNumber, String message, CaseStatus caseStatus, Case parentCase, Date placementDate, SchoolSeason season, boolean sendMessage, String subject, String body, boolean isFClassAndPrio) throws CreateException, RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.AfterSchoolBusinessBean#createAfterSchoolChoices
