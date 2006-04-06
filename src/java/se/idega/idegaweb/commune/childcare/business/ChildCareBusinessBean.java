@@ -1372,8 +1372,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		else {
 			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
 		}
-		addContractToArchive(oldFileID, -1, false, application, -1, fromDate.getDate(), employmentTypeID, -1, user, false, -1, -1, null);
+		
+		ChildCareContract contract = addContractToArchive(oldFileID, -1, false, application, -1, fromDate.getDate(), employmentTypeID, -1, user, false, -1, -1, null);
 		application.store();
+		
 		try {
 			SchoolClassMember member = getLatestPlacement(application.getChildId(), application.getProviderId());
 			if (schoolTypeID != -1 && schoolClassID != -1) {
@@ -1391,6 +1393,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			member.setRegisterDate(fromDate.getTimestamp());
 			member.store();
+			
+			contract.setSchoolClassMember(member);
+			contract.store();
 		}
 		catch (FinderException e) {
 			// Placing not yet created...
