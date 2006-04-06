@@ -1254,6 +1254,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			else {
 				ChildCareContract con = getLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());
 				con.setSchoolClassMember(member);
+				con.store();
 			}
 			application.setApplicationStatus(getStatusReady());
 			application.store();
