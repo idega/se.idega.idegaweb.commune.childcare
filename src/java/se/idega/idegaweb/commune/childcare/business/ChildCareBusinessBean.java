@@ -1240,15 +1240,20 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (terminationDate != null) {
 				application.setRejectionDate(terminationDate.getDate());
 			}
+			SchoolClassMember member = null;
 			if (groupID != -1) {
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
 				IWTimestamp endDate = application.getRejectionDate() != null ? new IWTimestamp(application.getRejectionDate()) : null;
-				SchoolClassMember member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), endDate != null ? endDate.getTimestamp() : null, ((Integer) user.getPrimaryKey()).intValue(), null);
+				member = getSchoolBusiness().storeSchoolClassMemberCC(application.getChildId(), groupID, schoolTypeID, fromDate.getTimestamp(), endDate != null ? endDate.getTimestamp() : null, ((Integer) user.getPrimaryKey()).intValue(), null);
 				getSchoolBusiness().addToSchoolClassMemberLog(member, member.getSchoolClass(), fromDate.getDate(), endDate != null ? endDate.getDate() : null, user);
 				sendMessageToParents(application, subject, body, attachment);
 			}
 			if (attachment == null) {
 				alterValidFromDate(application, application.getFromDate(), employmentTypeID, locale, user);
+			}
+			else {
+				ChildCareContract con = getLatestContractByApplication(((Integer) application.getPrimaryKey()).intValue());
+				con.setSchoolClassMember(member);
 			}
 			application.setApplicationStatus(getStatusReady());
 			application.store();
@@ -1373,7 +1378,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
 		}
 		
-		ChildCareContract contract = addContractToArchive(oldFileID, -1, false, application, -1, fromDate.getDate(), employmentTypeID, -1, user, false, -1, -1, null);
+		addContractToArchive(oldFileID, -1, false, application, -1, fromDate.getDate(), employmentTypeID, -1, user, false, -1, -1, null);
 		application.store();
 		
 		try {
@@ -1393,9 +1398,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			}
 			member.setRegisterDate(fromDate.getTimestamp());
 			member.store();
-			
-			contract.setSchoolClassMember(member);
-			contract.store();
 		}
 		catch (FinderException e) {
 			// Placing not yet created...
