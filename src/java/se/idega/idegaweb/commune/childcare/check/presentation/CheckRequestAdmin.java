@@ -154,21 +154,25 @@ public class CheckRequestAdmin extends CommuneBlock {
 			}
 
 			String managerName = "-";
-			if (manager != null)
+			if (manager != null) {
 				managerName = manager.getName();
+			}
 				
 			String caseStatus = null;												
 			if (!caseStatusMap.containsKey(check.getStatus())) {			
 				caseStatus = getCheckBusiness(iwc).getLocalizedCaseStatusDescription(check.getCaseStatus(), iwc.getCurrentLocale());
 				caseStatusMap.put(check.getStatus(), caseStatus);
 			}
-			else 				
-				caseStatus = (String) caseStatusMap.get(check.getStatus());			
+			else {
+				caseStatus = (String) caseStatusMap.get(check.getStatus());
+			}			
 
-			if (row % 2 == 0)
+			if (row % 2 == 0) {
 				table.setRowColor(row, getZebraColor1());
-			else
+			}
+			else {
 				table.setRowColor(row, getZebraColor2());
+			}
 			
 			Link link = getSmallLink(check.getPrimaryKey().toString());
 			link.addParameter(PARAM_VIEW_CHECK, "true");
@@ -269,10 +273,12 @@ public class CheckRequestAdmin extends CommuneBlock {
 					checkInfoTable.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 2, ++row);
 					checkInfoTable.add(getSmallText(" - " + PersonalIDFormatter.format(parent.getPersonalID(), iwc.getCurrentLocale())), 2, row);
 					if (check != null && getWorkSituation(check.getWorkSituation1()) != null) {
-						if (count == 1 && getWorkSituation(check.getWorkSituation1()) != null)
+						if (count == 1 && getWorkSituation(check.getWorkSituation1()) != null) {
 							checkInfoTable.add(getSmallText(", " + getWorkSituation(check.getWorkSituation1())), 2, row);
-						if (count == 2 && getWorkSituation(check.getWorkSituation2()) != null)
+						}
+						if (count == 2 && getWorkSituation(check.getWorkSituation2()) != null) {
 							checkInfoTable.add(getSmallText(", " + getWorkSituation(check.getWorkSituation2())), 2, row);
+						}
 					}
 				}
 			}
@@ -346,8 +352,9 @@ public class CheckRequestAdmin extends CommuneBlock {
 		frame.add(getLocalizedSmallHeader("check.notes", "Notes"), 1, 2);
 		frame.add(new Break(), 1, 2);
 		TextArea notes = (TextArea) getStyledInterface(new TextArea(PARAM_NOTES));
-		if (check != null && check.getNotes() != null)
+		if (check != null && check.getNotes() != null) {
 			notes.setValue(check.getNotes());
+		}
 		notes.setRows(4);
 		notes.setColumns(65);
 		frame.add(notes, 1, 2);
@@ -362,8 +369,9 @@ public class CheckRequestAdmin extends CommuneBlock {
 		
 		TextArea userNotes = (TextArea) getStyledInterface(standardMsgArea.getTextArea(frame));
 		//TextArea userNotes = (TextArea) getStyledInterface(new TextArea(PARAM_USER_NOTES));
-		if (check != null && check.getUserNotes() != null)
+		if (check != null && check.getUserNotes() != null) {
 			userNotes.setValue(check.getUserNotes());
+		}
 		userNotes.setRows(4);
 		userNotes.setColumns(65);
 		frame.add(userNotes, 1, 3);

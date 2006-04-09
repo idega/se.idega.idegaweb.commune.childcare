@@ -90,8 +90,9 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 		table.setHeight(4, 12);
 		
 		GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back",localize("back","Back")));
-		if (getResponsePage() != null)
+		if (getResponsePage() != null) {
 			back.setPageToOpen(getResponsePage());
+		}
 
 		if (getSession().getUserID() != -1) {
 			table.add(getInformationTable(iwc), 1, 1);
@@ -163,8 +164,9 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			group = member.getSchoolClass();
 			provider = group.getSchool();
 			validFrom = new IWTimestamp(member.getRegisterDate());
-			if (member.getRemovedDate() != null)
+			if (member.getRemovedDate() != null) {
 				terminated = new IWTimestamp(member.getRemovedDate());
+			}
 
 			if (useStyleNames()) {
 				if (row % 2 == 0) {
@@ -177,19 +179,23 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 				table.setCellpaddingRight(table.getColumns(), row, 12);
 			}
 			else {
-				if (row % 2 == 0)
+				if (row % 2 == 0) {
 					table.setRowColor(row, getZebraColor1());
-				else
+				}
+				else {
 					table.setRowColor(row, getZebraColor2());
+				}
 			}
 	
 			table.add(getSmallText(provider.getSchoolName()), column++, row);
 			table.add(getSmallText(group.getSchoolClassName()), column++, row);
 			table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-			if (member.getRemovedDate() != null)
+			if (member.getRemovedDate() != null) {
 				table.add(getSmallText(terminated.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-			else
+			}
+			else {
 				table.add(getSmallText("-"), column++, row);
+			}
 			
 			ChildCareContract contract = null;
 			try {
@@ -201,13 +207,13 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			}
 			
 			// Fix link, when a classmember is not related to any contract, it can be deleted
-			if(allowUnrelatedRemoval && contract==null){
+			if(this.allowUnrelatedRemoval && contract==null){
 				Link removeLink = new Link(getDeleteIcon(localize("child_care.tooltip.removed_noncontract_placement","Remove noncontract placement")));
 				removeLink.addParameter(PRM_RM_CLASS_MEMBER_ID,member.getPrimaryKey().toString());
 				table.add(removeLink,column++,row);
 			}
 			// Fix link , when old classmember's removed_date has not been set
-			if(allowPreviousTermination && previousMember!=null && member.getRemovedDate()==null){
+			if(this.allowPreviousTermination && previousMember!=null && member.getRemovedDate()==null){
 			    IWTimestamp removedDate = new IWTimestamp(previousMember.getRegisterDate());
 			    removedDate.addDays(-1);
 			    java.text.DateFormat df = java.text.DateFormat.getDateInstance(java.text.DateFormat.SHORT,iwc.getCurrentLocale());
@@ -251,8 +257,9 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			if (address != null) {
 				table.add(getLocalizedSmallHeader("child_care.address","Address"), 1, row);
 				table.add(getSmallText(address.getStreetAddress()), 3, row);
-				if (address.getPostalAddress() != null)
+				if (address.getPostalAddress() != null) {
 					table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+				}
 				row++;
 			}
 			
@@ -277,8 +284,9 @@ public class ChildCareChildPlacing extends ChildCareBlock {
 			
 					if (address != null) {
 						table.add(getSmallText(address.getStreetAddress()), 3, row);
-						if (address.getPostalAddress() != null)
+						if (address.getPostalAddress() != null) {
 							table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+						}
 						row++;
 					}
 					if (phone != null && phone.getNumber() != null) {
@@ -302,7 +310,7 @@ public class ChildCareChildPlacing extends ChildCareBlock {
      * @return Returns the allowPreviousTermination.
      */
     public boolean isAllowPreviousTermination() {
-        return allowPreviousTermination;
+        return this.allowPreviousTermination;
     }
     /**
      * @param allowPreviousTermination The allowPreviousTermination to set.
@@ -314,7 +322,7 @@ public class ChildCareChildPlacing extends ChildCareBlock {
      * @return Returns the allowUnrelatedRemoval.
      */
     public boolean isAllowUnrelatedRemoval() {
-        return allowUnrelatedRemoval;
+        return this.allowUnrelatedRemoval;
     }
     /**
      * @param allowUnrelatedRemoval The allowUnrelatedRemoval to set.

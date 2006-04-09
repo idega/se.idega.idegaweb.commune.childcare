@@ -94,7 +94,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		
 
 		if (iwc.isLoggedOn()) {
-			_user = iwc.getCurrentUser();
+			this._user = iwc.getCurrentUser();
 			setResourceBundle(getResourceBundle(iwc));
 			
 			try {
@@ -113,18 +113,21 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 	private void control(IWContext iwc, int action) throws RemoteException {
 		if ((action == ACTION_YES) || (action == ACTION_NO)) {
 			boolean done = changeApplication(iwc,action);
-			if (!done)
+			if (!done) {
 				add(getErrorText(localize(ERROR_UNABLE_TO_CHANGE,"Unable to change application status")));
+			}
 		}
 		else if (action == ACTION_ASSIGN_CONTRACT) {
 			boolean done = assignContract(iwc);
-			if (!done)
+			if (!done) {
 				add(getErrorText(localize(ERROR_UNABLE_TO_ASSIGN_CONTRACT,"Unable to assign a contract to the application")));
+			}
 		}	
 		else if (action == ACTION_ASSIGN_PLACE) {
 			boolean done = assignPlace(iwc);
-			if (!done)
+			if (!done) {
 				add(getErrorText(localize(ERROR_UNABLE_TO_ASSIGN_PLACE,"Unable to assign a place to the application")));
+			}
 		}	
 
 		viewList(iwc);	
@@ -136,7 +139,7 @@ public class ChildCareApplicationAdmin extends CommuneBlock {
 		Collection appl = null;
 		
 		try {
-			appl = getChildCareBusiness(iwc).getApplicationsByProvider(_user);
+			appl = getChildCareBusiness(iwc).getApplicationsByProvider(this._user);
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();

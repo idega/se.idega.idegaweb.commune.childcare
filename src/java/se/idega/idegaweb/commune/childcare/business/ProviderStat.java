@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderStat.java,v 1.3 2005/09/28 14:14:32 dainis Exp $
+ * $Id: ProviderStat.java,v 1.4 2006/04/09 11:45:18 laddi Exp $
  * Created on 8.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -13,10 +13,10 @@ import java.util.Date;
 
 /**
  * 
- *  Last modified: $Date: 2005/09/28 14:14:32 $ by $Author: dainis $
+ *  Last modified: $Date: 2006/04/09 11:45:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ProviderStat{
     
@@ -38,7 +38,7 @@ public class ProviderStat{
      * @return Returns the lastUpdate.
      */
     public Date getLastUpdate() {
-        return lastUpdate;
+        return this.lastUpdate;
     }
     /**
      * @param lastUpdate The lastUpdate to set.
@@ -50,7 +50,7 @@ public class ProviderStat{
      * @return Returns the oneYearPriority.
      */
     public Integer getOneYearPriority() {
-        return oneYearPriority;
+        return this.oneYearPriority;
     }
     /**
      * @param oneYearPriority The oneYearPriority to set.
@@ -62,7 +62,7 @@ public class ProviderStat{
      * @return Returns the oneYearPrognosis.
      */
     public Integer getOneYearPrognosis() {
-        return oneYearPrognosis;
+        return this.oneYearPrognosis;
     }
     /**
      * @param oneYearPrognosis The oneYearPrognosis to set.
@@ -74,7 +74,7 @@ public class ProviderStat{
      * @return Returns the prognosisID.
      */
     public Integer getPrognosisID() {
-        return prognosisID;
+        return this.prognosisID;
     }
     /**
      * @param prognosisID The prognosisID to set.
@@ -90,7 +90,7 @@ public class ProviderStat{
      * @return Returns the providerCapacity.
      */
     public Integer getProviderCapacity() {
-        return providerCapacity;
+        return this.providerCapacity;
     }
     /**
      * @param providerCapacity The providerCapacity to set.
@@ -102,7 +102,7 @@ public class ProviderStat{
      * @return Returns the providerID.
      */
     public Integer getProviderID() {
-        return providerID;
+        return this.providerID;
     }
     /**
      * @param providerID The providerID to set.
@@ -114,7 +114,7 @@ public class ProviderStat{
      * @return Returns the providerName.
      */
     public String getProviderName() {
-        return providerName;
+        return this.providerName;
     }
     /**
      * @param providerName The providerName to set.
@@ -126,7 +126,7 @@ public class ProviderStat{
      * @return Returns the threeMonthsPriority.
      */
     public Integer getThreeMonthsPriority() {
-        return threeMonthsPriority;
+        return this.threeMonthsPriority;
     }
     /**
      * @param threeMonthsPriority The threeMonthsPriority to set.
@@ -138,7 +138,7 @@ public class ProviderStat{
      * @return Returns the threeMonthsPrognosis.
      */
     public Integer getThreeMonthsPrognosis() {
-        return threeMonthsPrognosis;
+        return this.threeMonthsPrognosis;
     }
     /**
      * @param threeMonthsPrognosis The threeMonthsPrognosis to set.
@@ -150,7 +150,7 @@ public class ProviderStat{
      * @return Returns the queueTotal.
      */
     public Integer getQueueTotal() {
-        return queueTotal;
+        return this.queueTotal;
     }
     /**
      * @param queueTotal The queueTotal to set.
@@ -163,7 +163,7 @@ public class ProviderStat{
      * @return Returns the vacancies.
      */
     public Integer getVacancies() {
-    	return vacancies;
+    	return this.vacancies;
     }
     
     /**
@@ -175,7 +175,7 @@ public class ProviderStat{
     
     
     public Boolean getQueueSortedByBirthdate() {
-        return queueSortedByBirthdate;
+        return this.queueSortedByBirthdate;
     }
     public void setQueueSortedByBirthdate(Boolean queueSortedByBirthdate) {
         this.queueSortedByBirthdate = queueSortedByBirthdate;

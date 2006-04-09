@@ -81,10 +81,10 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 	
 	public void init(HttpServletRequest req, IWContext iwc) {
 		try {
-			locale = iwc.getApplicationSettings().getApplicationLocale();
-			business = getChildCareBusiness(iwc);
-			userBusiness = getCommuneUserBusiness(iwc);
-			iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+			this.locale = iwc.getApplicationSettings().getApplicationLocale();
+			this.business = getChildCareBusiness(iwc);
+			this.userBusiness = getCommuneUserBusiness(iwc);
+			this.iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(this.locale);
 			
 			if (req.getParameter(PARAMETER_PROVIDER_ID) != null && req.getParameter(PARAMETER_GROUP_ID) != null) {
 				int groupID = Integer.parseInt(req.getParameter(PARAMETER_GROUP_ID));
@@ -98,23 +98,26 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 				
 				IWTimestamp stamp = new IWTimestamp();
 				Collection students = null;
-				if (hasShowNotYetActive)
-					students = business.getSchoolBusiness().findStudentsInSchoolByDate(providerID, groupID, stamp.getDate(), showNotYetActive);
-				else
-					students = business.getSchoolBusiness().findStudentsInSchoolByDate(providerID, groupID, stamp.getDate());
+				if (hasShowNotYetActive) {
+					students = this.business.getSchoolBusiness().findStudentsInSchoolByDate(providerID, groupID, stamp.getDate(), showNotYetActive);
+				}
+				else {
+					students = this.business.getSchoolBusiness().findStudentsInSchoolByDate(providerID, groupID, stamp.getDate());
+				}
 				
-				if (groupID != -1)
-					groupName = business.getSchoolBusiness().findSchoolClass(new Integer(groupID)).getSchoolClassName();
-				schoolName = business.getSchoolBusiness().getSchool(new Integer(providerID)).getSchoolName();
+				if (groupID != -1) {
+					this.groupName = this.business.getSchoolBusiness().findSchoolClass(new Integer(groupID)).getSchoolClassName();
+				}
+				this.schoolName = this.business.getSchoolBusiness().getSchool(new Integer(providerID)).getSchoolName();
 				
 				String type = req.getParameter(PARAMETER_TYPE);
 				if (type.equals(PDF)) {
-					buffer = writePDF(students);
-					setAsDownload(iwc,"school_class.pdf",buffer.length());
+					this.buffer = writePDF(students);
+					setAsDownload(iwc,"school_class.pdf",this.buffer.length());
 				}
 				else if (type.equals(XLS)) {
-					buffer = writeXLS(students);
-					setAsDownload(iwc,"school_class.xls",buffer.length());
+					this.buffer = writeXLS(students);
+					setAsDownload(iwc,"school_class.xls",this.buffer.length());
 				}
 				
 			}
@@ -125,22 +128,24 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 	}
 	
 	public String getMimeType() {
-		if (buffer != null)
-			return buffer.getMimeType();
+		if (this.buffer != null) {
+			return this.buffer.getMimeType();
+		}
 		return super.getMimeType();
 	}
 	
 	public void writeTo(OutputStream out) throws IOException {
-		if (buffer != null) {
-			MemoryInputStream mis = new MemoryInputStream(buffer);
+		if (this.buffer != null) {
+			MemoryInputStream mis = new MemoryInputStream(this.buffer);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			while (mis.available() > 0) {
 				baos.write(mis.read());
 			}
 			baos.writeTo(out);
 		}
-		else
+		else {
 			System.err.println("buffer is null");
+		}
 	}
 	
 	public MemoryFileBuffer writeXLS(Collection students) throws Exception {
@@ -149,7 +154,7 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 		if (!students.isEmpty()) {
 	    HSSFWorkbook wb = new HSSFWorkbook();
 	    
-        String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, 31); //the name of worksheet can be 31 symbols max
+        String sheetTitle = this.schoolName.length() <= 31 ? this.schoolName : this.schoolName.substring(0, 31); //the name of worksheet can be 31 symbols max
         HSSFSheet sheet = wb.createSheet(sheetTitle);
         
 	    sheet.setColumnWidth((short)0, (short) (30 * 256));
@@ -166,14 +171,14 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 			int cellRow = 0;
 			HSSFRow row = sheet.createRow(cellRow++);
 			HSSFCell cell = row.createCell((short)0);
-			cell.setCellValue(schoolName);
+			cell.setCellValue(this.schoolName);
 			cell.setCellStyle(style);
 			cell = row.createCell((short)1);
 			
-			if (groupName != null) {
+			if (this.groupName != null) {
 				row = sheet.createRow(cellRow++);
 				cell = row.createCell((short)0);
-				cell.setCellValue(groupName);
+				cell.setCellValue(this.groupName);
 				cell.setCellStyle(style);
 			}
 			
@@ -181,19 +186,19 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 			
 	    row = sheet.createRow(cellRow++);
 	    cell = row.createCell((short)0);
-	    cell.setCellValue(iwrb.getLocalizedString("school.name","Name"));
+	    cell.setCellValue(this.iwrb.getLocalizedString("school.name","Name"));
 	    cell.setCellStyle(style);
 	    cell = row.createCell((short)1);
-	    cell.setCellValue(iwrb.getLocalizedString("school.personal_id","Personal ID"));
+	    cell.setCellValue(this.iwrb.getLocalizedString("school.personal_id","Personal ID"));
 	    cell.setCellStyle(style);
 	    cell = row.createCell((short)2);
-	    cell.setCellValue(iwrb.getLocalizedString("school.address","Address"));
+	    cell.setCellValue(this.iwrb.getLocalizedString("school.address","Address"));
 	    cell.setCellStyle(style);
 			cell = row.createCell((short)3);
-			cell.setCellValue(iwrb.getLocalizedString("school.postal_code","Postal code"));
+			cell.setCellValue(this.iwrb.getLocalizedString("school.postal_code","Postal code"));
 			cell.setCellStyle(style);
 	    cell = row.createCell((short)4);
-	    cell.setCellValue(iwrb.getLocalizedString("school.phone","Phone"));
+	    cell.setCellValue(this.iwrb.getLocalizedString("school.phone","Phone"));
 	    cell.setCellStyle(style);
 
 			User student;
@@ -207,21 +212,24 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 				row = sheet.createRow(cellRow++);
 				studentMember = (SchoolClassMember) iter.next();
 				student = studentMember.getStudent();
-				address = userBusiness.getUsersMainAddress(student);
-				if (address != null)
+				address = this.userBusiness.getUsersMainAddress(student);
+				if (address != null) {
 					postalCode = address.getPostalCode();
-				phone = userBusiness.getChildHomePhone(student);
+				}
+				phone = this.userBusiness.getChildHomePhone(student);
 
 				Name name = new Name(student.getFirstName(), student.getMiddleName(), student.getLastName());
-		    row.createCell((short)0).setCellValue(name.getName(locale, true));
-		    row.createCell((short)1).setCellValue(PersonalIDFormatter.format(student.getPersonalID(), locale));
+		    row.createCell((short)0).setCellValue(name.getName(this.locale, true));
+		    row.createCell((short)1).setCellValue(PersonalIDFormatter.format(student.getPersonalID(), this.locale));
 		    if (address != null) {
 			    row.createCell((short)2).setCellValue(address.getStreetAddress());
-			    if (postalCode != null)
+			    if (postalCode != null) {
 						row.createCell((short)3).setCellValue(postalCode.getPostalAddress());
+					}
 		    }
-			  if (phone != null)
-			    row.createCell((short)4).setCellValue(phone.getNumber());
+			  if (phone != null) {
+					row.createCell((short)4).setCellValue(phone.getNumber());
+				}
 			}
 			wb.write(mos);
 		}
@@ -235,14 +243,15 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 		if (!students.isEmpty()) {
 			Document document = new Document(PageSize.A4, 50, 50, 50, 50);
 			PdfWriter writer = PdfWriter.getInstance(document, mos);
-			document.addTitle(schoolName);
+			document.addTitle(this.schoolName);
 			document.addAuthor("Idega Reports");
-			document.addSubject(schoolName);
+			document.addSubject(this.schoolName);
 			document.open();
 			
-			document.add(new Phrase(schoolName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
-			if (groupName != null)
-				document.add(new Phrase(groupName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
+			document.add(new Phrase(this.schoolName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
+			if (this.groupName != null) {
+				document.add(new Phrase(this.groupName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
+			}
 			document.add(new Phrase("\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
 			
 			User student;
@@ -252,7 +261,7 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 			SchoolClassMember studentMember;
 			Cell cell;
 			
-			String[] headers = {iwrb.getLocalizedString("school.name","Name"), iwrb.getLocalizedString("school.personal_id","Personal ID"), iwrb.getLocalizedString("school.address","Address"), iwrb.getLocalizedString("school.postal_code"),iwrb.getLocalizedString("school.phone","Phone")};
+			String[] headers = {this.iwrb.getLocalizedString("school.name","Name"), this.iwrb.getLocalizedString("school.personal_id","Personal ID"), this.iwrb.getLocalizedString("school.address","Address"), this.iwrb.getLocalizedString("school.postal_code"),this.iwrb.getLocalizedString("school.phone","Phone")};
 			int[] sizes = { 25, 14, 20, 26, 15 };
 
 			Table datatable = getTable(headers, sizes);
@@ -260,38 +269,42 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 			while (iter.hasNext()) {
 				studentMember = (SchoolClassMember) iter.next();
 				student = studentMember.getStudent();
-				address = userBusiness.getUsersMainAddress(student);
-				if (address != null)
+				address = this.userBusiness.getUsersMainAddress(student);
+				if (address != null) {
 					postalCode = address.getPostalCode();
-				phone = userBusiness.getChildHomePhone(student);
+				}
+				phone = this.userBusiness.getChildHomePhone(student);
 
 				//Name name = new Name(student.getFirstName(), student.getMiddleName(), student.getLastName());
 				Name name = new Name(student.getFirstName(), "", student.getLastName());
-				cell = new Cell(new Phrase(name.getName(locale, true), new Font(Font.HELVETICA, 10, Font.BOLD)));
+				cell = new Cell(new Phrase(name.getName(this.locale, true), new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
 				datatable.addCell(cell);
 
-				cell = new Cell(new Phrase(PersonalIDFormatter.format(student.getPersonalID(), locale), new Font(Font.HELVETICA, 10, Font.BOLD)));
+				cell = new Cell(new Phrase(PersonalIDFormatter.format(student.getPersonalID(), this.locale), new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
 				datatable.addCell(cell);
 
 				String streetAddress = "";
-				if (address != null)
+				if (address != null) {
 					streetAddress = address.getStreetAddress();
+				}
 				cell = new Cell(new Phrase(streetAddress, new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
 				datatable.addCell(cell);
 
 				String postalAddress = "";
-				if (address != null && postalCode != null)
-				postalAddress = postalCode.getPostalAddress();
+				if (address != null && postalCode != null) {
+					postalAddress = postalCode.getPostalAddress();
+				}
 				cell = new Cell(new Phrase(postalAddress, new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
 				datatable.addCell(cell);
 
 				String phoneNumber = "";
-				if (phone != null && phone.getNumber() != null)
+				if (phone != null && phone.getNumber() != null) {
 					phoneNumber = phone.getNumber();
+				}
 				cell = new Cell(new Phrase(phoneNumber, new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
 				datatable.addCell(cell);
@@ -318,8 +331,9 @@ public class ChildCareGroupWriter extends DownloadWriter implements MediaWritabl
 		datatable.setSpacing(0.0f);
 		datatable.setBorder(Rectangle.NO_BORDER);
 		datatable.setWidth(100);
-		if (sizes != null)
+		if (sizes != null) {
 			datatable.setWidths(sizes);
+		}
 		for (int i = 0; i < headers.length; i++) {
 			Cell cell = new Cell(new Phrase(headers[i], new Font(Font.HELVETICA, 12, Font.BOLD)));
 			cell.setBorder(Rectangle.BOTTOM);

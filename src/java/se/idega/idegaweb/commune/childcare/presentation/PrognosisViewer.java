@@ -31,10 +31,12 @@ public class PrognosisViewer extends ChildCareBlock {
 			add(getAdminButton());
 		}
 		else {
-			if (getSession().hasOutdatedPrognosis())
+			if (getSession().hasOutdatedPrognosis()) {
 				add(getSmallErrorText(localize("child_care.prognosis_outdated","Prognosis is outdated and needs to be set again!")));
-			else
+			}
+			else {
 				add(getSmallErrorText(localize("child_care.prognosis_not_set","Prognosis have not been set!")));
+			}
 			add(new Break());
 			add(getAdminButton());
 		}
@@ -120,10 +122,12 @@ public class PrognosisViewer extends ChildCareBlock {
 			table.add(getLocalizedSmallText("child_care.three_months_prognosis","Three months prognosis"), column++, row);
 			table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPrognosis())), column++, row);
 			if (showPriorities) {
-				if (prognosis.getThreeMonthsPriority() != -1)
+				if (prognosis.getThreeMonthsPriority() != -1) {
 					table.add(getSmallText(String.valueOf(prognosis.getThreeMonthsPriority())), column++, row);
-				else
+				}
+				else {
 					table.add(getSmallText(""), column++, row);
+				}
 			}
 			table.add(getSmallText(stamp.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
 			column = 1;
@@ -132,10 +136,12 @@ public class PrognosisViewer extends ChildCareBlock {
 			table.add(getLocalizedSmallText("child_care.one_year_prognosis","Twelve months prognosis"), column++, row);
 			table.add(getSmallText(String.valueOf(prognosis.getOneYearPrognosis())), column++, row);
 			if (showPriorities) {
-				if (prognosis.getOneYearPriority() != -1)
+				if (prognosis.getOneYearPriority() != -1) {
 					table.add(getSmallText(String.valueOf(prognosis.getOneYearPriority())), column++, row);
-				else
+				}
+				else {
 					table.add(getSmallText(""), column++, row);
+				}
 			}
 			table.add(getSmallText(stamp.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row++);
 		}

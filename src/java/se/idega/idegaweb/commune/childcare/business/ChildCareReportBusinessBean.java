@@ -49,10 +49,10 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 	private IWResourceBundle _iwrb;
 
 	private void initializeBundlesIfNeeded() {
-		if (_iwb == null) {
-			_iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
+		if (this._iwb == null) {
+			this._iwb = this.getIWApplicationContext().getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER);
 		}
-		_iwrb = _iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
+		this._iwrb = this._iwb.getResourceBundle(this.getUserContext().getCurrentLocale());
 	}
 
 	public ReportableCollection getChildCareReport(Integer numberOfWeeks, Integer numberOfMonths, Object areaID, Boolean firstHandOnly) {
@@ -457,6 +457,6 @@ public class ChildCareReportBusinessBean extends IBOSessionBean implements Child
 	}
 
 	private String getLocalizedString(String key, String defaultValue) {
-		return _iwrb.getLocalizedString(PREFIX + key, defaultValue);
+		return this._iwrb.getLocalizedString(PREFIX + key, defaultValue);
 	}
 }

@@ -66,7 +66,7 @@ public class ChangeChildCareForm extends CommuneBlock {
 		
 
 		if (iwc.isLoggedOn()) {
-			_user = iwc.getCurrentUser();
+			this._user = iwc.getCurrentUser();
 			setResourceBundle(getResourceBundle(iwc));
 
 			try {

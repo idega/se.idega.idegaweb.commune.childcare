@@ -30,8 +30,9 @@ public class ChildCareFindChild extends CommuneUserFinder {
 		try {
 			//return getChildCareBusiness(iwc).hasApplications(((Integer)user.getPrimaryKey()).intValue());
 			Age age = new Age(user.getDateOfBirth());
-			if (age.getYears() <= 12)
+			if (age.getYears() <= 12) {
 				return true;
+			}
 			return false;
 		}
 		catch (NullPointerException e) {
@@ -72,7 +73,7 @@ public class ChildCareFindChild extends CommuneUserFinder {
 	 * @see se.idega.idegaweb.commune.presentation.CommuneUserFinder#getSubmitDisplay()
 	 */
 	public String getSubmitDisplay() {
-		return localize(_key,_defaultValue);
+		return localize(this._key,this._defaultValue);
 	}
 
 	/**
@@ -105,7 +106,7 @@ public class ChildCareFindChild extends CommuneUserFinder {
 	}	
 	
 	public void setLocalizedKeyOnButton(String key, String defaultValue) {
-		_key = key;
-		_defaultValue = defaultValue;
+		this._key = key;
+		this._defaultValue = defaultValue;
 	}
 }

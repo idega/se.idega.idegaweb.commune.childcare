@@ -83,7 +83,7 @@ public class ContractAndPlacementChangesExportWriter {
 	private Date getFirstDateOfCurrentMonth() {		
 	    Calendar cal = roundCalendarToDate(new GregorianCalendar());
 	    
-	    if (isDebuggingGoingOn) {
+	    if (this.isDebuggingGoingOn) {
 		    cal.add(Calendar.YEAR, -1);
 		    cal.add(Calendar.MONTH, -1);
 	    }
@@ -97,7 +97,7 @@ public class ContractAndPlacementChangesExportWriter {
 	private Date getLastDateOfCurrentMonth() {		
 	    Calendar cal = roundCalendarToDate(new GregorianCalendar());
 	    
-	    if (isDebuggingGoingOn) {
+	    if (this.isDebuggingGoingOn) {
 	    	cal.add(Calendar.YEAR, -1);	
 	    } 	    	
 	        
@@ -116,7 +116,9 @@ public class ContractAndPlacementChangesExportWriter {
 	}	
 
 	private Date timestampToRoundedDate(Timestamp stamp) {
-		if (stamp == null) return null;
+		if (stamp == null) {
+			return null;
+		}
 		
 		Calendar cal = new GregorianCalendar();
 		cal.setTimeInMillis(stamp.getTime());
@@ -144,7 +146,9 @@ public class ContractAndPlacementChangesExportWriter {
 	*/
 	
 	String dateToString(Date date) {
-		if(date == null) return "";
+		if(date == null) {
+			return "";
+		}
 		IWTimestamp stamp = new IWTimestamp(date);
 		return stamp.getDateString("yyyy-MM-dd");	
 	}
@@ -167,13 +171,19 @@ public class ContractAndPlacementChangesExportWriter {
 				SchoolClassMember placement = (SchoolClassMember) placementsIterator.next();
 
 				Date registerDate = timestampToRoundedDate(placement.getRegisterDate()); //java.sql.Timestamp; and only contains date
-				if (registerDate == null ) continue;
+				if (registerDate == null ) {
+					continue;
+				}
 
 				Date removedDate = timestampToRoundedDate(placement.getRemovedDate()); //java.sql.Timestamp; contains date and time
 				
 				//XXX this should be done in SQL in the first place
-				if (registerDate.compareTo(lastDateOfCurrentMonth) > 0)	continue;
-				if (removedDate != null && removedDate.compareTo(firstDateOfCurrentMonth) < 0)	continue;
+				if (registerDate.compareTo(lastDateOfCurrentMonth) > 0) {
+					continue;
+				}
+				if (removedDate != null && removedDate.compareTo(firstDateOfCurrentMonth) < 0) {
+					continue;
+				}
 				
 				Iterator placementLogs = getSchoolClassMemberLogHome().findAllBySchoolClassMember(placement).iterator();
 				while (placementLogs.hasNext()){
@@ -186,14 +196,16 @@ public class ContractAndPlacementChangesExportWriter {
 					
 //					2.	IF it’s a new placement where sch_class_member.register_date >= 1st of current month 
 //					AND sch_class_member.register_date <= last date of current month					
-					if (registerDate.equals(startDate) & isDateInInterval(registerDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth))  //placement started
+					if (registerDate.equals(startDate) & isDateInInterval(registerDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth)) {
 						takeThisPlacement = true;
+					}
 
 //					3.	IF it’s a placement that ends (has removed_date set in sch_class_member) and 
 //					sch_class_member.removed date <= last date of current month
 //					and sch_class_member.removed date >= first date of current month					
-					if (removedDate != null && (isDateInInterval(removedDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth) & removedDate.equals(endDate))) //placement ended
+					if (removedDate != null && (isDateInInterval(removedDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth) & removedDate.equals(endDate))) {
 						takeThisPlacement = true;
+					}
 						
 //					4.	IF a group has been changed (new entry in sch_class_member_log with 
 //						sch_class_member_log.start date >= 1st of current month 
@@ -220,7 +232,9 @@ public class ContractAndPlacementChangesExportWriter {
 //				5.	IF a caretime has been changed (new entry in comm_childcare_archive with 
 //					comm_childcare_archive.start date >=1st of current month AND comm_childcare_archive.start date <= last date of current month)
 				Date validFromDate = contract.getValidFromDate(); //java.util.Date , only date
-				if (validFromDate == null) continue;
+				if (validFromDate == null) {
+					continue;
+				}
 				
 				if ( isDateInInterval(validFromDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth)) {
 					uberCollection.add(new DataForExport(contract.getSchoolClassMember(),validFromDate, null, contract.getCareTime()));					
@@ -255,7 +269,7 @@ public class ContractAndPlacementChangesExportWriter {
 	}	
 
 	private SchoolBusiness getSchoolBusiness() throws IBOLookupException{
-		return (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);   
+		return (SchoolBusiness) IBOLookup.getServiceInstance(this.iwc, SchoolBusiness.class);   
 	}
 	
 	private ChildCareContractHome getChildCareContractHome() throws IDOLookupException {
@@ -305,7 +319,7 @@ public class ContractAndPlacementChangesExportWriter {
 		}
 		
 		public Date getStartDate() {
-			return startDate;
+			return this.startDate;
 		}
 		
 		public void setStartDate(Date startDate) {
@@ -313,7 +327,7 @@ public class ContractAndPlacementChangesExportWriter {
 		}
 		
 		public String getContents() {
-			return contents;
+			return this.contents;
 		}
 		
 		public void setContents(String contents) {

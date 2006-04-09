@@ -119,10 +119,12 @@ class ChildCarePlaceOfferTable2 extends Table {
 			add(rb2, column++, row);
 		}
 
-		if (row % 2 == 0)
+		if (row % 2 == 0) {
 			setRowColor(row++, _page.getZebraColor1());
-		else
+		}
+		else {
 			setRowColor(row++, _page.getZebraColor2());
+		}
 	}
 
 	/**

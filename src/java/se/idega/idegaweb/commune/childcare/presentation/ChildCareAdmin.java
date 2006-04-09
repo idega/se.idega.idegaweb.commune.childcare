@@ -117,7 +117,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		if (iwc.isParameterSet(PARAMETER_CLEAN_QUEUE)) {
 			try {
 			    QueueCleaningSession cleaningSession = (QueueCleaningSession)IBOLookup.getSessionInstance(iwc,QueueCleaningSession.class);
-			    _queueCleaned = new Boolean(cleaningSession.cleanQueue(getSession().getChildCareID(),iwc.getCurrentUser()));
+			    this._queueCleaned = new Boolean(cleaningSession.cleanQueue(getSession().getChildCareID(),iwc.getCurrentUser()));
 				//_queueCleaned = new Boolean(getBusiness().cleanQueue(getSession().getChildCareID(), iwc.getCurrentUser(), iwc));
 			}
 			catch (Exception fe) {
@@ -168,10 +168,12 @@ public class ChildCareAdmin extends ChildCareBlock {
 				IWTimestamp stampTo = getSession().getToTimestamp();
 				Date from =  null;
 				Date to = null;
-				if (stampFrom != null)
+				if (stampFrom != null) {
 					from = stampFrom.getDate();
-				if (stampTo != null)
+				}
+				if (stampTo != null) {
 					to = stampTo.getDate();
+				}
 				
 			
 				if (from == null){
@@ -188,8 +190,8 @@ public class ChildCareAdmin extends ChildCareBlock {
 				//applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, getSession().getSortBy(), getSession().getFromTimestamp().getDate(), getSession().getToTimestamp().getDate());
 				applications = getBusiness()                
                         .getUnhandledApplicationsByProvider(
-                                getSession().getChildCareID(), _numberPerPage,
-                                _start, getSession().getSortBy(), from, to, ordering);
+                                getSession().getChildCareID(), this._numberPerPage,
+                                this._start, getSession().getSortBy(), from, to, ordering);
 				
 			}
 			catch (Exception e){
@@ -197,8 +199,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 				
 			}
 		}
-		else
-			applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), _numberPerPage, _start, ordering);
+		else {
+			applications = getBusiness().getUnhandledApplicationsByProvider(getSession().getChildCareID(), this._numberPerPage, this._start, ordering);
+		}
 		return applications;
 	}
 
@@ -271,10 +274,12 @@ public class ChildCareAdmin extends ChildCareBlock {
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getFromDate());
 				
                 queueOrder = getBusiness().getNumberInQueue(application, ordering);
-				if (application.getApplicationStatus() == getBusiness().getStatusSentIn())
+				if (application.getApplicationStatus() == getBusiness().getStatusSentIn()) {
 					netOrder = getBusiness().getNumberInQueueByStatus(application, ordering);
-				else
+				}
+				else {
 					netOrder = -1;
+				}
                 
 				hasOtherPlacing = getBusiness().hasBeenPlacedWithOtherProvider(application.getChildId(), getSession().getChildCareID());
 				hasSchoolPlacement = getBusiness().hasSchoolPlacement(child);
@@ -303,10 +308,12 @@ public class ChildCareAdmin extends ChildCareBlock {
 					if (application.getCaseStatus().equals(getBusiness().getCaseStatusPending())) {
 						applicationTable.setRowColor(row, PENDING_COLOR);
 					}
-					else if (row % 2 == 0)
+					else if (row % 2 == 0) {
 						applicationTable.setRowColor(row, getZebraColor1());
-					else
+					}
+					else {
 						applicationTable.setRowColor(row, getZebraColor2());
+					}
 				}
 				
 				//link = getSmallLink(child.getNameLastFirst(true));
@@ -316,8 +323,9 @@ public class ChildCareAdmin extends ChildCareBlock {
 				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
 				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
 				link.setParameter(getSession().getParameterCaseCode(), CareConstants.CASE_CODE_KEY);
-				if (getResponsePage() != null)
+				if (getResponsePage() != null) {
 					link.setPage(getResponsePage());
+				}
 	
 				//enumerated list
 				applicationTable.add(Integer.toString(number), column++, row);
@@ -335,22 +343,27 @@ public class ChildCareAdmin extends ChildCareBlock {
 					showPriority = true;
 					applicationTable.add(getSmallErrorText("+"), column, row);
 				}
-				if (showComment || showPriority || showMessage)
+				if (showComment || showPriority || showMessage) {
 					applicationTable.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
+				}
 				
 				
 				applicationTable.add(link, column++, row);
 				applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				applicationTable.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
 				applicationTable.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
-				if (netOrder != -1)
+				if (netOrder != -1) {
 					applicationTable.add(getSmallText(String.valueOf(netOrder)), column++, row);
-				else 
+				}
+				else {
 					applicationTable.add(getSmallText("-"), column++, row);
-				if (queueOrder != -1)
+				}
+				if (queueOrder != -1) {
 					applicationTable.add(getSmallText("("+String.valueOf(queueOrder)+")"), column++, row);
-				else 
+				}
+				else {
 					applicationTable.add(getSmallText("-"), column++, row);
+				}
 				
 				if (hasSchoolPlacement) {
 					delete = new SubmitButton(getDeleteIcon(localize("child_care.remove_application","Remove application")), PARAMETER_DELETE_APPLICATION, application.getPrimaryKey().toString());
@@ -396,7 +409,7 @@ public class ChildCareAdmin extends ChildCareBlock {
 		
 		
 		
-		if (_showQueueCleaning) {
+		if (this._showQueueCleaning) {
 			form.setEventListener(ChildCareEventListener.class);
 			row++;
 			applicationTable.mergeCells(1, row, applicationTable.getColumns(), row);
@@ -410,10 +423,10 @@ public class ChildCareAdmin extends ChildCareBlock {
 			}
 			form.setToDisableOnSubmit(button, true);
 			
-			if (_queueCleaned != null) {
+			if (this._queueCleaned != null) {
 				button.setDisabled(true);
 				form.add(Text.getNonBrakingSpace());
-				if (_queueCleaned.booleanValue()) {
+				if (this._queueCleaned.booleanValue()) {
 					applicationTable.add(getSmallText(localize("child_care.clean_queue_successful", "Cleaning of queue ran successfully!")), 1, row);
 				}
 				else {
@@ -444,23 +457,25 @@ public class ChildCareAdmin extends ChildCareBlock {
 		table.add(from, 3, 2);		
 		from.setAsNotEmpty(localize("child_care.must_select_from_date","You have to select a from date"));
 		from.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-		if (getSession().getFromTimestamp() != null)
+		if (getSession().getFromTimestamp() != null) {
 			from.setDate(getSession().getFromTimestamp().getDate());
+		}
 
 		DateInput to = (DateInput) getStyledInterface(new DateInput(getSession().getParameterTo(), true));
 		table.add(to, 5, 2);		
 		to.setAsNotEmpty(localize("child_care.must_select_to_date","You have to select a to date"));
 		to.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
-		if (getSession().getToTimestamp() != null)
+		if (getSession().getToTimestamp() != null) {
 			to.setDate(getSession().getToTimestamp().getDate());
+		}
 
 		DropdownMenu sortBy = (DropdownMenu) getStyledInterface(new DropdownMenu(getSession().getParameterSortBy()));
 		table.add(sortBy, 1, 2);		
 		sortBy.setAsNotEmpty(localize("child_care.sort_can_not_be_empty","You must select a sorting method"), "-1");
 		sortBy.addMenuElement(-1, localize("child_care.sort","- Sort -"));
-		sortBy.addMenuElement(SORT_DATE_OF_BIRTH, localize("child_care.date_of_birth","Date of birth"));
-		sortBy.addMenuElement(SORT_QUEUE_DATE, localize("child_care.queue_date","Queue date"));
-		sortBy.addMenuElement(SORT_PLACEMENT_DATE, localize("child_care.placement_date","Placement date"));
+		sortBy.addMenuElement(this.SORT_DATE_OF_BIRTH, localize("child_care.date_of_birth","Date of birth"));
+		sortBy.addMenuElement(this.SORT_QUEUE_DATE, localize("child_care.queue_date","Queue date"));
+		sortBy.addMenuElement(this.SORT_PLACEMENT_DATE, localize("child_care.placement_date","Placement date"));
 		if (getSession().getSortBy() != -1) {
 			sortBy.setSelectedElement(getSession().getSortBy());
 			sortBy.addMenuElement(SORT_ALL, localize("child_care.show_all","Show all"));
@@ -484,12 +499,14 @@ public class ChildCareAdmin extends ChildCareBlock {
 		link.addParameter(ChildCareQueueWriter.PARAMETER_TYPE, ChildCareQueueWriter.PDF);
 		link.addParameter(ChildCareQueueWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareQueueWriter.PARAMETER_SORT_BY, getSession().getSortBy());
-		link.addParameter(ChildCareQueueWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
-		link.addParameter(ChildCareQueueWriter.PARAMETER_START, _start);
-		if (getSession().getFromTimestamp() != null)
+		link.addParameter(ChildCareQueueWriter.PARAMETER_NUMBER_PER_PAGE, this._numberPerPage);
+		link.addParameter(ChildCareQueueWriter.PARAMETER_START, this._start);
+		if (getSession().getFromTimestamp() != null) {
 			link.addParameter(ChildCareQueueWriter.PARAMETER_FROM_DATE, String.valueOf(getSession().getFromTimestamp().getDate()));
-		if (getSession().getToTimestamp() != null)
+		}
+		if (getSession().getToTimestamp() != null) {
 			link.addParameter(ChildCareQueueWriter.PARAMETER_TO_DATE, String.valueOf(getSession().getToTimestamp().getDate()));
+		}
 		
 		return link;
 	}
@@ -500,12 +517,14 @@ public class ChildCareAdmin extends ChildCareBlock {
 		link.addParameter(ChildCareQueueWriter.PARAMETER_TYPE, ChildCareQueueWriter.XLS);
 		link.addParameter(ChildCareQueueWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareQueueWriter.PARAMETER_SORT_BY, getSession().getSortBy());
-		link.addParameter(ChildCareQueueWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
-		link.addParameter(ChildCareQueueWriter.PARAMETER_START, _start);
-		if (getSession().getFromTimestamp() != null)
+		link.addParameter(ChildCareQueueWriter.PARAMETER_NUMBER_PER_PAGE, this._numberPerPage);
+		link.addParameter(ChildCareQueueWriter.PARAMETER_START, this._start);
+		if (getSession().getFromTimestamp() != null) {
 			link.addParameter(ChildCareQueueWriter.PARAMETER_FROM_DATE, String.valueOf(getSession().getFromTimestamp().getDate()));
-		if (getSession().getToTimestamp() != null)
+		}
+		if (getSession().getToTimestamp() != null) {
 			link.addParameter(ChildCareQueueWriter.PARAMETER_TO_DATE, String.valueOf(getSession().getToTimestamp().getDate()));
+		}
 		
 
 		return link;
@@ -518,8 +537,8 @@ public class ChildCareAdmin extends ChildCareBlock {
 		link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareSiblingListWriter.class));		
 		link.addParameter(ChildCareSiblingListWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareSiblingListWriter.PARAMETER_SORT_BY, getSession().getSortBy());
-		link.addParameter(ChildCareSiblingListWriter.PARAMETER_NUMBER_PER_PAGE, _numberPerPage);
-		link.addParameter(ChildCareSiblingListWriter.PARAMETER_START, _start);
+		link.addParameter(ChildCareSiblingListWriter.PARAMETER_NUMBER_PER_PAGE, this._numberPerPage);
+		link.addParameter(ChildCareSiblingListWriter.PARAMETER_START, this._start);
 		
 		return link;
 	}
@@ -529,14 +548,14 @@ public class ChildCareAdmin extends ChildCareBlock {
 	 * @param showQueueCleaning The showQueueCleaning to set.
 	 */
 	public void setShowQueueCleaning(boolean showQueueCleaning) {
-		_showQueueCleaning = showQueueCleaning;
+		this._showQueueCleaning = showQueueCleaning;
 	}
 
 	public boolean getShowViewSiblingListButton() {
-		return showViewSiblingListButton;
+		return this.showViewSiblingListButton;
 	}
 
 	public void setShowViewSiblingListButton(boolean viewSiblingListButton) {
-		showViewSiblingListButton = viewSiblingListButton;
+		this.showViewSiblingListButton = viewSiblingListButton;
 	}
 }

@@ -48,13 +48,13 @@ public class ApplicationEditor extends ChildCareBlock {
 		if ( childID > 0 ) {
 			try {
 				UserHome uHome = (UserHome) IDOLookup.getHome(User.class);
-				child = uHome.findByPrimaryKey(new Integer(childID));
+				this.child = uHome.findByPrimaryKey(new Integer(childID));
 			} catch (Exception e) {
 				logError(e.getMessage());
 			}
 		}
 	
-		if (child != null) {
+		if (this.child != null) {
 			String action = iwc.getParameter(ACTION);
 			if (ACTION_EDIT.equals(action)) {
 				displayEditForm(iwc);
@@ -111,7 +111,7 @@ public class ApplicationEditor extends ChildCareBlock {
 		int row = 1;
 		
 		table.mergeCells(1, row, 2, row);
-		table.add(getSmallHeader(child.getName()+Text.NON_BREAKING_SPACE+"-"+Text.NON_BREAKING_SPACE+child.getPersonalID()), 1, row++);
+		table.add(getSmallHeader(this.child.getName()+Text.NON_BREAKING_SPACE+"-"+Text.NON_BREAKING_SPACE+this.child.getPersonalID()), 1, row++);
 		
 		if (application != null) {
 			table.mergeCells(1, row, 2, row);
@@ -195,7 +195,7 @@ public class ApplicationEditor extends ChildCareBlock {
 
 	private void displayApplications(IWContext iwc) throws RemoteException, FinderException {
 		ChildCareApplicationHome ccHome = (ChildCareApplicationHome) IDOLookup.getHome(ChildCareApplicationBMPBean.class);
-		Collection applications = ccHome.findApplicationByChild(new Integer(child.getPrimaryKey().toString()).intValue()); 
+		Collection applications = ccHome.findApplicationByChild(new Integer(this.child.getPrimaryKey().toString()).intValue()); 
 		
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
@@ -204,7 +204,7 @@ public class ApplicationEditor extends ChildCareBlock {
 		int column = 1;
 		
 		table.mergeCells(1, row, 8, row);
-		table.add(getSmallHeader(child.getName()+Text.NON_BREAKING_SPACE+"-"+Text.NON_BREAKING_SPACE+child.getPersonalID()), 1, row++);
+		table.add(getSmallHeader(this.child.getName()+Text.NON_BREAKING_SPACE+"-"+Text.NON_BREAKING_SPACE+this.child.getPersonalID()), 1, row++);
 		
 		table.add(getLocalizedSmallHeader("child_care.provider","Provider"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.status","Status"), column++, row);
@@ -253,7 +253,7 @@ public class ApplicationEditor extends ChildCareBlock {
 				
 				link = new Link(getSmallText(application.getProvider().getName()));
 				link.setEventListener(ChildCareEventListener.class);
-				link.addParameter(session.getParameterApplicationID(), application.getPrimaryKey().toString());
+				link.addParameter(this.session.getParameterApplicationID(), application.getPrimaryKey().toString());
 				if (getResponsePage() != null) {
 					link.setPage(getResponsePage());
 				}
@@ -268,10 +268,12 @@ public class ApplicationEditor extends ChildCareBlock {
 					table.setRowColor(row, CONTRACT_COLOR);
 				}
 				else {
-					if (row % 2 == 0)
+					if (row % 2 == 0) {
 						table.setRowColor(row, getZebraColor1());
-					else
+					}
+					else {
 						table.setRowColor(row, getZebraColor2());
+					}
 				}
 				
 				

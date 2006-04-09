@@ -1,5 +1,5 @@
 /*
- * $Id: ContractRemoverWindow.java,v 1.3 2006/04/08 10:47:50 laddi Exp $ Created
+ * $Id: ContractRemoverWindow.java,v 1.4 2006/04/09 11:45:19 laddi Exp $ Created
  * on 24.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -26,10 +26,10 @@ import se.idega.idegaweb.commune.childcare.presentation.ChildCareWindow;
 
 /**
  * 
- * Last modified: $Date: 2006/04/08 10:47:50 $ by $Author: laddi $
+ * Last modified: $Date: 2006/04/09 11:45:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ContractRemoverWindow extends ChildCareWindow {
 
@@ -59,7 +59,7 @@ public class ContractRemoverWindow extends ChildCareWindow {
 			if (iwc.isLoggedOn() && iwc.isParameterSet(PARAMETER_CONTRACT_ID)) {
 
 				ChildCareContractHome contractHome = (ChildCareContractHome) IDOLookup.getHome(ChildCareContract.class);
-				contract = contractHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CONTRACT_ID)));
+				this.contract = contractHome.findByPrimaryKey(new Integer(iwc.getParameter(PARAMETER_CONTRACT_ID)));
 
 				if (iwc.isParameterSet(PRM_DEL)) {
 					removeContract(iwc);
@@ -69,18 +69,18 @@ public class ContractRemoverWindow extends ChildCareWindow {
 				int row = 1;
 				Table infoTable = new Table();
 				infoTable.add(getSmallHeader(localize("child_care.child", "Child")), 1, row);
-				infoTable.add(getSmallText(contract.getChild().getName()), 2, row++);
+				infoTable.add(getSmallText(this.contract.getChild().getName()), 2, row++);
 
 				infoTable.add(getSmallHeader(localize("child_care.provider", "Provider")), 1, row);
-				infoTable.add(getSmallText(contract.getApplication().getProvider().getName()), 2, row++);
+				infoTable.add(getSmallText(this.contract.getApplication().getProvider().getName()), 2, row++);
 
 				DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 				infoTable.add(getSmallHeader(localize("child_care.valid_from", "Valid from")), 1, row);
-				infoTable.add(getSmallText(dateFormat.format(contract.getValidFromDate())), 2, row++);
+				infoTable.add(getSmallText(dateFormat.format(this.contract.getValidFromDate())), 2, row++);
 
-				if (contract.getTerminatedDate() != null) {
+				if (this.contract.getTerminatedDate() != null) {
 					infoTable.add(getSmallHeader(localize("child_care.valid_to", "Valid to")), 1, row);
-					infoTable.add(getSmallText(dateFormat.format(contract.getTerminatedDate())), 2, row++);
+					infoTable.add(getSmallText(dateFormat.format(this.contract.getTerminatedDate())), 2, row++);
 				}
 
 				add(infoTable);
@@ -100,7 +100,7 @@ public class ContractRemoverWindow extends ChildCareWindow {
 
 		private void removeContract(IWContext iwc) {
 			try {
-				getBusiness().removeContract(contract, iwc.getCurrentUser());
+				getBusiness().removeContract(this.contract, iwc.getCurrentUser());
 				add(getLocalizedSmallHeader("child_care.contract_delete_successful", "Contract successfully deleted"));
 			}
 			catch (Exception e) {

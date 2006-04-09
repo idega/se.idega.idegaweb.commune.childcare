@@ -83,7 +83,7 @@ public class ContractEditor extends ChildCareBlock {
 	private boolean showBackButton = true;
 
 	public void init(IWContext iwc) throws Exception {
-		int applId = session.getApplicationID();
+		int applId = this.session.getApplicationID();
 		if (iwc.isParameterSet(PARAMETER_APPLICATION_ID)) {
 			try {
 				applId = Integer.parseInt(iwc.getParameter(PARAMETER_APPLICATION_ID));
@@ -95,7 +95,7 @@ public class ContractEditor extends ChildCareBlock {
 
 		}
 		if (applId > 0) {
-			application = getBusiness().getApplication(applId);
+			this.application = getBusiness().getApplication(applId);
 
 			String action = iwc.getParameter(ACTION);
 			if (ACTION_UPDATE.equals(action)) {
@@ -121,7 +121,7 @@ public class ContractEditor extends ChildCareBlock {
 		else {
 			add(localize("child_care.no_application_selected", " No application selected "));
 		}
-		if (showBackButton) {
+		if (this.showBackButton) {
 			add(Text.getBreak());
 			GenericButton back = (GenericButton) getStyledInterface(new GenericButton("back", localize("child_care.select_new_application", "Select new application")));
 			back.setPageToOpen(getBackPage());
@@ -182,8 +182,9 @@ public class ContractEditor extends ChildCareBlock {
 			}
 
 			try {
-				if (!clearTerminationDate)
+				if (!clearTerminationDate) {
 					dToDate = (new IWTimestamp(toDate)).getDate();
+				}
 			}
 			catch (Exception ignore) {
 			}
@@ -358,7 +359,7 @@ public class ContractEditor extends ChildCareBlock {
 
 			Collection types = null;
 			try {
-				types = application.getProvider().findRelatedSchoolTypes();
+				types = this.application.getProvider().findRelatedSchoolTypes();
 
 			}
 			catch (IDORelationshipException e) {
@@ -385,7 +386,7 @@ public class ContractEditor extends ChildCareBlock {
 
 			if (!types.isEmpty()) {
 				ChildCareBusiness childCareBusiness = (ChildCareBusiness) IBOLookup.getServiceInstance(iwc, ChildCareBusiness.class);
-				Map typeGroupMap = childCareBusiness.getSchoolTypeClassMap(types, application.getProviderId(), getSession().getSeasonID(), null, null, localize("child_care.no_school_classes", "No school classes"));
+				Map typeGroupMap = childCareBusiness.getSchoolTypeClassMap(types, this.application.getProviderId(), getSession().getSeasonID(), null, null, localize("child_care.no_school_classes", "No school classes"));
 				if (typeGroupMap != null) {
 					Iterator iter = typeGroupMap.keySet().iterator();
 					while (iter.hasNext()) {
@@ -395,8 +396,9 @@ public class ContractEditor extends ChildCareBlock {
 				}
 			}
 
-			if (placement != null)
+			if (placement != null) {
 				schoolClasses.setSelectedValues(String.valueOf(placement.getSchoolTypeId()), String.valueOf(placement.getSchoolClassId()));
+			}
 
 			DropdownMenu employmentTypes = getEmploymentTypes(PARAMETER_EMPLOYMENT_TYPE, etId);
 
@@ -411,8 +413,9 @@ public class ContractEditor extends ChildCareBlock {
 			table.add(from, 2, row++);
 			table.add(getLocalizedSmallText("child_care.terminated", "Terminated"), 1, row);
 			table.add(cancelled, 2, row);
-			if (latestTerminatedContract != null && nextContract == null && latestTerminatedContract.getPrimaryKey().equals(contract.getPrimaryKey()))
+			if (latestTerminatedContract != null && nextContract == null && latestTerminatedContract.getPrimaryKey().equals(contract.getPrimaryKey())) {
 				table.add(clearTerminatedDate, 2, row);
+			}
 			row++;
 			table.add(getLocalizedSmallText("child_care.care_time", "Care time"), 1, row);
 			table.add(careTime, 2, row++);
@@ -457,7 +460,7 @@ public class ContractEditor extends ChildCareBlock {
 	private void displayContracts(IWContext iwc) throws RemoteException {
 		Collection contracts = null;
 		try {
-			contracts = getBusiness().getContractsByApplication(Integer.parseInt(application.getPrimaryKey().toString()));
+			contracts = getBusiness().getContractsByApplication(Integer.parseInt(this.application.getPrimaryKey().toString()));
 		}
 		catch (EJBException e) {
 			logError(e.getMessage());
@@ -472,7 +475,7 @@ public class ContractEditor extends ChildCareBlock {
 		int column = 1;
 
 		table.mergeCells(1, row, 5, row);
-		table.add(getSmallHeader(application.getProvider().getName()), 1, row);
+		table.add(getSmallHeader(this.application.getProvider().getName()), 1, row);
 
 		++row;
 		table.add(getLocalizedSmallHeader("child_care.name", "Name"), column++, row);
@@ -519,10 +522,12 @@ public class ContractEditor extends ChildCareBlock {
 				hasComment = true;
 				column = 1;
 
-				if (row % 2 == 0)
+				if (row % 2 == 0) {
 					table.setRowColor(row, getZebraColor1());
-				else
+				}
+				else {
 					table.setRowColor(row, getZebraColor2());
+				}
 
 				if (contract != null) {
 					created = new IWTimestamp(contract.getCreatedDate());
@@ -542,10 +547,12 @@ public class ContractEditor extends ChildCareBlock {
 					}
 
 					if (validFrom != null) {
-						if (dateNow.isEarlierThan(validFrom))
+						if (dateNow.isEarlierThan(validFrom)) {
 							isNotYetActive = true;
-						else
+						}
+						else {
 							isNotYetActive = false;
+						}
 					}
 					else {
 						isNotYetActive = false;
@@ -582,8 +589,9 @@ public class ContractEditor extends ChildCareBlock {
 						table.add(getSmallErrorText("+"), column, row);
 					}
 
-					if (hasComment)
+					if (hasComment) {
 						table.add(getSmallErrorText(Text.NON_BREAKING_SPACE), column, row);
+					}
 					if (getResponsePage() != null) {
 						Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
 						archive = getSmallLink(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true));
@@ -600,18 +608,24 @@ public class ContractEditor extends ChildCareBlock {
 
 					table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 					table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-					if (validFrom != null)
+					if (validFrom != null) {
 						table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-					else
+					}
+					else {
 						table.add(getSmallText("-"), column++, row);
-					if (cancelledDate != null)
+					}
+					if (cancelledDate != null) {
 						table.add(getSmallText(cancelledDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-					else
+					}
+					else {
 						table.add(getSmallText("-"), column++, row);
-					if (isCancelled)
+					}
+					if (isCancelled) {
 						table.add(getSmallText(localize("child_care.status_cancelled", "Cancelled")), column, row);
-					else
+					}
+					else {
 						table.add(getSmallText(localize("child_care.status_active", "Active")), column, row);
+					}
 					column++;
 					table.add(getSmallText(getCareTime(contract.getCareTime())), column++, row);
 

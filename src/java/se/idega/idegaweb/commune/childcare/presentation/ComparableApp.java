@@ -6,7 +6,7 @@ import se.idega.idegaweb.commune.care.data.ChildCareApplication;
  * This class is used to sort ChildCareApplication object according to their
  * choice number and granted status.
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ComparableApp.java,v 1.9 2004/10/14 11:42:34 thomas Exp $
+ * @version $Id: ComparableApp.java,v 1.10 2006/04/09 11:45:19 laddi Exp $
  * @since 12.2.2003 
  */
 class ComparableApp implements Comparable {
@@ -14,12 +14,12 @@ class ComparableApp implements Comparable {
 	private boolean _grantedFirst;
 				
 	ComparableApp(Object app, boolean grantedFirst){
-		_app = (ChildCareApplication) app;
-		_grantedFirst = grantedFirst;
+		this._app = (ChildCareApplication) app;
+		this._grantedFirst = grantedFirst;
 	}
 		
 	ChildCareApplication getApplication(){
-		return _app;
+		return this._app;
 	}
 
 	/**
@@ -32,10 +32,10 @@ class ComparableApp implements Comparable {
 	 */
 	public int compareTo(Object application){
 		ChildCareApplication app = ((ComparableApp) application).getApplication();
-		int diff = _app.getChoiceNumber() - app.getChoiceNumber();
+		int diff = this._app.getChoiceNumber() - app.getChoiceNumber();
 		
-		if (_grantedFirst){
-			if (_app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_PREL)){ 
+		if (this._grantedFirst){
+			if (this._app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_PREL)){ 
 				return  -1;
 			} else if (app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_PREL)){
 				return  1;
@@ -44,7 +44,7 @@ class ComparableApp implements Comparable {
 			}
 			
 		} else {
-			if (diff == 0 && _app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_PREL)){ 
+			if (diff == 0 && this._app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_PREL)){ 
 				return  -1;
 			} else if (diff == 0 && app.getStatus().equals(ChildCareCustomerApplicationTable.STATUS_PREL)){
 				return  1;

@@ -1,5 +1,5 @@
 /*
- * $Id: ProviderStatComparator.java,v 1.1 2004/09/09 13:25:20 aron Exp $
+ * $Id: ProviderStatComparator.java,v 1.2 2006/04/09 11:45:18 laddi Exp $
  * Created on 9.9.2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -15,10 +15,10 @@ import java.util.Locale;
 
 /**
  * 
- *  Last modified: $Date: 2004/09/09 13:25:20 $ by $Author: aron $
+ *  Last modified: $Date: 2006/04/09 11:45:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ProviderStatComparator implements Comparator{
     
@@ -28,14 +28,14 @@ public class ProviderStatComparator implements Comparator{
 	 * Constructor for SchoolComparator.
 	 */
 	public ProviderStatComparator(Locale locale) {
-		_locale = locale;
+		this._locale = locale;
 	}
 
 	/**
 	 * @see java.util.Comparator#compare(Object, Object)
 	 */
 	public int compare(Object o1, Object o2) {
-		Collator collator = Collator.getInstance(_locale);
+		Collator collator = Collator.getInstance(this._locale);
 		
 		ProviderStat stat1;
 		try {

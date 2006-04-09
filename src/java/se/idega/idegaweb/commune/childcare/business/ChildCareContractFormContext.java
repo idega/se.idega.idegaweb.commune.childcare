@@ -115,8 +115,9 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 				Iterator iter = parents.iterator();
 				while (iter.hasNext()) {
 					User parent = (User) iter.next();
-					if (((Integer) parent.getPrimaryKey()).intValue() != ((Integer) parent1.getPrimaryKey()).intValue())
+					if (((Integer) parent.getPrimaryKey()).intValue() != ((Integer) parent1.getPrimaryKey()).intValue()) {
 						parent2 = parent;
+					}
 				}
 			}
 			props.put("parent1", parent1);
@@ -162,16 +163,18 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 	}
 
 	protected IWBundle getBundle(IWApplicationContext iwac) {
-		if (iwb == null)
-			iwb = iwac.getIWMainApplication().getBundle(getBundleIdentifier());
-		return iwb;
+		if (this.iwb == null) {
+			this.iwb = iwac.getIWMainApplication().getBundle(getBundleIdentifier());
+		}
+		return this.iwb;
 	}
 
 	protected IWResourceBundle getResourceBundle(IWApplicationContext iwac,
 			Locale locale) {
-		if (iwrb == null)
+		if (this.iwrb == null) {
 			getBundle(iwac).getResourceBundle(locale);
-		return iwrb;
+		}
+		return this.iwrb;
 	}
 
 	protected String getTemplateUrl(IWBundle iwb, Locale locale, String name) {
@@ -183,18 +186,21 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 	}
 
 	protected String getResourcRealPath(IWBundle iwb, Locale locale) {
-		if (locale != null)
+		if (locale != null) {
 			return iwb.getResourcesRealPath(locale) + "/print/";
-		else
+		}
+		else {
 			return iwb.getResourcesRealPath() + "/print/";
+		}
 	}
 
 	protected FileInputStream getTemplateUrlAsStream(IWBundle iwb,
 			Locale locale, String name, boolean createIfNotExists)
 			throws IOException {
 		File template = new File(getTemplateUrl(iwb, locale, name));
-		if (!template.exists() && createIfNotExists)
+		if (!template.exists() && createIfNotExists) {
 			createTemplateFile(template);
+		}
 		return new FileInputStream(template);
 	}
 

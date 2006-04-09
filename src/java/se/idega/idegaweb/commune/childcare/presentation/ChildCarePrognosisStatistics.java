@@ -69,8 +69,9 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 		int column = 3;
 
 		boolean useVacancies = getBusiness().getUseVacancies();
-		if (useVacancies)
+		if (useVacancies) {
 			table.add(getLocalizedSmallHeader("child_care.total_vacancies","Vacancies"), column++, 1);
+		}
 		
 		table.add(getLocalizedSmallHeader("child_care.prognosis_3m","Prognosis (3M)"), column++, 1);
 		if (showPriorities) {
@@ -105,10 +106,12 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 			    int providerID = -1;
 			    providerID = stat.getProviderID().intValue();
 				column = 1;
-				if (row % 2 == 0)
+				if (row % 2 == 0) {
 					table.setRowColor(row, getZebraColor1());
-				else
+				}
+				else {
 					table.setRowColor(row, getZebraColor2());
+				}
 
                 table.add(getProviderName(stat), column++, row);
 				
@@ -116,14 +119,17 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 				table.add(getSmallText(String.valueOf(getBusiness().getQueueTotalByProvider(providerID, null, null, false))), column++, row);
 				
 				if (stat.hasPrognosis()) {
-					if (useVacancies)
+					if (useVacancies) {
 						table.add(getSmallText(String.valueOf(stat.getVacancies())), column++, row);
+					}
 					table.add(getSmallText(String.valueOf(stat.getThreeMonthsPrognosis())), column++, row);
 					if (showPriorities) {
-						if (stat.getThreeMonthsPriority().intValue() != -1)
+						if (stat.getThreeMonthsPriority().intValue() != -1) {
 							table.add(getSmallText(String.valueOf(stat.getThreeMonthsPriority())), column++, row);
-						else
+						}
+						else {
 							table.add(getSmallText("-"), column++, row);
+						}
 					}					
 					queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(stat.getProviderID().intValue(), 3, false);
 					
@@ -131,10 +137,12 @@ public class ChildCarePrognosisStatistics extends ChildCareBlock {
 					
 					table.add(getSmallText(String.valueOf(stat.getOneYearPrognosis())), column++, row);
 					if (showPriorities) {
-						if (stat.getOneYearPriority().intValue() != -1)
+						if (stat.getOneYearPriority().intValue() != -1) {
 							table.add(getSmallText(String.valueOf(stat.getOneYearPriority())), column++, row);
-						else
+						}
+						else {
 							table.add(getSmallText("-"), column++, row);
+						}
 					}					
 					queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(stat.getProviderID().intValue(), 12, false);
 					table.add(getSmallText(String.valueOf(queueWithin12Months)), column++, row);

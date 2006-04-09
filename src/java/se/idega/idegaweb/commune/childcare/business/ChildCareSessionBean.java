@@ -60,19 +60,19 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	}
 	
 	public School getProvider() {
-		return _provider;
+		return this._provider;
 	}
 	
 	public boolean hasPrognosis() throws RemoteException {
-		if (hasPrognosis == null) {
+		if (this.hasPrognosis == null) {
 			setHasPrognosis();
 		}
-		return hasPrognosis.booleanValue();
+		return this.hasPrognosis.booleanValue();
 	}
 	
 	private void setHasPrognosis() throws RemoteException {
 		if (!getChildCareBusiness().usePrognosis()) {
-			hasPrognosis = new Boolean(true);
+			this.hasPrognosis = new Boolean(true);
 			return;
 		}
 		
@@ -81,14 +81,15 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 			IWTimestamp stamp = new IWTimestamp();
 			IWTimestamp lastUpdated = new IWTimestamp(prognosis.getUpdatedDate());
 			if (IWTimestamp.getDaysBetween(lastUpdated, stamp) > 90) {
-				hasPrognosis = new Boolean(false);
-				_outDatedPrognosis = true;
+				this.hasPrognosis = new Boolean(false);
+				this._outDatedPrognosis = true;
 			}
-			else
-				hasPrognosis = new Boolean(true);
+			else {
+				this.hasPrognosis = new Boolean(true);
+			}
 		}
 		else {
-			hasPrognosis = new Boolean(false);
+			this.hasPrognosis = new Boolean(false);
 		}
 	}
 	
@@ -97,11 +98,11 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	}
 	
 	public boolean hasOutdatedPrognosis() {
-		return _outDatedPrognosis;
+		return this._outDatedPrognosis;
 	}
 	
 	public void setHasOutdatedPrognosis(boolean hasOutdatedPrognosis) {
-		_outDatedPrognosis = hasOutdatedPrognosis;
+		this._outDatedPrognosis = hasOutdatedPrognosis;
 	}
 	
 	/**
@@ -113,23 +114,23 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 			User user = getUserContext().getCurrentUser();
 			int userID = ((Integer)user.getPrimaryKey()).intValue();
 			
-			if (_userID == userID) {
-				if (_childcareID != -1) {
-					return _childcareID;
+			if (this._userID == userID) {
+				if (this._childcareID != -1) {
+					return this._childcareID;
 				}
 				else {
-					hasPrognosis = null;
+					this.hasPrognosis = null;
 					return getChildCareIDFromUser(user);
 				}
 			}
 			else {
-				hasPrognosis = null;
-				_userID = userID;
+				this.hasPrognosis = null;
+				this._userID = userID;
 				return getChildCareIDFromUser(user);
 			}
 		}
 		else {
-			return _childcareID;	
+			return this._childcareID;	
 		}
 	}
 	
@@ -138,21 +139,21 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 			try {
 				School school = getCareBusiness().getProviderForUser(user);
 				if (school != null) {
-					_provider = school;
-					_childcareID = ((Integer) school.getPrimaryKey()).intValue();
+					this._provider = school;
+					this._childcareID = ((Integer) school.getPrimaryKey()).intValue();
 				}
 			}
 			catch (FinderException fe) {
 			}
 		}
-		return _childcareID;
+		return this._childcareID;
 	}
 
 	/**
 	 * @return int
 	 */
 	public int getUserID() {
-		return _userID;
+		return this._userID;
 	}
 
 	/**
@@ -160,7 +161,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param childcareID The childcareID to set
 	 */
 	public void setChildCareID(int childcareID) {
-		_childcareID = childcareID;
+		this._childcareID = childcareID;
 	}
 
 	/**
@@ -168,7 +169,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param provider The provider to set
 	 */
 	public void setProvider(School provider) {
-		_provider = provider;
+		this._provider = provider;
 	}
 
 	/**
@@ -176,7 +177,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param userID The userID to set
 	 */
 	public void setUserID(int userID) {
-		_userID = userID;
+		this._userID = userID;
 	}
 
 	/**
@@ -240,35 +241,35 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @return int
 	 */
 	public int getApplicationID() {
-		return _applicationID;
+		return this._applicationID;
 	}
 
 	/**
 	 * @return int
 	 */
 	public int getChildID() {
-		return _childID;
+		return this._childID;
 	}
 
 	public User getChild() {
 		try {
-			if (_child == null && _childID != -1) {
-				_child = getUserBusiness().getUser(new Integer(_childID));
+			if (this._child == null && this._childID != -1) {
+				this._child = getUserBusiness().getUser(new Integer(this._childID));
 			}
-			else if (_child == null && _uniqueID != null) {
+			else if (this._child == null && this._uniqueID != null) {
 				try {
-					_child = getUserBusiness().getUserByUniqueId(_uniqueID);
+					this._child = getUserBusiness().getUserByUniqueId(this._uniqueID);
 				}
 				catch (FinderException fe) {
 					fe.printStackTrace();
-					_child = null;
+					this._child = null;
 				}
 			}
 		}
 		catch (RemoteException re) {
-			_child = null;
+			this._child = null;
 		}
-		return _child;
+		return this._child;
 	}
 	
 	private CommuneUserBusiness getUserBusiness() {
@@ -284,14 +285,14 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @return int
 	 */
 	public String getUniqueID() {
-		return _uniqueID;
+		return this._uniqueID;
 	}
 
 	/**
 	 * @return int
 	 */
 	public int getCheckID() {
-		return _checkID;
+		return this._checkID;
 	}
 
 	/**
@@ -299,7 +300,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param applicationID The applicationID to set
 	 */
 	public void setApplicationID(int applicationID) {
-		_applicationID = applicationID;
+		this._applicationID = applicationID;
 	}
 
 	/**
@@ -307,8 +308,8 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param childID The childID to set
 	 */
 	public void setChildID(int childID) {
-		_childID = childID;
-		_child = null;
+		this._childID = childID;
+		this._child = null;
 	}
 	
 	/**
@@ -316,8 +317,8 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param childID The childID to set
 	 */
 	public void setUniqueID(String uniqueID) {
-		_uniqueID = uniqueID;
-		_child = null;
+		this._uniqueID = uniqueID;
+		this._child = null;
 	}
 
 	/**
@@ -325,7 +326,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param checkID The checkID to set
 	 */
 	public void setCheckID(int checkID) {
-		_checkID = checkID;
+		this._checkID = checkID;
 	}
 
 	/**
@@ -367,28 +368,28 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @return String
 	 */
 	public String getStatus() {
-		return _status;
+		return this._status;
 	}
 
 	/**
 	 * @return int
 	 */
 	public int getSortBy() {
-		return _sortBy;
+		return this._sortBy;
 	}
 
 	/**
 	 * @return IWTimestamp
 	 */
 	public IWTimestamp getFromTimestamp() {
-		return fromTimestamp;
+		return this.fromTimestamp;
 	}
 
 	/**
 	 * @return IWTimestamp
 	 */
 	public IWTimestamp getToTimestamp() {
-		return toTimestamp;
+		return this.toTimestamp;
 	}
 
 	/**
@@ -396,7 +397,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param status The status to set
 	 */
 	public void setStatus(String status) {
-		_status = status;
+		this._status = status;
 	}
 
 	/**
@@ -404,7 +405,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param sortBy The sortBy to set
 	 */
 	public void setSortBy(int sortBy) {
-		_sortBy = sortBy;
+		this._sortBy = sortBy;
 	}
 
 	/**
@@ -412,10 +413,12 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param fromTimestamp The fromTimestamp to set
 	 */
 	public void setFromTimestamp(String timestamp) {
-		if (timestamp != null)
+		if (timestamp != null) {
 			this.fromTimestamp = new IWTimestamp(timestamp);
-		else
+		}
+		else {
 			this.fromTimestamp = null;
+		}
 	}
 
 	/**
@@ -423,10 +426,12 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param toTimestamp The toTimestamp to set
 	 */
 	public void setToTimestamp(String timestamp) {
-		if (timestamp != null)
+		if (timestamp != null) {
 			this.toTimestamp = new IWTimestamp(timestamp);
-		else
+		}
+		else {
 			this.toTimestamp = null;
+		}
 	}
 
 
@@ -434,7 +439,7 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @return int
 	 */
 	public int getSchoolTypeID() {
-		return _schoolTypeID;
+		return this._schoolTypeID;
 	}
 
 	/**
@@ -442,14 +447,14 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param groupID The groupID to set
 	 */
 	public void setSchoolTypeID(int schTypeID) {
-		_schoolTypeID = schTypeID;
+		this._schoolTypeID = schTypeID;
 	}
 
 	/**
 	 * @return int
 	 */
 	public int getGroupID() {
-		return _groupID;
+		return this._groupID;
 	}
 
 	/**
@@ -457,35 +462,35 @@ public class ChildCareSessionBean extends IBOSessionBean implements ChildCareSes
 	 * @param groupID The groupID to set
 	 */
 	public void setGroupID(int groupID) {
-		_groupID = groupID;
+		this._groupID = groupID;
 	}
 
 	/**
 	 * @return
 	 */
 	public int getSeasonID() {
-		return _seasonID;
+		return this._seasonID;
 	}
 
 	/**
 	 * @param seasonID
 	 */
 	public void setSeasonID(int seasonID) {
-		_seasonID = seasonID;
+		this._seasonID = seasonID;
 	}
 
 	/**
 	 * @return Returns the _caseCode.
 	 */
 	public String getCaseCode() {
-		return _caseCode;
+		return this._caseCode;
 	}
 	
 	/**
 	 * @param code The _caseCode to set.
 	 */
 	public void setCaseCode(String caseCode) {
-		_caseCode = caseCode;
+		this._caseCode = caseCode;
 	}
 	
 	private CareBusiness getCareBusiness() throws RemoteException {

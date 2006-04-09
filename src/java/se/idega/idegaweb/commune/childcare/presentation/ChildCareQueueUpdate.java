@@ -46,10 +46,10 @@ import com.idega.util.text.Name;
  */
 public class ChildCareQueueUpdate extends ChildCareBlock {
 
-	protected final int DBV_WITH_PLACE = 0;
-	protected final int DBV_WITHOUT_PLACE = 1;
-	protected final int FS_WITH_PLACE = 2;
-	protected final int FS_WITHOUT_PLACE = 3;
+	protected static final int DBV_WITH_PLACE = 0;
+	protected static final int DBV_WITHOUT_PLACE = 1;
+	protected static final int FS_WITH_PLACE = 2;
+	protected static final int FS_WITHOUT_PLACE = 3;
 
 	public static final String PARAMETER_ACTION = "ccqu_action";
 	public static final String PARAMETER_STAGE = "ccqu_stage";
@@ -87,10 +87,10 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	 */
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
-		back = (BackButton) getStyledInterface(new BackButton(localize("back", "Back")));
+		this.back = (BackButton) getStyledInterface(new BackButton(localize("back", "Back")));
 		
-		if (getBusiness().getHasUnexportedChoices(_childID)) {
-			switch (_action) {
+		if (getBusiness().getHasUnexportedChoices(this._childID)) {
+			switch (this._action) {
 				case ACTION_FORM :
 					getForm(iwc);
 					break;
@@ -116,7 +116,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	private void getForm(IWContext iwc) {
 		Collection choices = null;
 		try {
-			choices = getBusiness().getQueueChoices(_childID);
+			choices = getBusiness().getQueueChoices(this._childID);
 		}
 		catch (RemoteException e) {
 			choices = null;
@@ -125,10 +125,10 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		if (choices != null && choices.size() > 0) {
 			Map choiceMap = getChoiceMap(choices);
 			try {
-				_hasPlacing = getBusiness().hasActivePlacement(_childID);
+				this._hasPlacing = getBusiness().hasActivePlacement(this._childID);
 			}
 			catch (RemoteException e) {
-				_hasPlacing = false;
+				this._hasPlacing = false;
 			}
 			Table table = new Table();
 			table.setCellpadding(0);
@@ -143,7 +143,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			
             Form stageForm = null; 
             
-			switch (_stage) {
+			switch (this._stage) {
 				case STAGE_ONE :
 					table.setAlignment(1, row, Table.HORIZONTAL_ALIGN_RIGHT);
 					table.add(getExportAllButton(), 1, row++);
@@ -222,10 +222,12 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 				queuePosition = 1;
 			}
 
-			if (row % 2 == 0)
+			if (row % 2 == 0) {
 				table.setRowColor(row, getZebraColor1());
-			else
+			}
+			else {
 				table.setRowColor(row, getZebraColor2());
+			}
 
 			table.add(getSmallText(String.valueOf(row - 1)), column++, row);
 			table.add(getProviderNameFirstStage(provider), column++, row);
@@ -233,8 +235,9 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			table.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
 			table.add(getSmallText("("+queuePosition+")"), column++, row);
 			table.add(select, column++, row++);
-			if (!iter.hasNext())
+			if (!iter.hasNext()) {
 				select.setMustBeChecked(localize("child_care.must_check_provider","You must select at least one provider."));
+			}
             
             analyzeProvidersSortedByBirthdate(provider);            
             
@@ -243,14 +246,17 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		table.setColumnAlignment(5, Table.HORIZONTAL_ALIGN_CENTER);
 		table.setColumnAlignment(6, Table.HORIZONTAL_ALIGN_CENTER);
 
-		if (_hasPlacing)
-			maximumChecked = maximumChecked - 1;
+		if (this._hasPlacing) {
+			this.maximumChecked = this.maximumChecked - 1;
+		}
 			
 		String errorMessage = localize("child_care.can_only_select_five","You can only select five providers.");
-		if (maximumChecked == 4)
+		if (this.maximumChecked == 4) {
 			errorMessage = localize("child_care.can_only_select_four","You can only select four providers.");
-		if (select != null)
-			select.setMaximumChecked(maximumChecked, errorMessage);
+		}
+		if (select != null) {
+			select.setMaximumChecked(this.maximumChecked, errorMessage);
+		}
 
 		Table buttonTable = new Table(2,1);
 		buttonTable.setCellpadding(getCellpadding());
@@ -279,8 +285,9 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			form.setOnSubmit("return checkInputs(findObj('"+PARAMETER_QUEUE+"'))");
 		
 			Script script = form.getAssociatedFormScript();
-			if (script == null)
+			if (script == null) {
 				script = new Script();
+			}
 			script.addFunction("checkInputs", getCheckSubmitString(localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.")));
 			form.setAssociatedFormScript(script);
 		
@@ -319,7 +326,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			buttonTable.setAlignment(2, 1, Table.HORIZONTAL_ALIGN_RIGHT);
 
 			SubmitButton next = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.next","Next"), PARAMETER_STAGE, String.valueOf(STAGE_THREE)));
-			buttonTable.add(back, 1, 1);
+			buttonTable.add(this.back, 1, 1);
 			buttonTable.add(next, 2, 1);
 
 			form.add(table);
@@ -397,7 +404,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 
 			SubmitButton update = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.update","Update"), PARAMETER_ACTION, String.valueOf(ACTION_SAVE)));
 			update.setSingleSubmitConfirm(localize("child_care.confirm_queue_update","Are you sure you want to update? Selection can not be altered."));
-			buttonTable.add(back, 1, 1);
+			buttonTable.add(this.back, 1, 1);
 			buttonTable.add(update, 2, 1);
 
 			form.add(table);
@@ -442,18 +449,18 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		GenericButton button = (GenericButton) getStyledInterface(new GenericButton("export_all", localize("child_care.export_all","Export all")));
 		button.setPageToOpen(getParentPageID());
 		button.addParameterToPage(PARAMETER_ACTION, ACTION_EXPORT_ALL);
-		button.addParameterToPage(CitizenChildren.prmChildId, _childID);
+		button.addParameterToPage(CitizenChildren.prmChildId, this._childID);
 		button.setOnClickConfirm(localize("child_care.confirm_export_all","Are you sure you want to export all and drop all queues?"));
 		
 		return button;
 	}
 	
 	private Text getStageText() {
-		if (_hasPlacing) {
-			return getSmallText(localize("child_care.non_placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
+		if (this._hasPlacing) {
+			return getSmallText(localize("child_care.non_placed_queue_text_stage_"+this._stage,"Text for stage "+this._stage));
 		}
 		else {
-			return getSmallText(localize("child_care.placed_queue_text_stage_"+_stage,"Text for stage "+_stage));
+			return getSmallText(localize("child_care.placed_queue_text_stage_"+this._stage,"Text for stage "+this._stage));
 		}
 	}
 	
@@ -482,23 +489,24 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		int row = 1;
 		
 		try {
-			child = getBusiness().getUserBusiness().getUser(_childID);
-			if (child != null) {
-				Address address = getBusiness().getUserBusiness().getUsersMainAddress(child);
+			this.child = getBusiness().getUserBusiness().getUser(this._childID);
+			if (this.child != null) {
+				Address address = getBusiness().getUserBusiness().getUsersMainAddress(this.child);
 				
 				table.add(getLocalizedSmallHeader("child_care.child","Child"), 1, row);
-				Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+				Name name = new Name(this.child.getFirstName(), this.child.getMiddleName(), this.child.getLastName());
 				table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, row++);
 				table.setHeight(row++, 3);
 				table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), 1, row);
-				table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
+				table.add(getSmallText(PersonalIDFormatter.format(this.child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 				
 				if (address != null) {
 					table.setHeight(row++, 3);
 					table.add(getLocalizedSmallHeader("child_care.address","Address"), 1, row);
 					table.add(getSmallText(address.getStreetAddress()), 3, row);
-					if (address.getPostalAddress() != null)
+					if (address.getPostalAddress() != null) {
 						table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+					}
 				}
 			}
 		}
@@ -538,16 +546,16 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 				int queueType = queue.getQueueType();
 				switch (queueType) {
 					case DBV_WITH_PLACE :
-						_hasPlacing = true;
+						this._hasPlacing = true;
 						break;
 					case DBV_WITHOUT_PLACE :
-						_hasPlacing = false;
+						this._hasPlacing = false;
 						break;
 					case FS_WITH_PLACE :
-						_hasPlacing = true;
+						this._hasPlacing = true;
 						break;
 					case FS_WITHOUT_PLACE :
-						_hasPlacing = false;
+						this._hasPlacing = false;
 						break;
 				}
 			}
@@ -584,7 +592,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 		//else {
 			Collection choices = null;
 			try {
-				choices = getBusiness().getQueueChoices(_childID);
+				choices = getBusiness().getQueueChoices(this._childID);
 			}
 			catch (RemoteException e) {
 				choices = new ArrayList();
@@ -597,17 +605,19 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 					if (queue.getPrimaryKey().toString().equals(choice[a])) {
 						provider[a] = queue.getProviderId();
 						queueDates[a] = queue.getQueueDate();
-						if (queue.getPriority() != null)
+						if (queue.getPriority() != null) {
 							hasPriority[a] = true;
-						else
+						}
+						else {
 							hasPriority[a] = false;
+						}
 					}
 				}
 			}
 			
 			boolean success = false;
 			try {
-				success = getBusiness().insertApplications(iwc.getCurrentUser(), provider, dates, iwc.getParameter(PARAMETER_MESSAGE), _childID, queueDates, hasPriority);
+				success = getBusiness().insertApplications(iwc.getCurrentUser(), provider, dates, iwc.getParameter(PARAMETER_MESSAGE), this._childID, queueDates, hasPriority);
 			}
 			catch (RemoteException e1) {
 				e1.printStackTrace();
@@ -639,7 +649,7 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	
 	private void exportAll() {
 		try {
-			Collection choices = getBusiness().getQueueChoices(_childID);
+			Collection choices = getBusiness().getQueueChoices(this._childID);
 			Iterator iter = choices.iterator();
 			while (iter.hasNext()) {
 				ChildCareQueue queue = (ChildCareQueue) iter.next();
@@ -668,28 +678,32 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 	}
 
 	protected void parse(IWContext iwc) {
-		if (iwc.isParameterSet(PARAMETER_ACTION))
-			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
-		else
-			_action = ACTION_FORM;
+		if (iwc.isParameterSet(PARAMETER_ACTION)) {
+			this._action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
+		}
+		else {
+			this._action = ACTION_FORM;
+		}
 
-		if (iwc.isParameterSet(PARAMETER_STAGE))
-			_stage = Integer.parseInt(iwc.getParameter(PARAMETER_STAGE));
-		else
-			_stage = STAGE_ONE;
+		if (iwc.isParameterSet(PARAMETER_STAGE)) {
+			this._stage = Integer.parseInt(iwc.getParameter(PARAMETER_STAGE));
+		}
+		else {
+			this._stage = STAGE_ONE;
+		}
 
-		_childID = getChildId(iwc);
+		this._childID = getChildId(iwc);
 		
 	}
 	
 	private int getChildId(IWContext iwc) {
 		
-		if (childID != null){
-			_childID = Integer.parseInt(childID);
-			return _childID;
+		if (this.childID != null){
+			this._childID = Integer.parseInt(this.childID);
+			return this._childID;
 		}
-		else if (iwc.isParameterSet(prmChildUniqueId)){
-			String childUniqueId = iwc.getParameter(prmChildUniqueId);
+		else if (iwc.isParameterSet(this.prmChildUniqueId)){
+			String childUniqueId = iwc.getParameter(this.prmChildUniqueId);
 			User child = null;
 			Object objChildId = null;
 			if (childUniqueId != null){
@@ -706,13 +720,16 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 					log (re);
 				}
 				
-				if (child != null)
+				if (child != null) {
 					objChildId = child.getPrimaryKey();
+				}
 				
-				if(objChildId != null)
-				    return ((Integer) (objChildId)).intValue();
-				else
-				    return -1;
+				if(objChildId != null) {
+					return ((Integer) (objChildId)).intValue();
+				}
+				else {
+					return -1;
+				}
 				
 			}
 			else {
@@ -720,22 +737,24 @@ public class ChildCareQueueUpdate extends ChildCareBlock {
 			}
 		} //slut else if
 		else {
-			String childId = iwc.getParameter(prmChildId);
+			String childId = iwc.getParameter(this.prmChildId);
 			if (childId != null) {
-				iwc.setSessionAttribute(prmChildId, childId);
+				iwc.setSessionAttribute(this.prmChildId, childId);
 			}
 			else {
-				childId = (String) iwc.getSessionAttribute(prmChildId);
+				childId = (String) iwc.getSessionAttribute(this.prmChildId);
 			}
-			if(childId!=null)
-			    return Integer.parseInt(childId);
-			else
-			    return -1;
+			if(childId!=null) {
+				return Integer.parseInt(childId);
+			}
+			else {
+				return -1;
+			}
 		}
 	}
 
     public boolean isContainsSortedByBirthdateProvider() {
-        return containsSortedByBirthdateProvider;
+        return this.containsSortedByBirthdateProvider;
     }
 
     public void setContainsSortedByBirthdateProvider(

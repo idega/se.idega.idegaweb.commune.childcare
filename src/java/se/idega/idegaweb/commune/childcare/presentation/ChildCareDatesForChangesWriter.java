@@ -70,8 +70,8 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
 							endFromDate, endToDate);
             
 			// genereate xls
-			buffer = writeXls(iwc, contracts);
-			setAsDownload(iwc, "dates_for_changes.xls", buffer.length());
+			this.buffer = writeXls(iwc, contracts);
+			setAsDownload(iwc, "dates_for_changes.xls", this.buffer.length());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -81,36 +81,40 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
     private IWTimestamp getIWTimestampParameter(HttpServletRequest req, String paramName) {
     	String date = req.getParameter(paramName);                                                        
         IWTimestamp stamp = null;            
-        if (date.length() > 0)
-            stamp = new IWTimestamp(date);
+        if (date.length() > 0) {
+					stamp = new IWTimestamp(date);
+				}
         return stamp;
     }
     
     private java.sql.Date getSqlDateParameter(HttpServletRequest req, String paramName) {
     	java.sql.Date date = null;                                                        
         IWTimestamp stamp = getIWTimestampParameter(req, paramName);            
-        if (stamp != null)
-            date = stamp.getDate();
+        if (stamp != null) {
+					date = stamp.getDate();
+				}
         return date;
     }    
 	
 	public String getMimeType() {
-		if (buffer != null)
-			return buffer.getMimeType();
+		if (this.buffer != null) {
+			return this.buffer.getMimeType();
+		}
 		return super.getMimeType();
 	}
 	
 	public void writeTo(OutputStream out) throws IOException {
-		if (buffer != null) {
-			MemoryInputStream mis = new MemoryInputStream(buffer);
+		if (this.buffer != null) {
+			MemoryInputStream mis = new MemoryInputStream(this.buffer);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			while (mis.available() > 0) {
 				baos.write(mis.read());
 			}
 			baos.writeTo(out);
 		}
-		else
+		else {
 			System.err.println("buffer is null");
+		}
 	}	
 
 	
@@ -255,7 +259,7 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
     }
 
     public IWResourceBundle getIwrb() {
-        return iwrb;
+        return this.iwrb;
     }
 
     public void setIwrb(IWResourceBundle iwrb) {

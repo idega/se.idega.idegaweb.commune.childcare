@@ -251,16 +251,18 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 		choice.setOwner(user);
 		choice.setChildId(childID.intValue());
-		if (providerID != null)
+		if (providerID != null) {
 			choice.setProviderId(providerID.intValue());
+		}
 		choice.setChoiceNumber(choiceNumber.intValue());
 		choice.setMessage(message);
 		if (season != null) {
 			Integer seasonId = new Integer(season.getPrimaryKey().toString());
 			choice.setSchoolSeasonId(seasonId.intValue());
 		}
-		if (placementDate != null)
+		if (placementDate != null) {
 			choice.setFromDate(placementDate);
+		}
 		choice.setQueueDate(stamp.getDate());
 		stamp.addSeconds(1 - choiceNumber.intValue());
 		choice.setCreated(stamp.getTimestamp());
@@ -287,8 +289,9 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		if (caseStatus.equals(getCaseStatusPreliminary())) {
 			getChildCareBusiness().sendMessageToParents(choice, subject, body);
 		}
-		if (parentCase != null)
+		if (parentCase != null) {
 			choice.setParentCase(parentCase);
+		}
 		
 		if(isFClassAndPrio){
 			choice.setFClass(true);			

@@ -95,10 +95,12 @@ public class ChildCareQueueRenewer extends ChildCareBlock {
 			keep.setMustBeSelected(localize("child_care.queue_renew_must_select", "You must select to renew/cancel application for: " + application.getProvider().getSchoolName()));
 			discard = getRadioButton(PARAMETER_APPLICATION_ID + "_" + application.getPrimaryKey().toString(), Boolean.FALSE.toString());
 				
-			if (row % 2 == 0)
+			if (row % 2 == 0) {
 				table.setRowColor(row, getZebraColor1());
-			else
+			}
+			else {
 				table.setRowColor(row, getZebraColor2());
+			}
 
 			table.add(getSmallText(application.getProvider().getSchoolName()), column++, row);
 			table.add(getSmallText(getStatusString(application)), column++, row);

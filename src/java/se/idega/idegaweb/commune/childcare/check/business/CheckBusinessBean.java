@@ -127,8 +127,9 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 		check.setMethod(method);
 		check.setAmount(amount);
 		check.setCheckFee(checkFee);
-		if ( user != null )
+		if ( user != null ) {
 			check.setOwner(user);
+		}
 		check.setCaseStatus(this.getCaseStatusOpen());
 
 		check.store();
@@ -166,8 +167,9 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	public int getUserID(Check check) {
 		User user = check.getOwner();
 		int userID = -1;
-		if (user != null)
+		if (user != null) {
 			userID = ((Integer) user.getPrimaryKey()).intValue();
+		}
 		return userID;
 	}
 	
@@ -222,8 +224,9 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	}
 
 	public User getUserById(int userId) throws Exception {
-		if (userId == -1)
+		if (userId == -1) {
 			return null;
+		}
 		try {
 			return getUserBusiness().getUser(userId);
 		} catch (EJBException e) {
@@ -276,8 +279,9 @@ public class CheckBusinessBean extends CaseBusinessBean implements CheckBusiness
 	public void retrialCheck(Check check,String subject,String body,User performer) throws Exception {
 		changeCaseStatus(check, this.getCaseStatusReview().getPrimaryKey().toString(), performer);
 		String userNotes = check.getUserNotes();
-		if(userNotes==null || "".equals(userNotes.trim()))
-		    userNotes = body;
+		if(userNotes==null || "".equals(userNotes.trim())) {
+			userNotes = body;
+		}
 		sendMessageToCitizen(check,getUserID(check),subject,check.getUserNotes());
 	}
 

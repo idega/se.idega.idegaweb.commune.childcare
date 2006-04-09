@@ -63,8 +63,8 @@ public class ChildCareEndContractWindow extends Window {
 		Table layoutTbl = new Table();
 		
 		DateInput fromDate = new DateInput(FROM_DATE);
-		fromDate.setAsNotEmpty(style.localize("ccecw_date_missing","Please choose a valid from date."));
-		fromDate.setStyleAttribute("style", style.getSmallTextFontStyle());
+		fromDate.setAsNotEmpty(this.style.localize("ccecw_date_missing","Please choose a valid from date."));
+		fromDate.setStyleAttribute("style", this.style.getSmallTextFontStyle());
 		
 		HiddenInput action = new HiddenInput(CCConstants.ACTION);
 		action.setValue(ACTION_END_CONTRACT);
@@ -72,18 +72,18 @@ public class ChildCareEndContractWindow extends Window {
 		HiddenInput appid = new HiddenInput(CCConstants.APPID);
 		appid.setValue(iwc.getParameter(CCConstants.APPID));
 		
-		SubmitButton submit = new SubmitButton(style.localize(CCConstants.OK));
+		SubmitButton submit = new SubmitButton(this.style.localize(CCConstants.OK));
 		submit.setAsImageButton(true);
-		CloseButton close = new CloseButton(style.localize(CCConstants.CANCEL));
+		CloseButton close = new CloseButton(this.style.localize(CCConstants.CANCEL));
 		close.setAsImageButton(true);
 				
 		int row = 1;
 		
-		layoutTbl.add(style.getSmallText(style.localize(FROM_DATE_LABEL) + ":"), 1, row);		
+		layoutTbl.add(this.style.getSmallText(this.style.localize(FROM_DATE_LABEL) + ":"), 1, row);		
 		layoutTbl.add(fromDate, 2, row++);
 		Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.MONTH, 2);
-		fromDate.setEarliestPossibleDate(cal.getTime(), style.localize("ccecw_date_alert", "Date must be not earlier than two months from today."));
+		fromDate.setEarliestPossibleDate(cal.getTime(), this.style.localize("ccecw_date_alert", "Date must be not earlier than two months from today."));
 		
 		row++;
 		
@@ -91,7 +91,7 @@ public class ChildCareEndContractWindow extends Window {
 		layoutTbl.add(submit, 2, row);	
 		layoutTbl.setAlignment(2, row++, "right");	
 		
-		layoutTbl.add(style.getSmallText(style.localize(INFO)), 1, row);
+		layoutTbl.add(this.style.getSmallText(this.style.localize(INFO)), 1, row);
 		
 		form.add(action);
 		form.add(appid);
@@ -111,18 +111,18 @@ public class ChildCareEndContractWindow extends Window {
 		
 		getChildCareBusiness(iwc).sendMessageToParents(
 			application, 
-			style.localize("ccecw_encon_par1", "Begäran om uppsägning av kontrakt gjord"), 
-			style.localize("ccecw_encon_par2", "Du har skickat en begäran om uppsägning av kontrakt för") + " " +
+			this.style.localize("ccecw_encon_par1", "Begäran om uppsägning av kontrakt gjord"), 
+			this.style.localize("ccecw_encon_par2", "Du har skickat en begäran om uppsägning av kontrakt för") + " " +
 			child.getName() + " " +  child.getPersonalID() + " " +
-			style.localize("ccecw_encon_par3", "fr.o.m.")+ " " + iwc.getParameter(FROM_DATE) + ".");
+			this.style.localize("ccecw_encon_par3", "fr.o.m.")+ " " + iwc.getParameter(FROM_DATE) + ".");
 		
 		
 		getChildCareBusiness(iwc).sendMessageToProvider(
 			application,
-			style.localize("ccecw_encon_prov1", "Uppsägning av kontrakt"),
-			owner.getName() + " " + style.localize("ccecw_encon_prov2", "har begärt uppsägning av kontrakt för") + " " +
+			this.style.localize("ccecw_encon_prov1", "Uppsägning av kontrakt"),
+			owner.getName() + " " + this.style.localize("ccecw_encon_prov2", "har begärt uppsägning av kontrakt för") + " " +
 			child.getName() + " " +  child.getPersonalID() + ". " + 
-			style.localize("ccecw_encon_prov3", "Kontraktet ska upphöra fr.o.m.") + " " + iwc.getParameter(FROM_DATE) + ".",
+			this.style.localize("ccecw_encon_prov3", "Kontraktet ska upphöra fr.o.m.") + " " + iwc.getParameter(FROM_DATE) + ".",
 			application.getOwner());	
 	}
 		

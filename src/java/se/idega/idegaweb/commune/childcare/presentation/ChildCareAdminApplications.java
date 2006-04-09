@@ -94,10 +94,12 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 				}
 				else {
 					hasContract = false;
-					if (row % 2 == 0)
+					if (row % 2 == 0) {
 						applicationTable.setRowColor(row, getZebraColor1());
-					else
+					}
+					else {
 						applicationTable.setRowColor(row, getZebraColor2());
+					}
 				}
 				
 				Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
@@ -105,27 +107,36 @@ public class ChildCareAdminApplications extends ChildCareBlock {
 				link.setEventListener(ChildCareEventListener.class);
 				link.setParameter(getSession().getParameterUserID(), String.valueOf(application.getChildId()));
 				link.setParameter(getSession().getParameterApplicationID(), application.getPrimaryKey().toString());
-				if (getResponsePage() != null)
+				if (getResponsePage() != null) {
 					link.setPage(getResponsePage());
+				}
 				
 				applicationTable.add(link, column++, row);
 				applicationTable.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
-				if (address != null)
+				if (address != null) {
 					applicationTable.add(getSmallText(address.getStreetAddress()), column++, row);
-				else
+				}
+				else {
 					applicationTable.add(getSmallText("-"), column++, row);
-				if (phone != null)
+				}
+				if (phone != null) {
 					applicationTable.add(getSmallText(phone.getNumber()), column++, row);
-				else
+				}
+				else {
 					applicationTable.add(getSmallText("-"), column++, row);
-				if (queueDate != null)
+				}
+				if (queueDate != null) {
 					applicationTable.add(getSmallText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-				else
+				}
+				else {
 					applicationTable.add(getSmallText("-"), column++, row);
-				if (placementDate != null)
+				}
+				if (placementDate != null) {
 					applicationTable.add(getSmallText(placementDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-				else
+				}
+				else {
 					applicationTable.add(getSmallText("-"), column++, row);
+				}
 				if (hasContract) {
 					viewContract = new Link(getPDFIcon(localize("child_care.view_contract","View contract")));
 					viewContract.setFile(application.getContractFileId());

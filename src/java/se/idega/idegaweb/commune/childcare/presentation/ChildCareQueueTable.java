@@ -75,30 +75,32 @@ class ChildCareQueueTable extends Table {
 		String area,
 		String date,
 		String placeNr) {
-		row = tRow;
-		int index = row - 1; //row=2 for first row because of heading is in row 1
+		this.row = tRow;
+		int index = this.row - 1; //row=2 for first row because of heading is in row 1
 		add(new HiddenInput(CCConstants.APPID + index, id));
-		textColor = "black";
-		col = 1;
+		this.textColor = "black";
+		this.col = 1;
 		addStr(choice);
 		addStr(name);
 		addStr(area);
 		addStr(date);
 		addStr(placeNr);
 		CheckBox cb = new CheckBox();
-		add(cb, col++, row);
-		if (row % 2 == 0)
-			setRowColor(row++, _page.getZebraColor1());
-		else
-			setRowColor(row++, _page.getZebraColor2());
+		add(cb, this.col++, this.row);
+		if (this.row % 2 == 0) {
+			setRowColor(this.row++, _page.getZebraColor1());
+		}
+		else {
+			setRowColor(this.row++, _page.getZebraColor2());
+		}
 	}
 	String textColor = "black";
 	int row, col = 1;
 	private void addStr(String str) {
 		if (str != null) {
 			Text t = _page.getSmallText(str);
-			t.setStyleAttribute("color:" + textColor);
-			add(t, col++, row);
+			t.setStyleAttribute("color:" + this.textColor);
+			add(t, this.col++, this.row);
 		}
 	}
 	/**
@@ -113,13 +115,13 @@ class ChildCareQueueTable extends Table {
 		setCellspacing(2);
 		setCellpadding(4);
 		//Heading
-		col=1;
-		add(_page.getLocalHeader("Nr","Nr"),col++,1);
-		add(_page.getLocalHeader("Anordnare","Anordnare"),col++,1);
-		add(_page.getLocalHeader("Område","Område"),col++,1);
-		add(_page.getLocalHeader("Ködatum","Ködatum"),col++,1);
-		add(_page.getLocalHeader("Köplats","Köplats"),col++,1);
-		add(_page.getLocalHeader("Val","Val"),col++,1);
+		this.col=1;
+		add(_page.getLocalHeader("Nr","Nr"),this.col++,1);
+		add(_page.getLocalHeader("Anordnare","Anordnare"),this.col++,1);
+		add(_page.getLocalHeader("Område","Område"),this.col++,1);
+		add(_page.getLocalHeader("Ködatum","Ködatum"),this.col++,1);
+		add(_page.getLocalHeader("Köplats","Köplats"),this.col++,1);
+		add(_page.getLocalHeader("Val","Val"),this.col++,1);
 /*
 		add(HEADER_YOUR_CHOICE, 1, 1);
 		add(HEADER_OFFER, 2, 1);

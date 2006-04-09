@@ -82,7 +82,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	private String prefix = "cc_app_";
 
-	private String prmAction = prefix + "snd_frm";
+	private String prmAction = this.prefix + "snd_frm";
 
 	protected User _user = null;
 	protected ICPage _presentationPage = null;
@@ -101,14 +101,14 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
 	public void main(IWContext iwc) throws Exception {
-		_iwb = getBundle(iwc);
-		_iwrb = getResourceBundle(iwc);
+		this._iwb = getBundle(iwc);
+		this._iwrb = getResourceBundle(iwc);
 
 
 		if (iwc.isLoggedOn()) {
-			_user = iwc.getCurrentUser();
-			_schoolTypes = getSchoolTypes(iwc, getChildCareBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory());
-			_areas = getAreas(iwc);
+			this._user = iwc.getCurrentUser();
+			this._schoolTypes = getSchoolTypes(iwc, getChildCareBusiness(iwc).getSchoolBusiness().getChildCareSchoolCategory());
+			this._areas = getAreas(iwc);
 
 			setResourceBundle(getResourceBundle(iwc));
 
@@ -171,7 +171,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		Collection children = null;
 		
 		try {
-			children = getUserBusiness(iwc).getMemberFamilyLogic().getChildrenFor(_user);
+			children = getUserBusiness(iwc).getMemberFamilyLogic().getChildrenFor(this._user);
 		}
 		catch (RemoteException e) {
 		}
@@ -248,9 +248,9 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		nameTable.setCellpadding(2);
 		nameTable.setCellspacing(0);
 		
-		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(NAME, "Name")+":"), 1, 1);
-		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(PID, "Personal ID")+":"), 1, 2);
-		nameTable.add(getSmallHeader(_iwrb.getLocalizedString(ADDRESS, "Address")+":"), 1, 3);
+		nameTable.add(getSmallHeader(this._iwrb.getLocalizedString(NAME, "Name")+":"), 1, 1);
+		nameTable.add(getSmallHeader(this._iwrb.getLocalizedString(PID, "Personal ID")+":"), 1, 2);
+		nameTable.add(getSmallHeader(this._iwrb.getLocalizedString(ADDRESS, "Address")+":"), 1, 3);
 
 		Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
 		nameTable.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, 1);
@@ -260,8 +260,9 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		try {
 			Address address = getCheckBusiness(iwc).getUserAddress(child);
 //			PostalCode code = getCheckBusiness(iwc).getUserPostalCode(child);
-			if (address != null)
+			if (address != null) {
 				nameTable.add(getSmallText(address.getStreetAddress() + ", " + address.getPostalAddress()), 3, 3);
+			}
 		}
 		catch (RemoteException e) {
 		}
@@ -296,7 +297,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 			DropdownMenu areaDrop = getAreaDrop(PARAM_AREA + "_" + i);
 			areaDrop.setOnChange(getFilterCallerScript(PARAM_AREA + "_" + i, PARAM_PROVIDER + "_" + i));
 			DropdownMenu providerDrop = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAM_PROVIDER + "_" + i));
-			providerDrop.addMenuElementFirst("-1", _iwrb.getLocalizedString("school.school_first", "School........................."));
+			providerDrop.addMenuElementFirst("-1", this._iwrb.getLocalizedString("school.school_first", "School........................."));
 			providerText = getSmallHeader(provider + " " + i + ":");
 			inputTable.add(providerText, 1, row);
 			inputTable.add(areaDrop, 3, row);
@@ -346,18 +347,18 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				catch (Exception e) {
 					checkID = -1;
 				}*/
-				Date[] queueDates = new Date[_valProvider.length];
-				String[] valDates = new String[_valProvider.length];
+				Date[] queueDates = new Date[this._valProvider.length];
+				String[] valDates = new String[this._valProvider.length];
 				
 				Collection applications = business.getApplicationsForChild(Integer.parseInt(childId));
 				loop:
-				for (int i = 0; i < _valProvider.length; i++){
+				for (int i = 0; i < this._valProvider.length; i++){
 					Iterator apps = applications.iterator();
 					while(apps.hasNext()){
 						ChildCareApplication app = (ChildCareApplication) apps.next();
-						if (app.getProviderId() == _valProvider[i]){
+						if (app.getProviderId() == this._valProvider[i]){
 							queueDates[i] = app.getQueueDate();
-							valDates[i] = _valDate;
+							valDates[i] = this._valDate;
 							continue loop;
 						}
 					}
@@ -366,7 +367,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
 				String message = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
-				done = business.insertApplications(_user, _valProvider, valDates, null, checkID, new Integer(childId).intValue(), subject, message, true, true, queueDates, null);
+				done = business.insertApplications(this._user, this._valProvider, valDates, null, checkID, new Integer(childId).intValue(), subject, message, true, true, queueDates, null);
 			}
 			catch (RemoteException e) {
 				e.printStackTrace();
@@ -375,21 +376,24 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		}
 
 		if (done) {
-			if (getResponsePage() != null)
+			if (getResponsePage() != null) {
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
-			else
+			}
+			else {
 				add(new Text(localize(APPLICATION_INSERTED, "Application submitted")));
+			}
 		}
-		else
+		else {
 			add(new Text(localize(APPLICATION_FAILURE, "Failed to submit application")));
+		}
 	}
 
 	public void setProviderPresentationLink(ICPage page) {
-		_presentationPage = page;
+		this._presentationPage = page;
 	}
 
 	public ICPage getProviderPresentationLink() {
-		return _presentationPage;
+		return this._presentationPage;
 	}
 
 	private Collection getSchoolTypes(IWContext iwc, String category) {
@@ -406,7 +410,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 	private Collection getAreas(IWContext iwc) {
 		try {
 			SchoolBusiness sBuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
-			return sBuiz.findAllSchoolAreasByTypes(_schoolTypes);
+			return sBuiz.findAllSchoolAreasByTypes(this._schoolTypes);
 		}
 		catch (Exception ex) {
 		}
@@ -428,8 +432,8 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	private DropdownMenu getAreaDrop(String name) {
 		DropdownMenu drp = (DropdownMenu) getStyledInterface(new DropdownMenu(name));
-		drp.addMenuElement("-1", _iwrb.getLocalizedString("cca_area", "Area"));
-		Iterator iter = _areas.iterator();
+		drp.addMenuElement("-1", this._iwrb.getLocalizedString("cca_area", "Area"));
+		Iterator iter = this._areas.iterator();
 		while (iter.hasNext()) {
 			SchoolArea area = (SchoolArea) iter.next();
 			drp.addMenuElement(area.getPrimaryKey().toString(), area.getName());
@@ -454,10 +458,10 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	private boolean checkParameters(IWContext iwc) {
 		for (int i = 0; i < 5; i++) {
-			_valProvider[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
-			_valArea[i] = iwc.isParameterSet(PARAM_AREA + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
+			this._valProvider[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
+			this._valArea[i] = iwc.isParameterSet(PARAM_AREA + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
 		}
-		_valDate = iwc.getParameter(PARAM_DATE);
+		this._valDate = iwc.getParameter(PARAM_DATE);
 
 		return true;
 	}
@@ -483,7 +487,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		s.append("selected = areaSelect.options[areaSelect.selectedIndex].value;").append("\n\t\t");
 		s.append("schoolSelect.options.length = 0;").append("\n\t\t");
 		s.append("schoolSelect.options[schoolSelect.options.length] = new Option(\"");
-		s.append(_iwrb.getLocalizedString("choose_school", "Choose School")).append("\",\"-1\",true,true);").append("\n\t");
+		s.append(this._iwrb.getLocalizedString("choose_school", "Choose School")).append("\",\"-1\",true,true);").append("\n\t");
 		s.append("} else if(index == 2){").append("\n\t\t");
 		s.append("selected = schoolSelect.options[schoolSelect.selectedIndex].value;").append("\n\t");
 		s.append("}").append("\n\t\t\t");
@@ -495,8 +499,8 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		SchoolArea area;
 		School school;
 		Collection schools;
-		if (_areas != null && !_areas.isEmpty()) {
-			Iterator iter2 = _areas.iterator();
+		if (this._areas != null && !this._areas.isEmpty()) {
+			Iterator iter2 = this._areas.iterator();
 
 			Hashtable aHash = new Hashtable();
 
@@ -533,8 +537,9 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				}
 			}
 		}
-		else
+		else {
 			System.err.println("areas empty");
+		}
 
 		s.append("\n\n");
 
@@ -571,33 +576,33 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 		s.append("\n\t if(one > 0 && two > 0 && three > 0 && four > 0 && five > 0){");
 		s.append("\n\t if(one == two || one == three || one == four || one == five){");
-		String msg = _iwrb.getLocalizedString("school_school.must_not_be_the_same", "Please do not choose the same school more than once");
+		String msg = this._iwrb.getLocalizedString("school_school.must_not_be_the_same", "Please do not choose the same school more than once");
 		s.append("\n\t\t\t alert('").append(msg).append("');");
 		s.append("\n\t\t\t return false;");
 		s.append("\n\t\t }");
 		s.append("\n\t if(two == three || two == four || two == five){");
-		msg = _iwrb.getLocalizedString("school_school.must_not_be_the_same", "Please do not choose the same school more than once");
+		msg = this._iwrb.getLocalizedString("school_school.must_not_be_the_same", "Please do not choose the same school more than once");
 		s.append("\n\t\t\t alert('").append(msg).append("');");
 		s.append("\n\t\t\t return false;");
 		s.append("\n\t\t }");
 		s.append("\n\t if(three == four || three == five){");
-		msg = _iwrb.getLocalizedString("school_school.must_not_be_the_same", "Please do not choose the same school more than once");
+		msg = this._iwrb.getLocalizedString("school_school.must_not_be_the_same", "Please do not choose the same school more than once");
 		s.append("\n\t\t\t alert('").append(msg).append("');");
 		s.append("\n\t\t\t return false;");
 		s.append("\n\t\t }");
 		s.append("\n\t if(four == five){");
-		msg = _iwrb.getLocalizedString("school_school.must_not_be_the_same", "Please do not choose the same school more than once");
+		msg = this._iwrb.getLocalizedString("school_school.must_not_be_the_same", "Please do not choose the same school more than once");
 		s.append("\n\t\t\t alert('").append(msg).append("');");
 		s.append("\n\t\t\t return false;");
 		s.append("\n\t\t }");
 		s.append("\n\t }");
 		s.append("\n\t else{");
-		msg = _iwrb.getLocalizedString("school_school.must_fill_out", "Please fill out all choices");
+		msg = this._iwrb.getLocalizedString("school_school.must_fill_out", "Please fill out all choices");
 		s.append("\n\t\t alert('").append(msg).append("');");
 		s.append("\n\t\t return false;");
 		s.append("\n\t }");
 
-		s.append("\n\t\t findObj('").append(prmAction).append("').value='true';");
+		s.append("\n\t\t findObj('").append(this.prmAction).append("').value='true';");
 		s.append("\n\t return true;");
 		s.append("\n}\n");
 		return s.toString();

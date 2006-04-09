@@ -86,7 +86,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 		add(getNavigationTable(iwc));
 		add(new Break());
 		
-		switch (_action) {
+		switch (this._action) {
 			case ORDER_BY_ALL_CHOICES :
 				add(getAllProviderTable(iwc, false));
 				break;
@@ -117,7 +117,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.prognosis_12m", "Prognosis (12M)"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.last_updated", "Last updated"), column++, row++);
 		Collection schoolTypes = null;
-		switch (_schoolTypes) {
+		switch (this._schoolTypes) {
 			case SCHOOL_TYPES_CHILD_CARE:
 				schoolTypes = getBusiness().getSchoolBusiness().findAllSchoolTypesForChildCare();
 				break;
@@ -132,14 +132,14 @@ public class ChildCareStatistics extends ChildCareBlock {
 				break;
 		}
 		List providers = null;
-		if (_areaID == -1 && _subAreaID == -1) {
+		if (this._areaID == -1 && this._subAreaID == -1) {
 			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByType(schoolTypes));
 		}
-		else if (_subAreaID == -1) {
-			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByAreaAndTypes(_areaID, schoolTypes));
+		else if (this._subAreaID == -1) {
+			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsByAreaAndTypes(this._areaID, schoolTypes));
 		}
 		else {
-			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsBySubAreaAndTypes(_subAreaID,
+			providers = new Vector(getBusiness().getSchoolBusiness().findAllSchoolsBySubAreaAndTypes(this._subAreaID,
 					schoolTypes));
 		}
 		Date from = null;
@@ -159,8 +159,9 @@ public class ChildCareStatistics extends ChildCareBlock {
 			School school;
 			ChildCarePrognosis prognosis;
 			int providerID = -1;
-			if (_useSorting)
+			if (this._useSorting) {
 				Collections.sort(providers, new SchoolComparator(iwc.getCurrentLocale()));
+			}
 			int queueOrderSum = 0;
 			int queueTotalSum = 0;
 			int queueWithin3MonthsSum = 0;
@@ -196,15 +197,17 @@ public class ChildCareStatistics extends ChildCareBlock {
 					}
 					providerID = ((Integer) school.getPrimaryKey()).intValue();
 					prognosis = getBusiness().getPrognosis(providerID);
-					if (row % 2 == 0)
+					if (row % 2 == 0) {
 						table.setRowColor(row, getZebraColor1());
-					else
+					}
+					else {
 						table.setRowColor(row, getZebraColor2());
+					}
 					int queueOrder = 0;
 					int queueTotal = 0;
 					int queueWithin3Months = 0;
 					int queueWithin12Months = 0;
-					switch (_queueType) {
+					switch (this._queueType) {
 						case QUEUE_TYPE_ALL:
 							queueOrder = getBusiness().getQueueByProvider(providerID, from, to, isFirstHandOnly);
 							queueTotal = getBusiness().getQueueTotalByProvider(providerID, from, to, isFirstHandOnly);
@@ -296,8 +299,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 		DateInput from = new DateInput(PARAMETER_FROM_DATE);
 		from.setToDisplayDayLast(true);
 		from = (DateInput) getStyledInterface(from);
-		if (_fromDate != null) {
-			from.setDate(_fromDate);
+		if (this._fromDate != null) {
+			from.setDate(this._fromDate);
 		}
 		from.setYearRange(stamp.getYear() - 2, stamp.getYear() + 5);
 		table.add(from, 2, 1);
@@ -306,8 +309,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 		DateInput to = new DateInput(PARAMETER_TO_DATE);
 		to.setToDisplayDayLast(true);
 		to = (DateInput) getStyledInterface(to);		
-		if (_toDate != null) {
-			to.setDate(_toDate);
+		if (this._toDate != null) {
+			to.setDate(this._toDate);
 		}
 		to.setYearRange(stamp.getYear() - 2, stamp.getYear() + 5);
 		table.add(to, 4, 1);
@@ -321,7 +324,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_ACTION));
 		menu.addMenuElement(ORDER_BY_ALL_CHOICES, localize("child_care.show_provider_statistics","Show by area"));
 		menu.addMenuElement(ORDER_BY_FIRST_HAND_CHOICES, localize("child_care.show_first_hand_statistics","Show by first hand choices"));
-		menu.setSelectedElement(_action);
+		menu.setSelectedElement(this._action);
 		table.add(menu, 1, 1);
 		
 
@@ -351,14 +354,14 @@ public class ChildCareStatistics extends ChildCareBlock {
 		if (!getBusiness().getFamilyAfterSchoolTypes().isEmpty()) {
 			schoolTypes.addMenuElement(SCHOOL_TYPES_FAMILY_AFTER_SCHOOL, localize("child_care.family_after_school","Family after school"));
 		}
-		schoolTypes.setSelectedElement(_schoolTypes);
+		schoolTypes.setSelectedElement(this._schoolTypes);
 		table.add(schoolTypes, 1, 2);
 		
 		DropdownMenu queueType = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_QUEUE_TYPE));
 		queueType.addMenuElement(QUEUE_TYPE_ALL, localize("child_care.all_in_queue", "All in queue"));
 		queueType.addMenuElement(QUEUE_TYPE_NETTO, localize("child_care.netto_queue","Netto queue"));
 		queueType.addMenuElement(QUEUE_TYPE_BRUTTO, localize("child_care.brutto_queue","Brutto queue"));
-		queueType.setSelectedElement(_queueType);
+		queueType.setSelectedElement(this._queueType);
 		table.add(queueType, 3, 1);
 		
 		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("child_care.get", "Get")));
@@ -411,26 +414,31 @@ public class ChildCareStatistics extends ChildCareBlock {
 	}	
 	
 	private void parse(IWContext iwc) {
-		if (iwc.isParameterSet(PARAMETER_ACTION))
-			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
-		if (iwc.isParameterSet(PARAMETER_AREA))
-			_areaID = Integer.parseInt(iwc.getParameter(PARAMETER_AREA));
-		if (iwc.isParameterSet(PARAMETER_SUB_AREA))
-			_subAreaID = Integer.parseInt(iwc.getParameter(PARAMETER_SUB_AREA));
-		if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPES))
-			_schoolTypes = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
-		if (iwc.isParameterSet(PARAMETER_QUEUE_TYPE))
-			_queueType = Integer.parseInt(iwc.getParameter(PARAMETER_QUEUE_TYPE));
+		if (iwc.isParameterSet(PARAMETER_ACTION)) {
+			this._action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
+		}
+		if (iwc.isParameterSet(PARAMETER_AREA)) {
+			this._areaID = Integer.parseInt(iwc.getParameter(PARAMETER_AREA));
+		}
+		if (iwc.isParameterSet(PARAMETER_SUB_AREA)) {
+			this._subAreaID = Integer.parseInt(iwc.getParameter(PARAMETER_SUB_AREA));
+		}
+		if (iwc.isParameterSet(PARAMETER_SCHOOL_TYPES)) {
+			this._schoolTypes = Integer.parseInt(iwc.getParameter(PARAMETER_SCHOOL_TYPES));
+		}
+		if (iwc.isParameterSet(PARAMETER_QUEUE_TYPE)) {
+			this._queueType = Integer.parseInt(iwc.getParameter(PARAMETER_QUEUE_TYPE));
+		}
 		if (iwc.isParameterSet(PARAMETER_FROM_DATE)) {
 			String s = iwc.getParameter(PARAMETER_FROM_DATE);
 			if (s.length() > 0) {
-				_fromDate = Date.valueOf(s);
+				this._fromDate = Date.valueOf(s);
 			}
 		}
 		if (iwc.isParameterSet(PARAMETER_TO_DATE)) {
 			String s = iwc.getParameter(PARAMETER_TO_DATE);
 			if (s.length() > 0) {
-				_toDate = Date.valueOf(s);
+				this._toDate = Date.valueOf(s);
 			}
 		}
 	}
@@ -439,7 +447,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 	 * @param useSorting
 	 */
 	public void setUseSorting(boolean useSorting) {
-		_useSorting = useSorting;
+		this._useSorting = useSorting;
 	}
 	
 	protected CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {

@@ -69,13 +69,13 @@ public class ChildCareBlock extends CommuneBlock {
     
 	public void main(IWContext iwc) throws Exception{
 		setResourceBundle(getResourceBundle(iwc));
-		business = getChildCareBusiness(iwc);
-		session = getChildCareSession(iwc);
-		careBusiness = getCareBusiness(iwc);
-		userBusiness = getUserBusiness(iwc);
-		checkRequired = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_CHECK_REQUIRED, Boolean.TRUE.toString())).booleanValue();
-		usePredefinedCareTimeValues = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, Boolean.FALSE.toString())).booleanValue();
-		allowChangeGroupFromToday = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY, Boolean.TRUE.toString())).booleanValue();
+		this.business = getChildCareBusiness(iwc);
+		this.session = getChildCareSession(iwc);
+		this.careBusiness = getCareBusiness(iwc);
+		this.userBusiness = getUserBusiness(iwc);
+		this.checkRequired = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_CHECK_REQUIRED, Boolean.TRUE.toString())).booleanValue();
+		this.usePredefinedCareTimeValues = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_USE_PREDEFINED_CARE_TIME_VALUES, Boolean.FALSE.toString())).booleanValue();
+		this.allowChangeGroupFromToday = new Boolean(getPropertyValue(getBundle(iwc), PROPERTY_ALLOW_CHANGE_GROUP_FROM_TODAY, Boolean.TRUE.toString())).booleanValue();
 		initialize();
 		
 		ACCEPTED_COLOR = getBundle(iwc).getProperty(PROPERTY_ACCEPTED_COLOR, "#FFE0E0");
@@ -87,7 +87,7 @@ public class ChildCareBlock extends CommuneBlock {
 	}
 	
 	private void initialize() throws RemoteException {
-		_childCareID = session.getChildCareID();	
+		this._childCareID = this.session.getChildCareID();	
 	}
 	
 	public void init(IWContext iwc) throws Exception {
@@ -115,7 +115,7 @@ public class ChildCareBlock extends CommuneBlock {
 	 * @return CareBusiness
 	 */
 	public CareBusiness getCareBusiness() {
-		return careBusiness;
+		return this.careBusiness;
 	}
 	
 	
@@ -123,25 +123,25 @@ public class ChildCareBlock extends CommuneBlock {
 	 * @return ChildCareBusiness
 	 */
 	public ChildCareBusiness getBusiness() {
-		return business;
+		return this.business;
 	}
 
 	/**
 	 * @return ChildCareSession
 	 */
 	public ChildCareSession getSession() {
-		return session;
+		return this.session;
 	}
 	
 	public CommuneUserBusiness getUserBusiness() {
-		return userBusiness;
+		return this.userBusiness;
 	}
 
 	/**
 	 * @return int
 	 */
 	public int getChildcareID() {
-		return _childCareID;
+		return this._childCareID;
 	}
 
 	protected Table getLegendTable() {
@@ -239,13 +239,15 @@ public class ChildCareBlock extends CommuneBlock {
 			String catCC = element.getCategory().getCategory().toString().toUpperCase();
 			//only add to list if category is childcare
 			if (catCC.equals(catChildcare)){
-				if (((Integer)element.getPrimaryKey()).intValue() != typeToIgnoreID)
-					menu.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolTypeName());	
+				if (((Integer)element.getPrimaryKey()).intValue() != typeToIgnoreID) {
+					menu.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolTypeName());
+				}	
 			}
 			
 		}
-		if (typeID != -1)
+		if (typeID != -1) {
 			menu.setSelectedElement(typeID);
+		}
 		
 		return (DropdownMenu) getStyledInterface(menu);	
 	}
@@ -254,8 +256,9 @@ public class ChildCareBlock extends CommuneBlock {
 		SelectorUtility util = new SelectorUtility();
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(util.getSelectorFromIDOEntities(new DropdownMenu(parameterName), getBusiness().findAllEmploymentTypes(), "getLocalizationKey", getResourceBundle()));
 		menu.addMenuElementFirst("-1", "");
-		if (selectedType != -1)
+		if (selectedType != -1) {
 			menu.setSelectedElement(selectedType);
+		}
 		return menu;
 	}
 
@@ -266,11 +269,13 @@ public class ChildCareBlock extends CommuneBlock {
 		Iterator iter = groups.iterator();
 		while (iter.hasNext()) {
 			SchoolClass element = (SchoolClass) iter.next();
-			if (((Integer)element.getPrimaryKey()).intValue() != groupToIgnoreID)
+			if (((Integer)element.getPrimaryKey()).intValue() != groupToIgnoreID) {
 				menu.addMenuElement(element.getPrimaryKey().toString(), element.getSchoolClassName());
+			}
 		}
-		if (groupID != -1)
+		if (groupID != -1) {
 			menu.setSelectedElement(groupID);
+		}
 		
 		return (DropdownMenu) getStyledInterface(menu);	
 	}
@@ -305,13 +310,14 @@ public class ChildCareBlock extends CommuneBlock {
 
 	protected DropdownMenu getSeasons() throws RemoteException {
 		SelectorUtility util = new SelectorUtility();
-		Collection seasons = business.getSchoolBusiness().findAllSchoolSeasons(getBusiness().getSchoolBusiness().getCategoryElementarySchool());
+		Collection seasons = this.business.getSchoolBusiness().findAllSchoolSeasons(getBusiness().getSchoolBusiness().getCategoryElementarySchool());
 
 		DropdownMenu menu = (DropdownMenu) util.getSelectorFromIDOEntities(new DropdownMenu(getSession().getParameterSeasonID()), seasons, "getSchoolSeasonName");
 		menu.setToSubmit();
 		
-		if ( getSession().getSeasonID() != -1 )
+		if ( getSession().getSeasonID() != -1 ) {
 			menu.setSelectedElement(getSession().getSeasonID());
+		}
 		else {
 			try {
 				SchoolSeason currentSeason = getBusiness().getSchoolBusiness().getCurrentSchoolSeason(getBusiness().getSchoolBusiness().getCategoryElementarySchool());
@@ -319,7 +325,7 @@ public class ChildCareBlock extends CommuneBlock {
 			}
 			catch (FinderException e) {
 				try {
-					SchoolSeason currentSeason = careBusiness.getCurrentSeason();
+					SchoolSeason currentSeason = this.careBusiness.getCurrentSeason();
 					menu.setSelectedElement(currentSeason.getPrimaryKey().toString());
 				}
 				catch (FinderException e1) {
@@ -398,21 +404,21 @@ public class ChildCareBlock extends CommuneBlock {
 	 * @return Returns the checkRequired.
 	 */
 	public boolean isCheckRequired() {
-		return checkRequired;
+		return this.checkRequired;
 	}
 	
 	/**
 	 * @return Returns the usePredefinedCareTimeValues.
 	 */
 	public boolean isUsePredefinedCareTimeValues() {
-		return usePredefinedCareTimeValues;
+		return this.usePredefinedCareTimeValues;
 	}
 	
 	/**
 	 * @return Returns the allowChangeGroupFromToday.
 	 */
 	public boolean isAllowChangeGroupFromToday() {
-		return allowChangeGroupFromToday;
+		return this.allowChangeGroupFromToday;
 	}
     
 	/**

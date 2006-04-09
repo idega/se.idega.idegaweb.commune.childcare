@@ -26,7 +26,7 @@ import com.idega.util.IWTimestamp;
 /**
  * ChildCareQueueUpdateTable
  * @author <a href="mailto:joakim@idega.is">Joakim</a>
- * @version $Id: ChildCareQueueUpdateTable.java,v 1.6 2004/01/12 09:20:31 gimmi Exp $
+ * @version $Id: ChildCareQueueUpdateTable.java,v 1.8 2006/04/09 11:45:19 laddi Exp $
  * @since 12.2.2003 
  */
 public class ChildCareQueueUpdateTable extends CommuneBlock {
@@ -134,32 +134,32 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 		String _appid, _status;
 		Date _date;
 		AcceptedStatus(String appId, String status, String day, String month, String year) {
-			_appid = appId;
-			_status = status;
+			this._appid = appId;
+			this._status = status;
 			if (day != null && month != null && year != null) {
 				IWTimestamp stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
 				try {
-					_date = stamp.getDate();
+					this._date = stamp.getDate();
 				}
 				catch (IllegalArgumentException ex) {
-					_date = new Date(0);
+					this._date = new Date(0);
 				}
 			}
 		}
 		boolean equals(String status) {
-			return _status.equals(status);
+			return this._status.equals(status);
 		}
 		boolean isAccepted() {
-			return _status != null && _status.equals(CCConstants.YES);
+			return this._status != null && this._status.equals(CCConstants.YES);
 		}
 		boolean isRejected() {
-			return _status != null && _status.equals(CCConstants.NO);
+			return this._status != null && this._status.equals(CCConstants.NO);
 		}
 		boolean isRejectedNewDate() {
-			return _status != null && _status.equals(CCConstants.NO_NEW_DATE);
+			return this._status != null && this._status.equals(CCConstants.NO_NEW_DATE);
 		}
 		boolean isDefined() {
-			return _status != null;
+			return this._status != null;
 		}
 	}
 	
@@ -204,7 +204,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	 * @param layoutTbl
 	 * @throws RemoteException
 	 */
-	private void createPagePhase1(IWContext iwc, Table layoutTbl) throws RemoteException {
+	private void createPagePhase1(IWContext iwc, Table layoutTbl) {
 		Collection choices = findChoices(iwc);
 		if (choices.size() == 0) {
 			layoutTbl.add(new Text("No choices have been made for this person."));
@@ -232,7 +232,7 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	private Collection findChoices(IWContext iwc) {
 		Collection choices = null;
 		try {
-			int childId = Integer.parseInt(iwc.getParameter(prmChildId));
+			int childId = Integer.parseInt(iwc.getParameter(this.prmChildId));
 			ChildCareQueueHomeImpl ccqHome = (ChildCareQueueHomeImpl) IDOLookup.getHome(ChildCareQueue.class);
 			choices = ccqHome.findQueueByChild(childId);
 		}
@@ -279,11 +279,11 @@ public class ChildCareQueueUpdateTable extends CommuneBlock {
 	}
 
 	public void setEndPage(ICPage page) {
-		_endPage = page;
+		this._endPage = page;
 	}
 
 	public ICPage getEndPage() {
-		return _endPage;
+		return this._endPage;
 	}
 
 	private Table getHelpTextPage1() {

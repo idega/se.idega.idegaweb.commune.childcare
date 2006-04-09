@@ -1,5 +1,5 @@
 /*
- * $Id: CancelFormContext.java,v 1.3 2005/05/20 12:31:19 laddi Exp $ Created
+ * $Id: CancelFormContext.java,v 1.4 2006/04/09 11:45:18 laddi Exp $ Created
  * on 15.10.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -41,10 +41,10 @@ import com.idega.xml.XMLOutput;
 
 /**
  * 
- * Last modified: $Date: 2005/05/20 12:31:19 $ by $Author: laddi $
+ * Last modified: $Date: 2006/04/09 11:45:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class CancelFormContext extends PrintingContextImpl {
 
@@ -119,15 +119,17 @@ public class CancelFormContext extends PrintingContextImpl {
 	}
 
 	protected IWBundle getBundle(IWApplicationContext iwac) {
-		if (iwb == null)
-			iwb = iwac.getIWMainApplication().getBundle(getBundleIdentifier());
-		return iwb;
+		if (this.iwb == null) {
+			this.iwb = iwac.getIWMainApplication().getBundle(getBundleIdentifier());
+		}
+		return this.iwb;
 	}
 
 	protected IWResourceBundle getResourceBundle(IWApplicationContext iwac, Locale locale) {
-		if (iwrb == null)
+		if (this.iwrb == null) {
 			getBundle(iwac).getResourceBundle(locale);
-		return iwrb;
+		}
+		return this.iwrb;
 	}
 
 	protected String getTemplateUrl(IWBundle iwb, Locale locale, String name) {
@@ -139,16 +141,19 @@ public class CancelFormContext extends PrintingContextImpl {
 	}
 
 	private String getResourcRealPath(IWBundle iwb, Locale locale) {
-		if (locale != null)
+		if (locale != null) {
 			return iwb.getResourcesRealPath(locale) + "/print/";
-		else
+		}
+		else {
 			return iwb.getResourcesRealPath() + "/print/";
+		}
 	}
 
 	protected FileInputStream getTemplateUrlAsStream(IWBundle iwb, Locale locale, String name, boolean createIfNotExists) throws IOException {
 		File template = new File(getTemplateUrl(iwb, locale, name));
-		if (!template.exists() && createIfNotExists)
+		if (!template.exists() && createIfNotExists) {
 			createTemplateFile(template);
+		}
 		return new FileInputStream(template);
 	}
 

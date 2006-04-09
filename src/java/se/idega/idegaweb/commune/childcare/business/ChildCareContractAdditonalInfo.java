@@ -32,7 +32,7 @@ public class ChildCareContractAdditonalInfo {
         
         if (parent != null) {
             try {
-                Phone p = userBusiness.getUsersHomePhone(parent);
+                Phone p = this.userBusiness.getUsersHomePhone(parent);
                 s = p.getNumber();                
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -47,7 +47,7 @@ public class ChildCareContractAdditonalInfo {
         
         if (parent != null) {
             try {
-                Phone p = userBusiness.getUsersWorkPhone(parent);
+                Phone p = this.userBusiness.getUsersWorkPhone(parent);
                 s = p.getNumber();
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -63,7 +63,7 @@ public class ChildCareContractAdditonalInfo {
         
         if (parent!= null) {            
             try {               
-                Email email = userBusiness.getEmail(parent);
+                Email email = this.userBusiness.getEmail(parent);
                 if(email != null) {
                     s = email.getEmailAddress();
                 }
@@ -80,7 +80,7 @@ public class ChildCareContractAdditonalInfo {
         
         if (parent != null) {
             try {
-                Phone p = userBusiness.getUsersMobilePhone(parent);
+                Phone p = this.userBusiness.getUsersMobilePhone(parent);
                 s = p.getNumber();
             } catch (RemoteException e) {
                 e.printStackTrace();
@@ -92,35 +92,35 @@ public class ChildCareContractAdditonalInfo {
     }     
     
     public String getParent1HomePhoneNumber() {
-        return this.getParentHomePhoneNumber(parent1);
+        return this.getParentHomePhoneNumber(this.parent1);
     }
     
     public String getParent2HomePhoneNumber() {
-        return this.getParentHomePhoneNumber(parent2);
+        return this.getParentHomePhoneNumber(this.parent2);
     } 
     
     public String getParent1WorkPhoneNumber() {
-        return this.getParentWorkPhoneNumber(parent1);
+        return this.getParentWorkPhoneNumber(this.parent1);
     }
     
     public String getParent2WorkPhoneNumber() {
-        return this.getParentWorkPhoneNumber(parent2);
+        return this.getParentWorkPhoneNumber(this.parent2);
     }  
     
     public String getParent1EmailAddress() {
-        return getParentEmailAddress(parent1);
+        return getParentEmailAddress(this.parent1);
     }
     
     public String getParent2EmailAddress() {
-        return getParentEmailAddress(parent2);
+        return getParentEmailAddress(this.parent2);
     }
     
     public String getParent1MobilePhoneNumber() {
-        return getParentMobilePhoneNumber(parent1);
+        return getParentMobilePhoneNumber(this.parent1);
     }
     
     public String getParent2MobilePhoneNumber() {
-        return getParentMobilePhoneNumber(parent2);
+        return getParentMobilePhoneNumber(this.parent2);
     }    
     
 }

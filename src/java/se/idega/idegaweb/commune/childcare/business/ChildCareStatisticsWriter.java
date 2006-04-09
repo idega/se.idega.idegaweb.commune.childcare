@@ -70,8 +70,9 @@ public class ChildCareStatisticsWriter {
 			IWTimestamp fromDate = new IWTimestamp(1, 6, 2003);
 			IWTimestamp toDate = new IWTimestamp();
 			String lastUpdated = iwrb.getIWBundleParent().getProperty(PROPERTY_LAST_UPDATED);
-			if (lastUpdated != null)
+			if (lastUpdated != null) {
 				fromDate = new IWTimestamp(lastUpdated);
+			}
 				
 			Collection collection = getChildCareBusiness(iwc).getCaseLogNewContracts(fromDate.getTimestamp(), toDate.getTimestamp());
 			collection.addAll(getChildCareBusiness(iwc).getCaseLogAlteredContracts(fromDate.getTimestamp(), toDate.getTimestamp()));
@@ -169,13 +170,15 @@ public class ChildCareStatisticsWriter {
 					caseLog = (CaseLog) iter.next();
 					application = getChildCareBusiness(iwc).getApplication(((Integer)caseLog.getCase().getPrimaryKey()).intValue());
 					archive = getChildCareBusiness(iwc).getContractFile(application.getContractFileId());
-					if (archive == null)
+					if (archive == null) {
 						continue;
+					}
 					child = application.getChild();
 					provider = application.getProvider();
 					address = getCommuneUserBusiness(iwc).getUsersMainAddress(child);
-					if (address != null)
+					if (address != null) {
 						postalCode = address.getPostalCode();
+					}
 					phone = getCommuneUserBusiness(iwc).getChildHomePhone(child);
 		
 					row.createCell((short)cellColumn++).setCellValue(provider.getSchoolName());
@@ -185,16 +188,20 @@ public class ChildCareStatisticsWriter {
 		
 					if (address != null) {
 						row.createCell((short)cellColumn++).setCellValue(address.getStreetAddress());
-						if (postalCode != null)
+						if (postalCode != null) {
 							row.createCell((short)cellColumn++).setCellValue(postalCode.getPostalAddress());
+						}
 					}
-					else
+					else {
 						cellColumn = cellColumn + 2;
+					}
 					
-					if (phone != null)
+					if (phone != null) {
 						row.createCell((short)cellColumn++).setCellValue(phone.getNumber());
-					else
+					}
+					else {
 						cellColumn++;
+					}
 	
 					row.createCell((short)cellColumn++).setCellValue(getCareTime(getChildCareBusiness(iwc), iwrb, archive.getCareTime()));
 					row.createCell((short)cellColumn++).setCellValue(new IWTimestamp(archive.getValidFromDate()).getLocaleDate(locale, IWTimestamp.SHORT));
@@ -204,10 +211,12 @@ public class ChildCareStatisticsWriter {
 						status = iwrb.getLocalizedString("child_care.status_cancelled","Cancelled");
 					}
 					else {
-						if (caseLog.getCaseStatusBefore().getStatus().equals(getChildCareBusiness(iwc).getCaseStatusReady().getStatus()))
+						if (caseLog.getCaseStatusBefore().getStatus().equals(getChildCareBusiness(iwc).getCaseStatusReady().getStatus())) {
 							status = iwrb.getLocalizedString("child_care.status_altered","Altered");
-						else
+						}
+						else {
 							status = iwrb.getLocalizedString("child_care.status_ready","Ready");
+						}
 						cellColumn++;
 					}
 						
@@ -233,8 +242,9 @@ public class ChildCareStatisticsWriter {
 			
 				return true;
 			}
-			else
+			else {
 				return false;
+			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -354,7 +364,9 @@ public class ChildCareStatisticsWriter {
 	}	
 
 	private Date timestampToRoundedDate(Timestamp stamp) {
-		if (stamp == null) return null;
+		if (stamp == null) {
+			return null;
+		}
 		
 		Calendar cal = new GregorianCalendar();
 		cal.setTimeInMillis(stamp.getTime());
@@ -399,13 +411,17 @@ public class ChildCareStatisticsWriter {
 	*/
 	
 	String dateToString(Date date) {
-		if(date == null) return "";
+		if(date == null) {
+			return "";
+		}
 		IWTimestamp stamp = new IWTimestamp(date);
 		return stamp.getDateString("yyyy-MM-dd");	
 	}
 	
 	private java.sql.Date utilDateToSqlDate(Date d) {
-		if(d == null) return null;
+		if(d == null) {
+			return null;
+		}
 		return new java.sql.Date(d.getTime());
 	}
 	
@@ -438,7 +454,9 @@ public class ChildCareStatisticsWriter {
 				smallCollection = new Vector();
 				
 				Date registerDate = timestampToRoundedDate(placement.getRegisterDate()); //java.sql.Timestamp; and only contains date
-				if (registerDate == null ) continue;
+				if (registerDate == null ) {
+					continue;
+				}
 
 				Date removedDate = timestampToRoundedDate(placement.getRemovedDate()); //java.sql.Timestamp; contains date and time
 				
@@ -465,14 +483,16 @@ public class ChildCareStatisticsWriter {
 					
 //					2.	IF it’s a new placement where sch_class_member.register_date >= 1st of current month 
 //					AND sch_class_member.register_date <= last date of current month					
-					if (registerDate.equals(startDate) && isDateInInterval(registerDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth))  //placement started
+					if (registerDate.equals(startDate) && isDateInInterval(registerDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth)) {
 						takeThisPlacement = true;
+					}
 
 //					3.	IF it’s a placement that ends (has removed_date set in sch_class_member) and 
 //					sch_class_member.removed date <= last date of current month
 //					and sch_class_member.removed date >= first date of current month					
-					if (removedDate != null && (isDateInInterval(removedDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth) & removedDate.equals(endDate))) //placement ended
+					if (removedDate != null && (isDateInInterval(removedDate, firstDateOfCurrentMonth, lastDateOfCurrentMonth) & removedDate.equals(endDate))) {
 						takeThisPlacement = true;
+					}
 						
 //					4.	IF a group has been changed (new entry in sch_class_member_log with 
 //						sch_class_member_log.start date >= 1st of current month 
@@ -491,7 +511,9 @@ public class ChildCareStatisticsWriter {
 							contract = null;
 							
 							Date validFromDate = c.getValidFromDate(); //java.util.Date , only date
-							if (validFromDate == null) continue;
+							if (validFromDate == null) {
+								continue;
+							}
 							
 							if (validFromDate.equals(startDate)) {
 								contract = c;
@@ -510,7 +532,9 @@ public class ChildCareStatisticsWriter {
 								ChildCareContract c = (ChildCareContract) contractsIter.next();	
 								
 								Date validFromDate = c.getValidFromDate(); //java.util.Date , only date
-								if (validFromDate == null) continue; //fool's protection
+								if (validFromDate == null) {
+									continue; //fool's protection
+								}
 								
 								if (validFromDate.before(startDate)) {
 									if (contract != null ) {
@@ -547,7 +571,9 @@ public class ChildCareStatisticsWriter {
 //						5.	IF a caretime has been changed (new entry in comm_childcare_archive with 
 //							comm_childcare_archive.start date >=1st of current month AND comm_childcare_archive.start date <= last date of current month)
 						Date validFromDate = contract.getValidFromDate(); //java.util.Date , only date
-						if (validFromDate == null) continue;
+						if (validFromDate == null) {
+							continue;
+						}
 						
 						Date terminatedDate = contract.getTerminatedDate();
 						Date endOfPlacementDate = null;
@@ -618,7 +644,7 @@ public class ChildCareStatisticsWriter {
 	}	
 
 	private SchoolBusiness getSchoolBusiness() throws IBOLookupException{
-		return (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);   
+		return (SchoolBusiness) IBOLookup.getServiceInstance(this.iwc, SchoolBusiness.class);   
 	}
 	
 	private ChildCareContractHome getChildCareContractHome() throws IDOLookupException {
@@ -642,24 +668,34 @@ public class ChildCareStatisticsWriter {
 		}
 		
 		public String formatPersonalId(String personalId) {
-			if (personalId == null) return null;
+			if (personalId == null) {
+				return null;
+			}
 			return personalId.substring(2, personalId.length());
 		}
 		
 		public String formatEndDate(String s) {
-			if (s == null) return null;
-			if (s.length() < 10)
-				return EMPTY_DATE;
-			else
+			if (s == null) {
+				return null;
+			}
+			if (s.length() < 10) {
+				return this.EMPTY_DATE;
+			}
+			else {
 				return s;
+			}
 		}	
 		
 		public String formatCaretime(String s) {
-			if (s == null) return null;
-			if (s.length() == 1) 
+			if (s == null) {
+				return null;
+			}
+			if (s.length() == 1) {
 				return "0" + s;
-			else 
+			}
+			else {
 				return s;
+			}
 		}
 		
 
@@ -683,7 +719,7 @@ public class ChildCareStatisticsWriter {
 		}
 		
 		public Date getStartDate() {
-			return startDate;
+			return this.startDate;
 		}
 		
 		public void setStartDate(Date startDate) {
@@ -694,13 +730,13 @@ public class ChildCareStatisticsWriter {
 			String contents = null;	
 			try {
 				contents = 
-				member.getSchoolClass().getSchool().getExtraProviderId() + SEPARATOR +
-				member.getSchoolClass().getGroupStringId() + SEPARATOR +
-				formatPersonalId(member.getStudent().getPersonalID()) + SEPARATOR + 
-				dateToString(startDate) + SEPARATOR +
-				formatEndDate(dateToString(endDate)) + SEPARATOR +
-				formatCaretime(careTimeString) + SEPARATOR +
-				member.getSchoolType().getTypeStringId() + 
+				this.member.getSchoolClass().getSchool().getExtraProviderId() + SEPARATOR +
+				this.member.getSchoolClass().getGroupStringId() + SEPARATOR +
+				formatPersonalId(this.member.getStudent().getPersonalID()) + SEPARATOR + 
+				dateToString(this.startDate) + SEPARATOR +
+				formatEndDate(dateToString(this.endDate)) + SEPARATOR +
+				formatCaretime(this.careTimeString) + SEPARATOR +
+				this.member.getSchoolType().getTypeStringId() + 
 				"\r\n";	
 			} catch (Exception e) {
 				System.out.println("error in DataForExport");
@@ -711,7 +747,7 @@ public class ChildCareStatisticsWriter {
 
 		
 		public Date getEndDate() {
-			return endDate;
+			return this.endDate;
 		}
 
 		

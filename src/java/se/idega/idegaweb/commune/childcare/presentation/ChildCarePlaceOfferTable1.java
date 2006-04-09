@@ -89,7 +89,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		//int row = 2;
 		int row = 2;
 		boolean offerPresented = false;
-		itemRow = 1;
+		this.itemRow = 1;
 
 		//To avoid more than the first offer to be presented with accept/reject possibilities
 		StringBuffer validateDateScript = new StringBuffer("false ");
@@ -99,7 +99,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 		//int itemRow = 2;   
 		while (i.hasNext()) { 
 			ChildCareApplication app = ((ComparableApp) i.next()).getApplication();
-			itemRow = app.getChoiceNumber();
+			this.itemRow = app.getChoiceNumber();
 			if (app.isActive()) {   
 				continue;
 			}
@@ -141,15 +141,16 @@ class ChildCarePlaceOfferTable1 extends Table {
 			row++;  
 		}
 		
-		if (offerList != null) {
+		if (this.offerList != null) {
 			setHeight(row++, 12);
 			this.mergeCells(1, row, getColumns(), row);
-			Iterator iter = offerList.iterator();
+			Iterator iter = this.offerList.iterator();
 			while (iter.hasNext()) {
 				String element = (String) iter.next();
 				add(_page.getSmallText(element), 1, row);
-				if (iter.hasNext())
+				if (iter.hasNext()) {
 					add(new Break(), 1, row);
+				}
 			}
 		}
 
@@ -167,13 +168,13 @@ class ChildCarePlaceOfferTable1 extends Table {
 		script.setFunction("validateDates", "function validateDates() { if(" + validateDateScript + ") { alert('" + _page.localize(SUBMIT_UNVALID_DATE) + "'); return false; } else {return true;}}");
 		script.setFunction("alertTerminateContract", "function alertTerminateContract() { " + (!hasActivePlacement ? "return true; }" : "if(" + alertTerminateContractScript + ") { alert('" + _page.localize(ALERT_TERMINATE_CONTRACT) + "'); return true; } else {return true;}}"));
 
-		_onSubmitHandler = "if (!validateDates()) " + "return false; " + "if (!alertTerminateContract()) " + "return false; " + "return confirm('" + _page.localize(SUBMIT_ALERT_1) + "')";
+		this._onSubmitHandler = "if (!validateDates()) " + "return false; " + "if (!alertTerminateContract()) " + "return false; " + "return confirm('" + _page.localize(SUBMIT_ALERT_1) + "')";
 
 		initTable(hasOffer);
 	}
 
 	public String getOnSubmitHandler() {
-		return _onSubmitHandler;
+		return this._onSubmitHandler;
 	}
 
 	/**
@@ -195,8 +196,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 		String validUntil = app.getOfferValidUntil() != null ? VALID_UNTIL + " " + new IWTimestamp(app.getOfferValidUntil()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + "." : "";
 		String offerText = isOffer ? app.getChoiceNumber() + ": " + GRANTED + " " + new IWTimestamp(app.getFromDate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) + ". " + validUntil : "";
 		
-		if (isOffer)
+		if (isOffer) {
 			addToOfferList(offerText);
+		}
 
 		boolean presentOffer = isOffer && !offerPresented;
 		boolean disable = offerPresented || app.getApplicationStatus() == _page.childCarebusiness.getStatusRejected();
@@ -231,8 +233,9 @@ class ChildCarePlaceOfferTable1 extends Table {
 			RadioButton rb3 = new RadioButton(CCConstants.ACCEPT_OFFER + index, CCConstants.NO);
 			rb3.setMustBeSelected(_page.localize("child_care.must_select_offer_option", "You must select an offer option."));
 
-			if (disableAccept)
+			if (disableAccept) {
 				rb1.setDisabled(true);
+			}
 			
 			if (hasAcceptedApplication) {
 				rb1.setOnClick("document.getElementById('" + rb1.getID() + "').checked = false; alert('" + _page.localize("child_care.must_delete_accepted_offer", "You must delete accepted offer before you can choose a new offer.") + "'); return false;");
@@ -322,8 +325,8 @@ class ChildCarePlaceOfferTable1 extends Table {
         School provider = app.getProvider();
 
       //  String choiceNumber = app.getChoiceNumber() + ": "; 
-        String choiceNumber = itemRow + ": ";
-		itemRow ++ ;
+        String choiceNumber = this.itemRow + ": ";
+		this.itemRow ++ ;
         String name =  provider.getName() + _page.getDebugInfo(app);
         
         Text t = _page.getSmallText(choiceNumber);
@@ -391,9 +394,10 @@ class ChildCarePlaceOfferTable1 extends Table {
 	}
 	
 	private void addToOfferList(String offerText) {
-		if (offerList == null)
-			offerList = new ArrayList();
-		offerList.add(offerText);
+		if (this.offerList == null) {
+			this.offerList = new ArrayList();
+		}
+		this.offerList.add(offerText);
 	}
 
 	ChildCareBusiness getChildCareBusiness(IWContext iwc) {
@@ -406,7 +410,7 @@ class ChildCarePlaceOfferTable1 extends Table {
 	}
 
     public boolean isContainsSortedByBirthdateProvider() {
-        return containsSortedByBirthdateProvider;
+        return this.containsSortedByBirthdateProvider;
     }
 	
 	

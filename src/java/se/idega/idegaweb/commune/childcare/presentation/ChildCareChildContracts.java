@@ -52,7 +52,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 		table.setWidth(getWidth());
 
 		GenericButton back = null;
-		if(insideWindow){
+		if(this.insideWindow){
 			CloseButton close = new CloseButton(localize("close","Close"));
 			close = (CloseButton)getStyledInterface(close);
 			back = close;
@@ -294,10 +294,12 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			table.setCellpaddingRight(table.getColumns(), row, 12);
 		}
 		else {
-			if (row % 2 == 0)
+			if (row % 2 == 0) {
 				table.setRowColor(row, getZebraColor1());
-			else
+			}
+			else {
 				table.setRowColor(row, getZebraColor2());
+			}
 		}
 
 		row++;
@@ -355,8 +357,9 @@ public class ChildCareChildContracts extends ChildCareBlock {
 			
 					if (address != null) {
 						table.add(getSmallText(address.getStreetAddress()), 3, row);
-						if (address.getPostalAddress() != null)
+						if (address.getPostalAddress() != null) {
 							table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+						}
 						row++;
 					}
 					if (phone != null && phone.getNumber() != null) {
@@ -405,7 +408,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	
 	private Date getEarliestPossibleContractRemoveDate() throws RemoteException {
 		Date earliestPossibleRemoveDate = null;
-		if (useFuturePayment) {
+		if (this.useFuturePayment) {
 			IWTimestamp t = new IWTimestamp();
 			t.setDay(1);
 			t.addMonths(3);
@@ -471,7 +474,7 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	 * @return
 	 */
 	public boolean isInsideWindow() {
-		return insideWindow;
+		return this.insideWindow;
 	}
 
 	/**
@@ -482,10 +485,10 @@ public class ChildCareChildContracts extends ChildCareBlock {
 	}
 	
 	public boolean getUseFuturePayment() {
-		return useFuturePayment;
+		return this.useFuturePayment;
 	}
 	
 	public void setUseFuturePayment(boolean b) {
-		useFuturePayment = b;
+		this.useFuturePayment = b;
 	}
 }

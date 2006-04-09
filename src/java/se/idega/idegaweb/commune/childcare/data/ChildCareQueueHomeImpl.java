@@ -112,9 +112,11 @@ public Collection getDistinctNotExportedChildIds() {
 	System.out.println("Placed "+childIds.size()+" children in map.");
 		
 	Set keys = childIds.keySet();
-	if (keys != null)
+	if (keys != null) {
 		return childIds.keySet();
-	else
+	}
+	else {
 		return null;
+	}
 }
 }

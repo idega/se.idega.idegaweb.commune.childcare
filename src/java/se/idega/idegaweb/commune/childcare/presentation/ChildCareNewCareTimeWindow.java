@@ -75,8 +75,8 @@ public class ChildCareNewCareTimeWindow extends Window {
 		//		add(new Text("Appid:" + iwc.getParameter(CCConstants.APPID) + "."));
 
 		InterfaceObject careTime = null;
-		if (style.isUsePredefinedCareTimeValues()) {
-			DropdownMenu menu = style.getCareTimeMenu(CARE_TIME);
+		if (this.style.isUsePredefinedCareTimeValues()) {
+			DropdownMenu menu = this.style.getCareTimeMenu(CARE_TIME);
 			menu.setSelectedElement(application.getCareTime());
 			careTime = menu;
 		}
@@ -84,13 +84,13 @@ public class ChildCareNewCareTimeWindow extends Window {
 			TextInput input = new TextInput(CARE_TIME);
 			input.setValue(application.getCareTime());
 			input.setLength(4);
-			input.setStyleAttribute(style.getSmallTextFontStyle());
+			input.setStyleAttribute(this.style.getSmallTextFontStyle());
 			careTime = input;
 		}
 		
 		DateInput fromDate = new DateInput(FROM_DATE);
-		fromDate.setAsNotEmpty(style.localize(ALERT_UNVALID_DATE_FORMAT));
-		fromDate.setStyleAttribute("style", style.getSmallTextFontStyle());
+		fromDate.setAsNotEmpty(this.style.localize(ALERT_UNVALID_DATE_FORMAT));
+		fromDate.setStyleAttribute("style", this.style.getSmallTextFontStyle());
 
 		HiddenInput action = new HiddenInput(CCConstants.ACTION);
 		action.setValue(ACTION_NEW_CARE_TIME);
@@ -98,26 +98,26 @@ public class ChildCareNewCareTimeWindow extends Window {
 		HiddenInput appid = new HiddenInput(CCConstants.APPID);
 		appid.setValue(iwc.getParameter(CCConstants.APPID));
 
-		SubmitButton submit = new SubmitButton(style.localize(CCConstants.OK));
+		SubmitButton submit = new SubmitButton(this.style.localize(CCConstants.OK));
 		submit.setAsImageButton(true);
-		CloseButton close = new CloseButton(style.localize(CCConstants.CANCEL));
+		CloseButton close = new CloseButton(this.style.localize(CCConstants.CANCEL));
 		close.setAsImageButton(true);
 
 		int row = 1;
 		layoutTbl.add(
-			style.getSmallText(style.localize(CARE_TIME_LABEL) + ":"),
+			this.style.getSmallText(this.style.localize(CARE_TIME_LABEL) + ":"),
 			1,
 			row);
 		layoutTbl.add(careTime, 2, row++);
 
 		layoutTbl.add(
-			style.getSmallText(style.localize(FROM_DATE_LABEL) + ":"),
+			this.style.getSmallText(this.style.localize(FROM_DATE_LABEL) + ":"),
 			1,
 			row);
 		layoutTbl.add(fromDate, 2, row++);
 		fromDate.setEarliestPossibleDate(
 			new Date(),
-			style.localize(ALERT_UNVALID_DATE));
+			this.style.localize(ALERT_UNVALID_DATE));
 
 		row++;
 
@@ -125,7 +125,7 @@ public class ChildCareNewCareTimeWindow extends Window {
 		layoutTbl.add(submit, 2, row);
 		layoutTbl.setAlignment(2, row++, "right");
 
-		layoutTbl.add(style.getSmallText(style.localize(INFO)), 1, row);
+		layoutTbl.add(this.style.getSmallText(this.style.localize(INFO)), 1, row);
 
 		form.add(action);
 		form.add(appid);
@@ -146,10 +146,10 @@ public class ChildCareNewCareTimeWindow extends Window {
 
 		getChildCareBusiness(iwc).sendMessageToParents(
 			application,
-			style.localize(
+			this.style.localize(
 				"ccnctw_new_caretime_msg_parents_subject",
 				"Begäran om ändrad omsorgstid gjord"),
-			style.localize(
+			this.style.localize(
 				"ccnctw_new_caretime_msg_parents_message",
 				"Du har skickat en begäran om ändrad omsorgstid för ")
 				+ child.getName()
@@ -158,18 +158,18 @@ public class ChildCareNewCareTimeWindow extends Window {
 
 		getChildCareBusiness(iwc).sendMessageToProvider(
 			application,
-			style.localize(
+			this.style.localize(
 				"ccnctw_new_caretime_msg_provider_subject",
 				"Begäran om ändrad omsorgstid"),
 			owner.getName()
 				+ " "
-				+ style.localize(
+				+ this.style.localize(
 					"ccnctw_new_caretime_msg_provider_message1",
 					"har begärt ändrad omsorgstid till")
 				+ " "
 				+ iwc.getParameter(CARE_TIME)
 				+ " "
-				+ style.localize(
+				+ this.style.localize(
 					"ccnctw_new_caretime_msg_provider_message2",
 					"tim/vecka för")
 				+ " "
@@ -177,7 +177,7 @@ public class ChildCareNewCareTimeWindow extends Window {
 				+ " "
 				+ child.getPersonalID()
 				+ ". "
-				+ style.localize(
+				+ this.style.localize(
 					"ccnctw_new_caretime_msg_provider_message3",
 					"Den nya omsorgstiden skall gälla fr.o.m.")
 				+ " "

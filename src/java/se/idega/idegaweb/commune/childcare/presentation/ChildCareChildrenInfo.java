@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareChildrenInfo.java,v 1.3 2005/04/13 09:54:19 laddi Exp $
+ * $Id: ChildCareChildrenInfo.java,v 1.4 2006/04/09 11:45:19 laddi Exp $
  * Created on 31.1.2005
  *
  * Copyright (C) 2005 Idega Software hf. All Rights Reserved.
@@ -42,10 +42,10 @@ import com.idega.util.text.Name;
 
 
 /**
- * Last modified: $Date: 2005/04/13 09:54:19 $ by $Author: laddi $
+ * Last modified: $Date: 2006/04/09 11:45:19 $ by $Author: laddi $
  * 
  * @author <a href="mailto:laddi@idega.com">laddi</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class ChildCareChildrenInfo extends ChildCareBlock {
 	
@@ -123,11 +123,11 @@ public class ChildCareChildrenInfo extends ChildCareBlock {
 		headerTable.add(getText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + " - " + name.getName(iwc.getCurrentLocale(), true)), 1, 1);
 		
 		try {
-			if (getBusiness().getCheckBusiness().hasChildApprovedCheck(((Integer) child.getPrimaryKey()).intValue()) != -1 && iCheckImage != null) {
-				headerTable.add(iCheckImage, 2, 1);
+			if (getBusiness().getCheckBusiness().hasChildApprovedCheck(((Integer) child.getPrimaryKey()).intValue()) != -1 && this.iCheckImage != null) {
+				headerTable.add(this.iCheckImage, 2, 1);
 			}
-			else if (iNoCheckImage != null) {
-				headerTable.add(iNoCheckImage, 2, 1);
+			else if (this.iNoCheckImage != null) {
+				headerTable.add(this.iNoCheckImage, 2, 1);
 			}
 		}
 		catch (RemoteException re) {
@@ -161,9 +161,9 @@ public class ChildCareChildrenInfo extends ChildCareBlock {
 					row = addContractToTable(iwc, table, contract, row);
 				}
 				
-				if (iPage != null) {
+				if (this.iPage != null) {
 					GenericButton button = getButton(new GenericButton("to_central_contract_creation", localize("child_care.to_central_contract_creation", "To central contract creation")));
-					button.setPageToOpen(iPage);
+					button.setPageToOpen(this.iPage);
 					outerTable.add(button, 1, 2);
 				}
 			}
@@ -210,10 +210,12 @@ public class ChildCareChildrenInfo extends ChildCareBlock {
 		
 		IWTimestamp dateNow = new IWTimestamp();
 		boolean isNotYetActive = false;
-		if (dateNow.isEarlierThan(validFrom))
+		if (dateNow.isEarlierThan(validFrom)) {
 			isNotYetActive = true;
-		else
+		}
+		else {
 			isNotYetActive = false;
+		}
 		
 		table.add(getSmallText(school.getName()), column++, row);
 		table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
@@ -284,14 +286,14 @@ public class ChildCareChildrenInfo extends ChildCareBlock {
 	}
 	
 	public void setPage(ICPage page) {
-		iPage = page;
+		this.iPage = page;
 	}
 	
 	public void setCheckImage(Image checkImage) {
-		iCheckImage = checkImage;
+		this.iCheckImage = checkImage;
 	}
 	
 	public void setNoCheckImage(Image noCheckImage) {
-		iNoCheckImage = noCheckImage;
+		this.iNoCheckImage = noCheckImage;
 	}
 }

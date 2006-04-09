@@ -70,7 +70,7 @@ public class RedeemCheck extends CommuneBlock {
 		
 
 		if (iwc.isLoggedOn()) {
-			_user = iwc.getCurrentUser();
+			this._user = iwc.getCurrentUser();
 			setResourceBundle(getResourceBundle(iwc));
 
 			try {
@@ -97,10 +97,12 @@ public class RedeemCheck extends CommuneBlock {
 	}
 
 	private int parseAction(IWContext iwc) {
-		if (iwc.isParameterSet(PARAM_APPL_ID))
+		if (iwc.isParameterSet(PARAM_APPL_ID)) {
 			return ACTION_VIEW_DETAILS;
-		else if (iwc.isParameterSet(PARAM_REDEEM_APPL_ID))
+		}
+		else if (iwc.isParameterSet(PARAM_REDEEM_APPL_ID)) {
 			return ACTION_REDEEM_CHECK;
+		}
 			
 		return ACTION_VIEW_CHECKS;	
 	}
@@ -263,13 +265,16 @@ public class RedeemCheck extends CommuneBlock {
 		}
 		
 		if (done) {
-			if (getResponsePage() != null)
+			if (getResponsePage() != null) {
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
-			else
+			}
+			else {
 				add(new Text(localize(CHECK_REDEEMED, "Check redeemed")));
+			}
 		}
-		else
+		else {
 			add(new Text(localize(REDEEM_FAILED, "Failed to redeem check")));
+		}
 	}	
 	
 	private ChildCareBusiness getChildCareBusiness(IWContext iwc) {

@@ -25,8 +25,9 @@ public class ChildCareEventListener implements IWPageEventListener {
 		try {
 			ChildCareSession session = getChildCareSession(iwc);
 	
-			if (iwc.isParameterSet(session.getParameterChildCareID()))
+			if (iwc.isParameterSet(session.getParameterChildCareID())) {
 				session.setChildCareID(Integer.parseInt(iwc.getParameter(session.getParameterChildCareID())));
+			}
 
 			if (iwc.isParameterSet(session.getParameterUserID())) {
 				session.setChildID(Integer.parseInt(iwc.getParameter(session.getParameterUserID())));
@@ -52,26 +53,33 @@ public class ChildCareEventListener implements IWPageEventListener {
 				}
 			}
 
-			if (iwc.isParameterSet(session.getParameterApplicationID()))
+			if (iwc.isParameterSet(session.getParameterApplicationID())) {
 				session.setApplicationID(Integer.parseInt(iwc.getParameter(session.getParameterApplicationID())));
+			}
 
-			if (iwc.isParameterSet(session.getParameterFrom()))
+			if (iwc.isParameterSet(session.getParameterFrom())) {
 				session.setFromTimestamp(iwc.getParameter(session.getParameterFrom()));
+			}
 
-			if (iwc.isParameterSet(session.getParameterTo()))
+			if (iwc.isParameterSet(session.getParameterTo())) {
 				session.setToTimestamp(iwc.getParameter(session.getParameterTo()));
+			}
 
-			if (iwc.isParameterSet(session.getParameterSortBy()))
+			if (iwc.isParameterSet(session.getParameterSortBy())) {
 				session.setSortBy(Integer.parseInt(iwc.getParameter(session.getParameterSortBy())));
+			}
 				
-			if (iwc.isParameterSet(session.getParameterGroupID()))
+			if (iwc.isParameterSet(session.getParameterGroupID())) {
 				session.setGroupID(Integer.parseInt(iwc.getParameter(session.getParameterGroupID())));
+			}
 				
-			if (iwc.isParameterSet(session.getParameterCheckID()))
+			if (iwc.isParameterSet(session.getParameterCheckID())) {
 				session.setCheckID(Integer.parseInt(iwc.getParameter(session.getParameterCheckID())));
+			}
 				
-			if (iwc.isParameterSet(session.getParameterSeasonID()))
+			if (iwc.isParameterSet(session.getParameterSeasonID())) {
 				session.setSeasonID(Integer.parseInt(iwc.getParameter(session.getParameterSeasonID())));
+			}
 
 			if (iwc.isParameterSet(session.getParameterStatus())) {
 				session.setStatus(iwc.getParameter(session.getParameterStatus()));

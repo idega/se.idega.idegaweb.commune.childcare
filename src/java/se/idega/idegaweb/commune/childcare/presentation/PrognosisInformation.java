@@ -27,8 +27,8 @@ public class PrognosisInformation extends ChildCareBlock {
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
 		
-		if (providerID != -1) {
-			ChildCarePrognosis prognosis = getBusiness().getPrognosis(providerID);
+		if (this.providerID != -1) {
+			ChildCarePrognosis prognosis = getBusiness().getPrognosis(this.providerID);
 			if (prognosis != null) {
 				add(getPrognosisInformation(prognosis));
 			}
@@ -72,8 +72,8 @@ public class PrognosisInformation extends ChildCareBlock {
 		}
 		int row = 6;
 		
-		int queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 3, false);
-		int queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(providerID, 12, false);
+		int queueWithin3Months = getBusiness().getQueueTotalByProviderWithinMonths(this.providerID, 3, false);
+		int queueWithin12Months = getBusiness().getQueueTotalByProviderWithinMonths(this.providerID, 12, false);
 		
 		table.mergeCells(1, row, 2, row);
 		table.add(getSmallText(localize("child_care.provider_queue3months", "Children with desired placement within 3 months") + ":" + Text.NON_BREAKING_SPACE), 1, row);
@@ -108,7 +108,7 @@ public class PrognosisInformation extends ChildCareBlock {
 		table.setHeight(row++, 6);
 		table.mergeCells(1, row, 2, row);
 		table.add(getSmallText(localize("child_care.total_in_queue", "Total in queue") + ":" + Text.NON_BREAKING_SPACE), 1, row);
-		table.add(getSmallHeader(String.valueOf(getBusiness().getQueueTotalByProvider(providerID))), 1, row++);
+		table.add(getSmallHeader(String.valueOf(getBusiness().getQueueTotalByProvider(this.providerID))), 1, row++);
 		table.setHeight(row++, 6);
 		table.mergeCells(1, row, 2, row);
 				
@@ -123,14 +123,16 @@ public class PrognosisInformation extends ChildCareBlock {
 	
 	private void parse(IWContext iwc) {
 		try {
-			if (iwc.isParameterSet(getSchoolContentBusiness(iwc).getParameterSchoolId()))
-				providerID = Integer.parseInt(iwc.getParameter(getSchoolContentBusiness(iwc).getParameterSchoolId()));
-			else
-				providerID = getSession().getChildCareID();
+			if (iwc.isParameterSet(getSchoolContentBusiness(iwc).getParameterSchoolId())) {
+				this.providerID = Integer.parseInt(iwc.getParameter(getSchoolContentBusiness(iwc).getParameterSchoolId()));
+			}
+			else {
+				this.providerID = getSession().getChildCareID();
+			}
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
-			providerID = -1;
+			this.providerID = -1;
 		}
 	}
 

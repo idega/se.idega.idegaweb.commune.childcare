@@ -31,7 +31,7 @@ public class ContractAndPlacementChangesExport extends ChildCareBlock {
 	}
 	
 	private void parseAction() {		
-		if (iwc.isParameterSet(PARAMETER_CREATE_REPORT)) {
+		if (this.iwc.isParameterSet(PARAMETER_CREATE_REPORT)) {
 			this.createExport = true;
 			
 			ContractAndPlacementChangesExportWriter writer = 
@@ -44,7 +44,7 @@ public class ContractAndPlacementChangesExport extends ChildCareBlock {
 	private void createGui() {
 		PresentationObjectContainer poc = new PresentationObjectContainer();
 		
-		if (exportFolder != null ) {
+		if (this.exportFolder != null ) {
 			Table table = new Table(1, 3);
 			table.setCellpadding(0);
 			table.setCellspacing(0);
@@ -97,10 +97,12 @@ public class ContractAndPlacementChangesExport extends ChildCareBlock {
 				}
 				DecimalFormat format = new DecimalFormat("0.0 KB");
 
-				if (row % 2 == 0)
+				if (row % 2 == 0) {
 					table.setRowColor(row, getZebraColor1());
-				else
+				}
+				else {
 					table.setRowColor(row, getZebraColor2());
+				}
 	
 				Link link = getSmallLink(file.getName());
 				link.setFile(file);
@@ -109,7 +111,7 @@ public class ContractAndPlacementChangesExport extends ChildCareBlock {
 				table.setNoWrap(column, row);
 				table.add(getSmallText(format.format(size)), column++, row);
 				table.setNoWrap(column, row);
-				table.add(getSmallText(new IWTimestamp(file.getCreationDate()).getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), column++, row);
+				table.add(getSmallText(new IWTimestamp(file.getCreationDate()).getLocaleDateAndTime(this.iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), column++, row);
 				//table.setNoWrap(column, row);
 				//table.add(getSmallText(file.getMimeType()), column++, mos.write(new String("hello, world").getBytes()););
 				row++;	
@@ -128,7 +130,7 @@ public class ContractAndPlacementChangesExport extends ChildCareBlock {
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.create_report", "Create report")));
 		form.add(button);
 		
-		if (createExport && !exportCreated) {
+		if (this.createExport && !this.exportCreated) {
 			form.add(Text.getNonBrakingSpace());
 			form.add(getSmallErrorText(localize("child_care.create_report_failed", "Failed to create report. Possibly no changes found.")));
 		}
@@ -138,7 +140,7 @@ public class ContractAndPlacementChangesExport extends ChildCareBlock {
 	
 
 	public ICFile getExportFolder() {
-		return exportFolder;
+		return this.exportFolder;
 	}
 
 	public void setExportFolder(ICFile statisticsFolder) {
@@ -146,7 +148,7 @@ public class ContractAndPlacementChangesExport extends ChildCareBlock {
 	}
 	
 	public IWContext getIwc() {
-		return iwc;
+		return this.iwc;
 	}
 	
 	public void setIwc(IWContext iwc) {

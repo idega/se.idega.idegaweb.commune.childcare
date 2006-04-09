@@ -1,5 +1,5 @@
 /*
- * $Id: QueueCleaningSessionBean.java,v 1.5 2006/03/20 02:11:29 sigtryggur Exp $
+ * $Id: QueueCleaningSessionBean.java,v 1.6 2006/04/09 11:45:18 laddi Exp $
  * Created on 25.11.2004
  * 
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -27,17 +27,17 @@ import com.idega.util.IWTimestamp;
 
 /**
  * 
- * Last modified: $Date: 2006/03/20 02:11:29 $ by $Author: sigtryggur $
+ * Last modified: $Date: 2006/04/09 11:45:18 $ by $Author: laddi $
  * 
  * @author <a href="mailto:aron@idega.com">aron </a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCleaningSession {
 
 	private boolean cleaning = false;
 
 	public boolean cleanQueueInThread(int providerID, User performer) throws FinderException, RemoteException {
-		cleaning = true;
+		this.cleaning = true;
 		IWPropertyList properties = getIWApplicationContext().getSystemProperties().getProperties(ChildCareConstants.PROPERTIES_CHILD_CARE);
 		int monthsInQueue = Integer.parseInt(properties.getProperty(ChildCareConstants.PROPERTY_MAX_MONTHS_IN_QUEUE, "6"));
 		int daysToReply = Integer.parseInt(properties.getProperty(ChildCareConstants.PROPERTY_DAYS_TO_REPLY, "30"));
@@ -73,7 +73,7 @@ public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCle
 			}
 
 			transaction.commit();
-			cleaning = false;
+			this.cleaning = false;
 			return true;
 		}
 		catch (Exception e) {
@@ -109,13 +109,14 @@ public class QueueCleaningSessionBean extends IBOSessionBean implements QueueCle
 			}.start();
 			return true;
 		}
-		else
+		else {
 			return false;
+		}
 
 	}
 
 	public boolean isStillCleaningQueue() {
-		return cleaning;
+		return this.cleaning;
 	}
 
 	public ChildCareBusiness getService() throws RemoteException {

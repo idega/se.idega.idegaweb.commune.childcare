@@ -63,9 +63,10 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	 */
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
-		isAdministrator = isCommuneAdministrator(iwc);
-		if (_canEdit != null)
-			isAdministrator = !_canEdit.booleanValue();
+		this.isAdministrator = isCommuneAdministrator(iwc);
+		if (this._canEdit != null) {
+			this.isAdministrator = !this._canEdit.booleanValue();
+		}
 
 		Table table = new Table(1,7);
 		table.setCellpadding(0);
@@ -79,7 +80,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			table.add(getInformationTable(iwc), 1, 1);
 			table.add(getApplicationTable(iwc), 1, 3);
 			table.add(getLegendTable(), 1, 5);
-			table.add(getButtonTable(iwc, !isAdministrator), 1, 7);
+			table.add(getButtonTable(iwc, !this.isAdministrator), 1, 7);
 			
 			if (useStyleNames()) {
 				table.setCellpaddingLeft(1, 1, 12);
@@ -118,22 +119,23 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		form.add(table);
 		int row = 1;
 		
-		child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
-		if (child != null) {
-			Address address = getBusiness().getUserBusiness().getUsersMainAddress(child);
-			Collection parents = getBusiness().getUserBusiness().getParentsForChild(child);
+		this.child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+		if (this.child != null) {
+			Address address = getBusiness().getUserBusiness().getUsersMainAddress(this.child);
+			Collection parents = getBusiness().getUserBusiness().getParentsForChild(this.child);
 			
 			table.add(getLocalizedSmallHeader("child_care.child","Child"), 1, row);
-			Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+			Name name = new Name(this.child.getFirstName(), this.child.getMiddleName(), this.child.getLastName());
 			table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, row);
 			table.add(getSmallText(" - "), 3, row);
-			table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
+			table.add(getSmallText(PersonalIDFormatter.format(this.child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 			
 			if (address != null) {
 				table.add(getLocalizedSmallHeader("child_care.address","Address"), 1, row);
 				table.add(getSmallText(address.getStreetAddress()), 3, row);
-				if (address.getPostalAddress() != null)
+				if (address.getPostalAddress() != null) {
 					table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+				}
 				row++;
 			}
 			
@@ -172,8 +174,9 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			
 					if (address != null) {
 						table.add(getSmallText(address.getStreetAddress()), 3, row);
-						if (address.getPostalAddress() != null)
+						if (address.getPostalAddress() != null) {
 							table.add(getSmallText(", "+address.getPostalAddress()), 3, row);
+						}
 						row++;
 					}
 					if (phone != null && phone.getNumber() != null) {
@@ -223,18 +226,18 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			}
 			
 			
-			if (getSession().getApplicationID() != -1 && !isAdministrator) {
-				application = getBusiness().getApplication(getSession().getApplicationID());
-				if (application != null) {
-					if (application.getMessage() != null) {
+			if (getSession().getApplicationID() != -1 && !this.isAdministrator) {
+				this.application = getBusiness().getApplication(getSession().getApplicationID());
+				if (this.application != null) {
+					if (this.application.getMessage() != null) {
 						table.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 						table.add(getLocalizedSmallHeader("child_care.message","Message"), 1, row);
-						table.add(getSmallText(application.getMessage()), 3, row++);
+						table.add(getSmallText(this.application.getMessage()), 3, row++);
 						table.setHeight(row++, 12);
 					}
 					
-					if (application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
-						IWTimestamp validUntil = new IWTimestamp(application.getOfferValidUntil());
+					if (this.application.getApplicationStatus() == getBusiness().getStatusAccepted()) {
+						IWTimestamp validUntil = new IWTimestamp(this.application.getOfferValidUntil());
 						table.add(getLocalizedSmallHeader("child_care.reply_date","Reply date"), 1, row);
 						table.add(getSmallText(validUntil.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), 3, row++);
 						table.setHeight(row++, 12);
@@ -246,8 +249,9 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					TextArea comments = (TextArea) getStyledInterface(new TextArea(PARAMETER_COMMENTS));
 					comments.setWidth(Table.HUNDRED_PERCENT);
 					comments.setRows(4);
-					if (application.getPresentation() != null)
-						comments.setContent(application.getPresentation());
+					if (this.application.getPresentation() != null) {
+						comments.setContent(this.application.getPresentation());
+					}
 					table.add(comments, 3, row++);
 					SubmitButton saveComments = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.save_comments","Save comments")));
 					table.setAlignment(3, row, Table.HORIZONTAL_ALIGN_RIGHT);
@@ -291,7 +295,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		boolean isCurrentProvider = false;
 		Link archive;
 
-		Collection applications = getBusiness().getApplicationsForChild(child, getSession().getCaseCode());
+		Collection applications = getBusiness().getApplicationsForChild(this.child, getSession().getCaseCode());
 		Iterator iter = applications.iterator();
 		while (iter.hasNext()) {
 			column = 1;
@@ -299,10 +303,12 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			phone = getBusiness().getSchoolBusiness().getSchoolPhone(application.getProviderId());
 			queueDate = new IWTimestamp(application.getQueueDate());
 			placementDate = new IWTimestamp(application.getFromDate());
-			if (application.getProviderId() == getSession().getChildCareID())
+			if (application.getProviderId() == getSession().getChildCareID()) {
 				isCurrentProvider = true;
-			else
+			}
+			else {
 				isCurrentProvider = false;
+			}
 				
 			if (useStyleNames()) {
 				if (row % 2 == 0) {
@@ -326,15 +332,17 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			}
 			else {
 				if (!useStyleNames()) {
-					if (row % 2 == 0)
+					if (row % 2 == 0) {
 						table.setRowColor(row, getZebraColor1());
-					else
+					}
+					else {
 						table.setRowColor(row, getZebraColor2());
+					}
 				}
 			}
 
-			if (contractsPage != null) {
-				Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+			if (this.contractsPage != null) {
+				Name name = new Name(this.child.getFirstName(), this.child.getMiddleName(), this.child.getLastName());
 				archive = getLink(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true),isCurrentProvider);
 				archive.setEventListener(ChildCareEventListener.class);
 				archive.addParameter(getSession().getParameterUserID(), application.getChildId());
@@ -342,11 +350,13 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				archive.setPage(getResponsePage());
 				table.add(archive, column++, row);
 			}
-			else
+			else {
 				table.add(getText(application.getProvider().getSchoolName(), isCurrentProvider), column++, row);
+			}
 			table.add(getText(getStatusString(application), isCurrentProvider), column++, row);
-			if (phone != null)
+			if (phone != null) {
 				table.add(getText(phone, isCurrentProvider), column, row);
+			}
 			column++;
 			table.add(getText(queueDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isCurrentProvider), column++, row);
 			table.add(getText(placementDate.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT), isCurrentProvider), column++, row++);
@@ -380,19 +390,19 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 		
 		if (showAllButtons) {
 			int numberInQueue = 1;
-			boolean hasPriority = application.getHasPriority();
-			boolean isAfterSchoolApplication = getBusiness().isAfterSchoolApplication(application);
+			boolean hasPriority = this.application.getHasPriority();
+			boolean isAfterSchoolApplication = getBusiness().isAfterSchoolApplication(this.application);
 			if (!isAfterSchoolApplication) {
                 int orderBy = ORDER_BY_QUEUE_DATE;
-                if (application.getProvider().getSortByBirthdate()) {
+                if (this.application.getProvider().getSortByBirthdate()) {
                     orderBy = ORDER_BY_DATE_OF_BIRTH;
                 }
-                numberInQueue = getBusiness().getNumberInQueueByStatus(application, orderBy);
+                numberInQueue = getBusiness().getNumberInQueueByStatus(this.application, orderBy);
             }		
 			
-			char status = application.getApplicationStatus();
+			char status = this.application.getApplicationStatus();
 
-			boolean hasSchoolPlacement = getBusiness().getSchoolBusiness().hasActivePlacement(application.getChildId(), application.getProviderId(), getBusiness().getSchoolBusiness().getCategoryElementarySchool());
+			boolean hasSchoolPlacement = getBusiness().getSchoolBusiness().hasActivePlacement(this.application.getChildId(), this.application.getProviderId(), getBusiness().getSchoolBusiness().getCategoryElementarySchool());
 			boolean instantContract = isAfterSchoolApplication && hasSchoolPlacement && (status == getBusiness().getStatusSentIn());
 
 			//if (status == getBusiness().getStatusSentIn() && !instantContract) {
@@ -404,7 +414,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					column++;
 
 					GenericButton offer = (GenericButton) getStyledInterface(new GenericButton("offer", localize("child_care.offer_placing","Offer placing")));
-					if (application.getHasDateSet()) {
+					if (this.application.getHasDateSet()) {
 						offer.setWindowToOpen(ChildCareWindow.class);
 						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_APPLICATION_ID, String.valueOf(getSession().getApplicationID()));
 						offer.addParameterToWindow(ChildCareAdminWindow.PARAMETER_USER_ID, String.valueOf(getSession().getChildID()));
@@ -436,7 +446,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 			}
 			else if (status == getBusiness().getStatusAccepted()) {
 				int column = 3;
-				if (showParentsAgree) {
+				if (this.showParentsAgree) {
 					GenericButton parentsAgree = getButton("parents_agree", localize("child_care.parents_agree","Parents agree"), -1);
 					parentsAgree.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_PARENTS_AGREE);
 					table.add(parentsAgree, column++, 1);
@@ -444,7 +454,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				}
 				
 				IWTimestamp dateNow = new IWTimestamp();
-				IWTimestamp validUntil = new IWTimestamp(application.getOfferValidUntil());
+				IWTimestamp validUntil = new IWTimestamp(this.application.getOfferValidUntil());
 				if (dateNow.isLaterThanOrEquals(validUntil)) {
 					GenericButton offer = (GenericButton) getStyledInterface(new GenericButton("change_offer", localize("child_care.change_offer_date","Change offer date")));
 					offer.setWindowToOpen(ChildCareWindow.class);
@@ -468,7 +478,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				GenericButton createContract = null;
 				GenericButton disabledCreateContract = null;
 								
-				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
+				if (getBusiness().getUserBusiness().hasBankLogin(this.application.getOwner())) {
 					createContract = getButton(new GenericButton("create_contract", localize("child_care.create_contract_for_digital_signing","Create contract for BankID")));
 					/*createContract.setValueOnClick(PARAMETER_CREATE_CONTRACT, ACTION_CREATE_BANKID_CONTRACT);
 					if (_useSubmitConfirm) {
@@ -509,7 +519,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					
 				if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID())) {
 					if (getBusiness().hasFutureActivePlacementsNotWithProvider(getSession().getChildID(),
-							getSession().getChildCareID(), application.getFromDate())) {
+							getSession().getChildCareID(), this.application.getFromDate())) {
 						table.add(changeDate, 3, 1);
 						table.add(createContract, 5, 1);
 						dateWarning = localize("child_care.child_has_future_active_contract",
@@ -524,7 +534,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					}
 				}
 				else {
-					IWTimestamp validFrom = new IWTimestamp(application.getFromDate());
+					IWTimestamp validFrom = new IWTimestamp(this.application.getFromDate());
 					
 					if (getBusiness().hasTerminationInFutureNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), validFrom)) {
 						
@@ -562,11 +572,11 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				int column = 3;
 
 				GenericButton viewContract = (GenericButton) getStyledInterface(new GenericButton("view_contract", localize("child_care.view_contract","View contract")));
-				viewContract.setFileToOpen(application.getContractFileId());
+				viewContract.setFileToOpen(this.application.getContractFileId());
 				table.add(viewContract, column++, 1);
 				column++;
 
-				if (showRecreateContract) {
+				if (this.showRecreateContract) {
 					GenericButton recreateContract = getButton("recreate_contract", localize("child_care.recreate_contract", "Recreate contract"), -1);
 					recreateContract.addParameterToWindow(ChildCareAdminWindow.PARAMETER_ACTION, ChildCareAdminWindow.ACTION_CREATE_CONTRACT);
 					table.add(recreateContract, column++, 1);
@@ -575,8 +585,8 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 				
 				GenericButton placeInGroup = null;
 
-				if (getBusiness().getUserBusiness().hasBankLogin(application.getOwner())) {
-					if (! application.getContract().isSigned()) {
+				if (getBusiness().getUserBusiness().hasBankLogin(this.application.getOwner())) {
+					if (! this.application.getContract().isSigned()) {
 						placeInGroup = (GenericButton) getStyledInterface(new GenericButton("place_in_group", localize("child_care.place_in_group","Place in group")));
 						placeInGroup.setDisabled(true);
 						placeInGroup.setToolTip(localize("child_care.tooltip.button.place_in_group.contract_unsigned","Contract is unsigned"));
@@ -585,7 +595,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 					}
 					else {
 						placeInGroup = getButton("place_in_group", localize("child_care.place_in_group","Place in group"), ChildCareAdminWindow.METHOD_PLACE_IN_GROUP);
-						if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID()) && !getBusiness().hasFutureActivePlacementsNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), application.getFromDate())){
+						if (getBusiness().hasActivePlacementNotWithProvider(getSession().getChildID(), getSession().getChildCareID()) && !getBusiness().hasFutureActivePlacementsNotWithProvider(getSession().getChildID(), getSession().getChildCareID(), this.application.getFromDate())){
 							//placeInGroup.setDisabled(true);	changed june 2005 - ac
 							placeInGroup.setToDisableOnClick(placeInGroup, true);
 							dateWarning = localize("child_care.child_has_active_contract", "Child has an active contract");
@@ -641,17 +651,21 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	}
 	
 	protected Text getText(String text, boolean isCurrentProvider) {
-		if (isCurrentProvider)
+		if (isCurrentProvider) {
 			return getSmallHeader(text);
-		else
+		}
+		else {
 			return getSmallText(text);
+		}
 	}
 	
 	protected Link getLink(String text, boolean isCurrentProvider) {
-		if (isCurrentProvider)
+		if (isCurrentProvider) {
 			return this.getSmallHeaderLink(text);
-		else
+		}
+		else {
 			return getSmallLink(text);
+		}
 	}
 	
 	private void parse(IWContext iwc) throws RemoteException {
@@ -668,7 +682,7 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	}
 
 	public void setContractsPage(ICPage page) {
-		contractsPage = page;
+		this.contractsPage = page;
 	}
 
 	public void setChildcareOverviewPage(ICPage page) {
@@ -680,21 +694,21 @@ public class ChildCareAdminApplication extends ChildCareBlock {
 	}
 	
 	public void setCanEdit(boolean b) {
-		_canEdit = new Boolean(b);
+		this._canEdit = new Boolean(b);
 	}
 
 	/**
 	 * @param b
 	 */
 	public void setShowParentsAgree(boolean b) {
-		showParentsAgree = b;
+		this.showParentsAgree = b;
 	}
 	
 	/**
 	 * @param b
 	 */
 	public void setShowRecreateContract(boolean b) {
-		showRecreateContract = b;
+		this.showRecreateContract = b;
 	}
 
 	/**

@@ -76,14 +76,14 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 	
 	public void init(HttpServletRequest req, IWContext iwc) {
 		try {
-			locale = iwc.getApplicationSettings().getApplicationLocale();
-			business = getChildCareBusiness(iwc);
+			this.locale = iwc.getApplicationSettings().getApplicationLocale();
+			this.business = getChildCareBusiness(iwc);
 		
-			iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+			this.iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(this.locale);
 			
 			if (req.getParameter(PARAMETER_PROVIDER_ID) != null) {
 				//int groupID = Integer.parseInt(req.getParameter(PARAMETER_GROUP_ID));
-				providerId = Integer.parseInt(req.getParameter(PARAMETER_PROVIDER_ID));
+				this.providerId = Integer.parseInt(req.getParameter(PARAMETER_PROVIDER_ID));
 				int sortBy = Integer.parseInt(req.getParameter(PARAMETER_SORT_BY));
 				int numberPerPage = Integer.parseInt(req.getParameter(PARAMETER_NUMBER_PER_PAGE));
 				int start = Integer.parseInt(req.getParameter(PARAMETER_START));
@@ -94,20 +94,23 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 				IWTimestamp stampTo = null;
 				
 				
-				if (fromDate != null)
+				if (fromDate != null) {
 					stampFrom = new IWTimestamp(fromDate);
-				if (toDate != null) 
+				}
+				if (toDate != null) {
 					stampTo = new IWTimestamp(toDate);
+				}
 					
 				Collection applications = null;
-				if (stampFrom != null && stampTo != null)
-					applications = getApplicationCollection(iwc, providerId, sortBy, numberPerPage, start, stampFrom.getDate(), stampTo.getDate());
-				else {
-					applications = getApplicationCollection(iwc, providerId, sortBy, numberPerPage, start, null, null);
+				if (stampFrom != null && stampTo != null) {
+					applications = getApplicationCollection(iwc, this.providerId, sortBy, numberPerPage, start, stampFrom.getDate(), stampTo.getDate());
 				}
-				schoolName = business.getSchoolBusiness().getSchool(new Integer(providerId)).getSchoolName();
-				buffer = writeXLS(applications, iwc);
-				setAsDownload(iwc,"childcare_siblinglist.xls",buffer.length());
+				else {
+					applications = getApplicationCollection(iwc, this.providerId, sortBy, numberPerPage, start, null, null);
+				}
+				this.schoolName = this.business.getSchoolBusiness().getSchool(new Integer(this.providerId)).getSchoolName();
+				this.buffer = writeXLS(applications, iwc);
+				setAsDownload(iwc,"childcare_siblinglist.xls",this.buffer.length());
 				
 			}
 		}
@@ -117,22 +120,24 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 	}
 	
 	public String getMimeType() {
-		if (buffer != null)
-			return buffer.getMimeType();
+		if (this.buffer != null) {
+			return this.buffer.getMimeType();
+		}
 		return super.getMimeType();
 	}
 	
 	public void writeTo(OutputStream out) throws IOException {
-		if (buffer != null) {
-			MemoryInputStream mis = new MemoryInputStream(buffer);
+		if (this.buffer != null) {
+			MemoryInputStream mis = new MemoryInputStream(this.buffer);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			while (mis.available() > 0) {
 				baos.write(mis.read());
 			}
 			baos.writeTo(out);
 		}
-		else
+		else {
 			System.err.println("buffer is null");
+		}
 	}
 	
 	public MemoryFileBuffer writeXLS(Collection applications, IWContext iwc)
@@ -142,7 +147,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
         if (!applications.isEmpty()) {
             HSSFWorkbook wb = new HSSFWorkbook();
             
-            String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, 31); //the name of worksheet can be 31 symbols max
+            String sheetTitle = this.schoolName.length() <= 31 ? this.schoolName : this.schoolName.substring(0, 31); //the name of worksheet can be 31 symbols max
             HSSFSheet sheet = wb.createSheet(sheetTitle);
             
             sheet.setColumnWidth((short) 0, (short) (30 * 256));
@@ -163,14 +168,14 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
             int cellRow = 0;
             HSSFRow row = sheet.createRow((short) cellRow++);
             HSSFCell cell = row.createCell((short) 0);
-            cell.setCellValue(schoolName);
+            cell.setCellValue(this.schoolName);
             cell.setCellStyle(style);
             cell = row.createCell((short) 1);
 
-            if (groupName != null) {
+            if (this.groupName != null) {
                 row = sheet.createRow((short) cellRow++);
                 cell = row.createCell((short) 0);
-                cell.setCellValue(groupName);
+                cell.setCellValue(this.groupName);
                 cell.setCellStyle(style);
             }
 
@@ -179,31 +184,31 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
             row = sheet.createRow((short) cellRow++);
 
             cell = row.createCell((short) 0);
-            cell.setCellValue(iwrb
+            cell.setCellValue(this.iwrb
                     .getLocalizedString("child_care.name", "Name"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 1);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.personal_id",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.personal_id",
                     "Personal ID"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 2);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.sibling_name",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.sibling_name",
                     "Sibling name"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 3);
-            cell.setCellValue(iwrb.getLocalizedString(
+            cell.setCellValue(this.iwrb.getLocalizedString(
                     "child_care.sibling_pid", "Sibling p.id"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 4);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.sibling_provider",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.sibling_provider",
                     "Provider"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 5);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.start_date",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.start_date",
                     "Start date"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 6);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.end_date",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.end_date",
                     "End date"));
             cell.setCellStyle(style);
             
@@ -219,10 +224,10 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                 Name name = new Name(child.getFirstName(), child
                         .getMiddleName(), child.getLastName());
                 row.createCell((short) 0).setCellValue(
-                        name.getName(locale, true));
+                        name.getName(this.locale, true));
                 row.createCell((short) 1).setCellValue(
                         PersonalIDFormatter.format(child.getPersonalID(),
-                                locale));                
+                                this.locale));                
                 User parent = application.getOwner();
                 FamilyLogic familyLogic = this.getMemberFamilyLogic(iwc);
                 Collection children = familyLogic.getChildrenFor(parent);                                
@@ -245,17 +250,17 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
                     		}
                     		Name childname = new Name(sibling.getFirstName(), sibling
                                     .getMiddleName(), sibling.getLastName());
-                    		if(name.getName(locale, true)!=null) {
-                    			row.createCell((short) 0).setCellValue(name.getName(locale, true));
+                    		if(name.getName(this.locale, true)!=null) {
+                    			row.createCell((short) 0).setCellValue(name.getName(this.locale, true));
                     		}
                     		if(child.getPersonalID()!=null) {
-                    			row.createCell((short) 1).setCellValue(PersonalIDFormatter.format(child.getPersonalID(),locale));
+                    			row.createCell((short) 1).setCellValue(PersonalIDFormatter.format(child.getPersonalID(),this.locale));
                     		}
-                    		if(childname.getName(locale, true)!=null) {
-                    			row.createCell((short) 2).setCellValue(childname.getName(locale, true));
+                    		if(childname.getName(this.locale, true)!=null) {
+                    			row.createCell((short) 2).setCellValue(childname.getName(this.locale, true));
                     		}
                     		if(sibling.getPersonalID()!=null) {
-                    			row.createCell((short) 3).setCellValue(PersonalIDFormatter.format(sibling.getPersonalID(),locale));                         	
+                    			row.createCell((short) 3).setCellValue(PersonalIDFormatter.format(sibling.getPersonalID(),this.locale));                         	
                     		}
                     		try {                    			                    			
                     			Integer providerId = (Integer)prov.getPrimaryKey();
@@ -309,12 +314,14 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
         
         int ordering = getOrdering(childcareId); 
         
-		if (sortBy != -1 && fromDate != null && toDate != null) // && sortBy != SORT_ALL)
+		if (sortBy != -1 && fromDate != null && toDate != null) {
 			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, numberPerPage, start, sortBy, fromDate, toDate, ordering);
-		else
-		    //applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId);
-            //Dainis 2005-09-30: lets use the same method as in ChildCareAdmin instead
-            applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, Integer.MAX_VALUE, 0, ordering);
+		}
+		else {
+			//applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId);
+			//Dainis 2005-09-30: lets use the same method as in ChildCareAdmin instead
+			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, Integer.MAX_VALUE, 0, ordering);
+		}
 		
 		return applications;
 	}
@@ -328,7 +335,7 @@ public class ChildCareSiblingListWriter extends DownloadWriter implements MediaW
 	}
     
     private int getOrdering(int providerId) throws RemoteException {
-        School provider = business.getSchoolBusiness().getSchool(new Integer(providerId));
+        School provider = this.business.getSchoolBusiness().getSchool(new Integer(providerId));
         int ordering = provider.getSortByBirthdate() ? ChildCareAdmin.ORDER_BY_DATE_OF_BIRTH : ChildCareAdmin.ORDER_BY_QUEUE_DATE;
         return ordering;
     }    

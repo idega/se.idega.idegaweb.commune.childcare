@@ -64,7 +64,7 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 	
 	protected boolean canSeeRejected() {
 		boolean hasPrognosis = false;
-		if (_requiresPrognosis) {
+		if (this._requiresPrognosis) {
 			try {
 				hasPrognosis = getSession().hasPrognosis();
 			}
@@ -72,8 +72,9 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				hasPrognosis = false;
 			}
 		}
-		else
+		else {
 			hasPrognosis = true;
+		}
 		
 		return hasPrognosis;
 	}
@@ -137,15 +138,19 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				email = null;
 				emails = "";
 				
-				if (application.getQueueDate() != null)
+				if (application.getQueueDate() != null) {
 					queueDate = new IWCalendar(iwc.getCurrentLocale(), application.getQueueDate());
-				else	
+				}
+				else {
 					queueDate = null;
+				}
 				placementDate = new IWCalendar(iwc.getCurrentLocale(), application.getCreated());
-				if (application.getRejectionDate() != null)
+				if (application.getRejectionDate() != null) {
 					rejectDate = new IWCalendar(iwc.getCurrentLocale(), application.getRejectionDate());
-				else	
+				}
+				else {
 					rejectDate = null;
+				}
 						
 				if (useStyleNames()) {
 					if (row % 2 == 0) {
@@ -158,10 +163,12 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 					table.setCellpaddingRight(table.getColumns(), row, 12);
 				}
 				else {
-					if (row % 2 == 0)
+					if (row % 2 == 0) {
 						table.setRowColor(row, getZebraColor1());
-					else
+					}
+					else {
 						table.setRowColor(row, getZebraColor2());
+					}
 				}
 
 				//// email to parent
@@ -177,10 +184,12 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 								email = getCommuneUserBusiness(iwc).getUsersMainEmail(parent);
 								if (email != null && email.getEmailAddress() != null && !email.getEmailAddress().equals(" ")) {
 									emailLink = this.getSmallLink(email.getEmailAddress());
-									if (emails != null)
+									if (emails != null) {
 										emails = emails + "; " + email.getEmailAddress();
-									else										
-									emails = email.getEmailAddress();
+									}
+									else {
+										emails = email.getEmailAddress();
+									}
 									
 									emailLink.setURL("mailto:" + emails);
 								}
@@ -206,12 +215,14 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 				
 				table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 				table.add(getSmallText(getStatusString(application)), column++, row);
-				if (queueDate != null)
+				if (queueDate != null) {
 					table.add(getSmallText(queueDate.getLocaleDate(IWCalendar.SHORT)), column, row);
+				}
 				column++;
 				table.add(getSmallText(placementDate.getLocaleDate(IWCalendar.SHORT)), column++, row);
-				if (rejectDate != null)
+				if (rejectDate != null) {
 					table.add(getSmallText(rejectDate.getLocaleDate(IWCalendar.SHORT)), column, row);
+				}
 				column++;
 				if (application.getApplicationStatus() == getBusiness().getStatusCancelled() || ((application.getApplicationStatus() == getBusiness().getStatusNotAnswered() || application.getApplicationStatus() == getBusiness().getStatusTimedOut()) && application.getQueueDate() != null)) {
 					String description = null;
@@ -233,8 +244,9 @@ public class ChildCareAdminRejected extends ChildCareBlock {
 						row++;
 					}
 				}
-				else
+				else {
 					row++;
+				}
 			}
 			table.setColumnAlignment(2, Table.HORIZONTAL_ALIGN_CENTER);
 			table.setColumnAlignment(3, Table.HORIZONTAL_ALIGN_CENTER);

@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.16 2005/02/17 09:57:29 laddi Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.17 2006/04/09 11:45:19 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -270,10 +270,12 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 			whereAdded = true;
 		}
 		if (exported) {
-			if (!whereAdded)
+			if (!whereAdded) {
 				sql.appendWhereEquals(EXPORTED, "'Y'");
-			else
+			}
+			else {
 				sql.appendAndEquals(EXPORTED, "'Y'");
+			}
 		}
 		return super.idoGetNumberOfRecords(sql);
 	}

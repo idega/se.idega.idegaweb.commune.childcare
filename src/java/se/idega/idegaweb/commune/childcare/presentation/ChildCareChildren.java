@@ -60,13 +60,15 @@ public class ChildCareChildren extends ChildCareBlock {
 				while (it.hasNext()) {
 					User child = (User) it.next();
 					Age age = null;
-					if (child.getDateOfBirth() != null)
+					if (child.getDateOfBirth() != null) {
 						age = new Age(child.getDateOfBirth());
-					else if (child.getPersonalID() != null)
+					}
+					else if (child.getPersonalID() != null) {
 						age = new Age(PIDChecker.getInstance().getDateFromPersonalID(child.getPersonalID()));
+					}
 					
 					if (age != null) {
-						if(age.getYears() > toAge || age.getYears() < fromAge){
+						if(age.getYears() > this.toAge || age.getYears() < this.fromAge){
 							continue;
 						}
 					}
@@ -74,7 +76,7 @@ public class ChildCareChildren extends ChildCareBlock {
 					boolean createLink = false;
 					GrantedCheck check = null;
 					//if (this.isCheckRequired()) {
-					if (_isCheckRequired || this.isCheckRequired()){
+					if (this._isCheckRequired || this.isCheckRequired()){
 						try {
 							check = getCheckBusiness(iwc).getGrantedCheckByChild(child);
 							if (check != null) {
@@ -95,10 +97,12 @@ public class ChildCareChildren extends ChildCareBlock {
 							link.addParameter(getSession().getParameterCheckID(), ((Integer) check.getPrimaryKey()).intValue());
 						}
 						//link.addParameter(getSession().getParameterUserID(), ((Integer)child.getPrimaryKey()).intValue());
-						if (child.getUniqueId() != null)
+						if (child.getUniqueId() != null) {
 							link.addParameter(getSession().getParameterUniqueID(), child.getUniqueId());
-						else
+						}
+						else {
 							link.addParameter(getSession().getParameterUserID(), ((Integer)child.getPrimaryKey()).intValue());
+						}
 						
 						link.setEventListener(ChildCareEventListener.class);
 						
@@ -135,7 +139,7 @@ public class ChildCareChildren extends ChildCareBlock {
 	 * <br>This defaults to the range -1 to 1000
 	 **/
 	public void setIsCheckRequired(boolean isRequired){
-		_isCheckRequired = isRequired;
+		this._isCheckRequired = isRequired;
 	}
 	
 	private CheckBusiness getCheckBusiness(IWApplicationContext iwac) throws RemoteException {

@@ -104,10 +104,12 @@ public class ApplicationQueueAdmin extends ChildCareBlock{
 				table.setRowColor(row, CONTRACT_COLOR);
 			}
 			else {
-				if (row % 2 == 0)
+				if (row % 2 == 0) {
 					table.setRowColor(row, getZebraColor1());
-				else
+				}
+				else {
 					table.setRowColor(row, getZebraColor2());
+				}
 			}
 			
 			

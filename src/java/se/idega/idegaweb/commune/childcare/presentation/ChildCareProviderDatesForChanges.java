@@ -119,14 +119,16 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         IWTimestamp stamp = new IWTimestamp();
         
         DateInput registerDateFrom = (DateInput) getStyledInterface(new DateInput(PARAMETER_START_FROM, true));        
-		if (getStartFromTimestamp() != null)
+		if (getStartFromTimestamp() != null) {
 			registerDateFrom.setDate(getStartFromTimestamp().getDate());
+		}
         registerDateFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
         //registerDateFrom.setAsNotEmpty(getLocalizedString("please_fill_start_from", "Please fill in start date from field!"));
         
         DateInput removeDateFrom = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_FROM, true));
-		if (getEndFromTimestamp() != null)
-			removeDateFrom.setDate(getEndFromTimestamp().getDate()); 
+		if (getEndFromTimestamp() != null) {
+			removeDateFrom.setDate(getEndFromTimestamp().getDate());
+		} 
         removeDateFrom.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
         //removeDateFrom.setAsNotEmpty(getLocalizedString("please_fill_start_to", "Please fill in start date to field!"));        
         
@@ -139,14 +141,16 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
         table.add(new Break(), 3, 2);   
         
         DateInput registerDateTo = (DateInput) getStyledInterface(new DateInput(PARAMETER_START_TO, true));
-		if (getStartToTimestamp() != null)
-			registerDateTo.setDate(getStartToTimestamp().getDate()); 
+		if (getStartToTimestamp() != null) {
+			registerDateTo.setDate(getStartToTimestamp().getDate());
+		} 
         registerDateTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
         //registerDateTo.setAsNotEmpty(getLocalizedString("please_fill_end_from", "Please fill in end date from field!"));        
                 
         DateInput removeDateTo = (DateInput) getStyledInterface(new DateInput(PARAMETER_END_TO, true));   
-		if (getEndToTimestamp() != null)
+		if (getEndToTimestamp() != null) {
 			removeDateTo.setDate(getEndToTimestamp().getDate());
+		}
         removeDateTo.setYearRange(stamp.getYear() - 11, stamp.getYear()+3);
         //removeDateTo.setAsNotEmpty(getLocalizedString("please_fill_end_to", "Please fill in end date to field!"));                
 		
@@ -162,20 +166,25 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
      * @param iwc
      */
     private void parse(IWContext iwc) {
-        if (iwc.isParameterSet(PARAMETER_PROVIDER_ID)) 
-            this.setProviderId(Integer.parseInt(iwc.getParameter(PARAMETER_PROVIDER_ID)));
+        if (iwc.isParameterSet(PARAMETER_PROVIDER_ID)) {
+					this.setProviderId(Integer.parseInt(iwc.getParameter(PARAMETER_PROVIDER_ID)));
+				}
         
-    	if (iwc.isParameterSet(PARAMETER_START_FROM))
-			this.setStartFromTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_START_FROM))); 
+    	if (iwc.isParameterSet(PARAMETER_START_FROM)) {
+				this.setStartFromTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_START_FROM)));
+			} 
     	
-    	if (iwc.isParameterSet(PARAMETER_START_TO))
-			this.setStartToTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_START_TO))); 
+    	if (iwc.isParameterSet(PARAMETER_START_TO)) {
+				this.setStartToTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_START_TO)));
+			} 
     	
-    	if (iwc.isParameterSet(PARAMETER_END_FROM))
-			this.setEndFromTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_END_FROM))); 
+    	if (iwc.isParameterSet(PARAMETER_END_FROM)) {
+				this.setEndFromTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_END_FROM)));
+			} 
     	
-    	if (iwc.isParameterSet(PARAMETER_END_TO))
-			this.setEndToTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_END_TO))); 
+    	if (iwc.isParameterSet(PARAMETER_END_TO)) {
+				this.setEndToTimestamp(stringToIWTimestamp(iwc.getParameter(PARAMETER_END_TO)));
+			} 
     	
     }
     
@@ -194,7 +203,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
     }
     
     public IWTimestamp getEndFromTimestamp() {
-		return endFromTimestamp;
+		return this.endFromTimestamp;
 	}
 
 	public void setEndFromTimestamp(IWTimestamp endFromTimestamp) {
@@ -202,7 +211,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 	}
 
 	public IWTimestamp getEndToTimestamp() {
-		return endToTimestamp;
+		return this.endToTimestamp;
 	}
 
 	public void setEndToTimestamp(IWTimestamp endToTimestamp) {
@@ -210,7 +219,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 	}
 
 	public IWTimestamp getStartFromTimestamp() {
-		return startFromTimestamp;
+		return this.startFromTimestamp;
 	}
 
 	public void setStartFromTimestamp(IWTimestamp startFromTimestamp) {
@@ -218,7 +227,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 	}
 
 	public IWTimestamp getStartToTimestamp() {
-		return startToTimestamp;
+		return this.startToTimestamp;
 	}
 
 	public void setStartToTimestamp(IWTimestamp startToTimestamp) {
@@ -249,7 +258,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
     }
 
     public int getProviderId() {
-        return providerId;
+        return this.providerId;
     }
 
     public void setProviderId(int providerId) {
@@ -257,7 +266,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
     }
 
     public IWResourceBundle getIwrb() {
-        return iwrb;
+        return this.iwrb;
     }
 
     public void setIwrb(IWResourceBundle iwrb) {

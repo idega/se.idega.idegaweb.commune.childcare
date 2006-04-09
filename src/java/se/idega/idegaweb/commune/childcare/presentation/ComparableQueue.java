@@ -6,7 +6,7 @@ import se.idega.idegaweb.commune.childcare.data.ChildCareQueue;
  * This class is used to sort ChildCareQueue object according to their
  * choice number and granted status.
  * @author <a href="mailto:joakim@idega.is">joakim</a>
- * @version $Id: ComparableQueue.java,v 1.4 2003/10/06 12:30:32 laddi Exp $
+ * @version $Id: ComparableQueue.java,v 1.5 2006/04/09 11:45:19 laddi Exp $
  * @since 12.2.2003 
  */
 class ComparableQueue implements Comparable {
@@ -14,12 +14,12 @@ class ComparableQueue implements Comparable {
 	private boolean _grantedFirst;
 				
 	ComparableQueue(Object queue, boolean grantedFirst){
-		_queue = (ChildCareQueue) queue;
-		_grantedFirst = grantedFirst;
+		this._queue = (ChildCareQueue) queue;
+		this._grantedFirst = grantedFirst;
 	}
 		
 	ChildCareQueue getQueue(){
-		return _queue;
+		return this._queue;
 	}
 
 	/**
@@ -32,10 +32,10 @@ class ComparableQueue implements Comparable {
 	 */
 	public int compareTo(Object queue){
 		ChildCareQueue que = ((ComparableQueue) queue).getQueue();
-		int diff = _queue.getChoiceNumber() - que.getChoiceNumber();
+		int diff = this._queue.getChoiceNumber() - que.getChoiceNumber();
 		
-		if (_grantedFirst){
-			if (_queue.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
+		if (this._grantedFirst){
+			if (this._queue.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
 				return  -1;
 			} else if (que.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
 				return  1;
@@ -43,7 +43,7 @@ class ComparableQueue implements Comparable {
 				return diff;
 			}
 		} else {
-			if (diff == 0 && _queue.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
+			if (diff == 0 && this._queue.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
 				return  -1;
 			} else if (diff == 0 && que.getStatus().equals(ChildCareQueueUpdateTable.STATUS_UBEH)){
 				return  1;

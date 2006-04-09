@@ -37,15 +37,15 @@ public class ChildCareProviderQueueWindow extends Window {
 	private CommuneBlock style = new CommuneBlock();
 	private Text 
 		HEADER_ORDER =
-			style.getSmallHeader(style.localize("ccpqw_order", "Queue number")),
+			this.style.getSmallHeader(this.style.localize("ccpqw_order", "Queue number")),
 		HEADER_QUEUE_DATE =
-			style.getSmallHeader(style.localize("ccpqw_queue_date", "Queue date")),	
+			this.style.getSmallHeader(this.style.localize("ccpqw_queue_date", "Queue date")),	
 		HEADER_FROM_DATE =
-			style.getSmallHeader(style.localize("ccpqw_from_date", "Placement date")),
-		PROVIDER = style.getSmallText(style.localize("ccpqw_provider", "Provider") + ":"),
-		PROGNOSIS = style.getSmallText(style.localize("ccpqw_prognosisr", "Prognosis") + ":");
+			this.style.getSmallHeader(this.style.localize("ccpqw_from_date", "Placement date")),
+		PROVIDER = this.style.getSmallText(this.style.localize("ccpqw_provider", "Provider") + ":"),
+		PROGNOSIS = this.style.getSmallText(this.style.localize("ccpqw_prognosisr", "Prognosis") + ":");
 	private String
-		CLOSE = style.localize("ccpqw_close", "Close");
+		CLOSE = this.style.localize("ccpqw_close", "Close");
 		
 				
 	public void main(IWContext iwc) throws Exception {
@@ -57,10 +57,10 @@ public class ChildCareProviderQueueWindow extends Window {
 		
 		ChildCarePrognosis prognosis = getChildCareBusiness(iwc).getPrognosis(Integer.parseInt(providerId));
 						
-		String prognosisText = prognosis == null ? style.localize("ccpqw_no_prognosis", "No prognosis available") :
-			style.localize("ccpqw_three_months", "Three months:") +" " + prognosis.getThreeMonthsPrognosis()+ "  " +
-			style.localize("ccpqw_one_year", "One year:") + " " + prognosis.getOneYearPrognosis() + "  " +
-			style.localize("ccpqw_updated_date", "Updated date:") + " " + prognosis.getUpdatedDate();	
+		String prognosisText = prognosis == null ? this.style.localize("ccpqw_no_prognosis", "No prognosis available") :
+			this.style.localize("ccpqw_three_months", "Three months:") +" " + prognosis.getThreeMonthsPrognosis()+ "  " +
+			this.style.localize("ccpqw_one_year", "One year:") + " " + prognosis.getOneYearPrognosis() + "  " +
+			this.style.localize("ccpqw_updated_date", "Updated date:") + " " + prognosis.getUpdatedDate();	
 		
 		Table appTbl = new Table();
 		
@@ -70,19 +70,19 @@ public class ChildCareProviderQueueWindow extends Window {
 			
 			Iterator i = applications.iterator();
 			
-			appTbl.add(HEADER_ORDER, 1, 1);
-			appTbl.add(HEADER_QUEUE_DATE, 2, 1);
-			appTbl.add(HEADER_FROM_DATE, 3, 1);
-			appTbl.setRowColor(1, style.getHeaderColor());			
+			appTbl.add(this.HEADER_ORDER, 1, 1);
+			appTbl.add(this.HEADER_QUEUE_DATE, 2, 1);
+			appTbl.add(this.HEADER_FROM_DATE, 3, 1);
+			appTbl.setRowColor(1, this.style.getHeaderColor());			
 	
 			int row = 2;
 			
 			while(i.hasNext()){
 				ChildCareApplication app = (ChildCareApplication) i.next();
 				
-				Text queueOrder = style.getSmallText("" + getChildCareBusiness(iwc).getNumberInQueue(app)),
-					queueDate = style.getSmallText(app.getQueueDate().toString()),
-					fromDate = style.getSmallText(app.getFromDate().toString());
+				Text queueOrder = this.style.getSmallText("" + getChildCareBusiness(iwc).getNumberInQueue(app)),
+					queueDate = this.style.getSmallText(app.getQueueDate().toString()),
+					fromDate = this.style.getSmallText(app.getFromDate().toString());
 //					currentAppId = style.getSmallText(""+app.getNodeID());   //debug only
 				
 				appTbl.add(queueOrder, 1, row);
@@ -97,9 +97,9 @@ public class ChildCareProviderQueueWindow extends Window {
 				}
 				
 				if (row % 2 == 0) {
-					appTbl.setRowColor(row, style.getZebraColor1());
+					appTbl.setRowColor(row, this.style.getZebraColor1());
 				} else {
-					appTbl.setRowColor(row, style.getZebraColor2());
+					appTbl.setRowColor(row, this.style.getZebraColor2());
 				}				
 		
 				row++;
@@ -109,20 +109,20 @@ public class ChildCareProviderQueueWindow extends Window {
 		}
 		
 		Table layoutTbl = new Table();		
-		layoutTbl.add(PROVIDER, 1, 1);
-		layoutTbl.add(style.getSmallText(school.getName()), 2, 1);	
+		layoutTbl.add(this.PROVIDER, 1, 1);
+		layoutTbl.add(this.style.getSmallText(school.getName()), 2, 1);	
 
 		layoutTbl.setRowHeight(2, "20px");	
 		
-		layoutTbl.add(PROGNOSIS, 1, 3);
-		layoutTbl.add(style.getSmallText(prognosisText), 2, 3);		
+		layoutTbl.add(this.PROGNOSIS, 1, 3);
+		layoutTbl.add(this.style.getSmallText(prognosisText), 2, 3);		
 			
 		layoutTbl.setRowHeight(4, "20px");
 			
 		layoutTbl.add(appTbl, 1, 5);
 		layoutTbl.mergeCells(1, 5, 2, 5);
 		
-		CloseButton closeBtn = (CloseButton) style.getStyledInterface(new CloseButton(CLOSE));
+		CloseButton closeBtn = (CloseButton) this.style.getStyledInterface(new CloseButton(this.CLOSE));
 		layoutTbl.add(closeBtn, 2, 6);
 		layoutTbl.setAlignment(2, 6, "right");
 	

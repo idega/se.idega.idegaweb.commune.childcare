@@ -53,7 +53,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 	public void init(IWContext iwc) throws Exception {
 		parseAction(iwc);
 		
-		switch (_action) {
+		switch (this._action) {
 			case ACTION_VIEW_FORM :
 				viewForm(iwc);
 				break;
@@ -65,7 +65,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 
 	private void viewForm(IWContext iwc) {
 		boolean hasPlacing = false;
-		if (child != null) {
+		if (this.child != null) {
 			try {
 				hasPlacing = getBusiness().hasActiveApplication(getSession().getChildID());
 			}
@@ -74,7 +74,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 			}
 		}
 		
-		if (!_noChildError && !hasPlacing) {
+		if (!this._noChildError && !hasPlacing) {
 			Form form = new Form();
 		
 			Table table = new Table();
@@ -91,9 +91,10 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 	
 			SubmitButton submit = (SubmitButton)getButton(new SubmitButton(localize("child_care.place_child", "Place child"), PARAMETER_ACTION, String.valueOf(ACTION_SUBMIT)));
 			try {
-				User parent = getBusiness().getUserBusiness().getCustodianForChild(child);
-				if (parent == null)
+				User parent = getBusiness().getUserBusiness().getCustodianForChild(this.child);
+				if (parent == null) {
 					submit.setDisabled(true);
+				}
 			}
 			catch (RemoteException re) {
 				submit.setDisabled(true);
@@ -110,10 +111,12 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 			add(form);
 		}
 		else {
-			if (hasPlacing)
+			if (hasPlacing) {
 				add(getErrorText(localize("child_care.child_has_placing", "Child has active placement.")));
-			else
+			}
+			else {
 				add(getErrorText(localize("child_care.no_child_selected", "No child selected.")));
+			}
 			add(new Break(2));
 			add(new UserHomeLink());
 		}
@@ -131,15 +134,16 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		table.add(getSmallHeader(localize("child_care.personal_id", "Personal ID")+":"), 1, 2);
 		table.add(getSmallHeader(localize("child_care.address", "Address")+":"), 1, 3);
 
-		Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
+		Name name = new Name(this.child.getFirstName(), this.child.getMiddleName(), this.child.getLastName());
 		table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, 1);
-		String personalID = PersonalIDFormatter.format(child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
+		String personalID = PersonalIDFormatter.format(this.child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 		table.add(getSmallText(personalID), 3, 2);
 		
 		try {
-			Address address = getBusiness().getUserBusiness().getUsersMainAddress(child);
-			if (address != null)
+			Address address = getBusiness().getUserBusiness().getUsersMainAddress(this.child);
+			if (address != null) {
 				table.add(getSmallText(address.getStreetAddress() + ", " + address.getPostalAddress()), 3, 3);
+			}
 		}
 		catch (RemoteException e) {
 		}
@@ -194,10 +198,11 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 			String careTime = iwc.getParameter(PARAM_CARE_TIME);
 			IWTimestamp fromDate = new IWTimestamp(iwc.getParameter(PARAM_FROM_DATE));
 			IWTimestamp toDate = null;
-			if (iwc.isParameterSet(PARAM_TO_DATE))
+			if (iwc.isParameterSet(PARAM_TO_DATE)) {
 				toDate = new IWTimestamp(iwc.getParameter(PARAM_TO_DATE));
+			}
 			
-			User parent = getBusiness().getUserBusiness().getCustodianForChild(child);
+			User parent = getBusiness().getUserBusiness().getCustodianForChild(this.child);
 			getBusiness().importChildToProvider(-1, getSession().getChildID(), providerID, -1, careTime, -1, -1, null, fromDate, toDate, iwc.getCurrentLocale(), parent, iwc.getCurrentUser());
 			done = true;
 		}
@@ -210,13 +215,16 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		}
 
 		if (done) {
-			if (getResponsePage() != null)
+			if (getResponsePage() != null) {
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
-			else
+			}
+			else {
 				add(getHeader(localize("child_care.child_placed", "Child placed")));
+			}
 		}
-		else
+		else {
 			add(getErrorText(localize("child_care.placing_failed", "Failed to place child")));
+		}
 	}
 
 	private ProviderDropdownDouble getDropdown(Locale locale, String primaryName, String secondaryName) {
@@ -244,16 +252,18 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 	}
 
 	private void parseAction(IWContext iwc) {
-		if (iwc.isParameterSet(PARAMETER_ACTION))
-			_action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
-		else
-			_action = ACTION_VIEW_FORM;
+		if (iwc.isParameterSet(PARAMETER_ACTION)) {
+			this._action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
+		}
+		else {
+			this._action = ACTION_VIEW_FORM;
+		}
 
 		try {
-			child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
+			this.child = getBusiness().getUserBusiness().getUser(getSession().getChildID());
 		}
 		catch (RemoteException re) {
-			_noChildError = true;
+			this._noChildError = true;
 		}
 	}
 }

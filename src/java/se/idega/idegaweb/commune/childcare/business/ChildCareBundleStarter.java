@@ -35,22 +35,22 @@ public class ChildCareBundleStarter implements IWBundleStartable {
 	 */
 	public void start(IWBundle starterBundle) {
 		System.out.println("[CHILD CARE]: Child care bundle starter starting...");
-    _bundle = starterBundle;
-		int queueInterval = Integer.parseInt(_bundle.getProperty(BUNDLE_PROPERTY_NAME_QUEUE_INTERVAL, String.valueOf(1440)));
+    this._bundle = starterBundle;
+		int queueInterval = Integer.parseInt(this._bundle.getProperty(BUNDLE_PROPERTY_NAME_QUEUE_INTERVAL, String.valueOf(1440)));
 		System.out.println("[CHILD CARE]: Queue interval = " + queueInterval + "minutes");
 		
-		if (timerManager==null) {
-			timerManager = new TimerManager();
+		if (this.timerManager==null) {
+			this.timerManager = new TimerManager();
 		}
 		
-		if(queueTimerEntry==null) {
+		if(this.queueTimerEntry==null) {
 			try {
-				queueTimerEntry = timerManager.addTimer(queueInterval, true, new TimerListener() {
+				this.queueTimerEntry = this.timerManager.addTimer(queueInterval, true, new TimerListener() {
 					public void handleTimer(TimerEntry entry) {
-			      ChildCareBusiness business = getChildCareBusiness(_bundle.getApplication().getIWApplicationContext());
+			      ChildCareBusiness business = getChildCareBusiness(ChildCareBundleStarter.this._bundle.getApplication().getIWApplicationContext());
 			      User performer = null;
 			      try {
-			      	performer = Converter.convertToNewUser(_bundle.getApplication().getAccessController().getAdministratorUser());
+			      	performer = Converter.convertToNewUser(ChildCareBundleStarter.this._bundle.getApplication().getAccessController().getAdministratorUser());
 			      }
 			      catch (Exception e) {
 			      	e.printStackTrace();
@@ -67,7 +67,7 @@ public class ChildCareBundleStarter implements IWBundleStartable {
 				});
 			}
 			catch(PastDateException e) {
-				queueTimerEntry = null;
+				this.queueTimerEntry = null;
 				e.printStackTrace();
 			}
 		}
@@ -77,10 +77,10 @@ public class ChildCareBundleStarter implements IWBundleStartable {
 	 * @see com.idega.idegaweb.IWBundleStartable#stop(com.idega.idegaweb.IWBundle)
 	 */
 	public void stop(IWBundle starterBundle) {
-		if(timerManager!=null) {
-			if (queueTimerEntry != null) {
-				timerManager.removeTimer(queueTimerEntry);
-				queueTimerEntry = null;
+		if(this.timerManager!=null) {
+			if (this.queueTimerEntry != null) {
+				this.timerManager.removeTimer(this.queueTimerEntry);
+				this.queueTimerEntry = null;
 			}
 		}
 	}

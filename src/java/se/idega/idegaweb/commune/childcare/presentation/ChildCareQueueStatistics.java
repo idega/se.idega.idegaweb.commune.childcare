@@ -38,13 +38,13 @@ public class ChildCareQueueStatistics extends ChildCareBlock {
 		table.add(getSmallText(String.valueOf(getBusiness().getOldQueueTotal(null, true))), column++, row++);
 		column = 1;
 		
-		String[] placedType = { String.valueOf(DBV_WITH_PLACE), String.valueOf(FS_WITH_PLACE) };
+		String[] placedType = { String.valueOf(this.DBV_WITH_PLACE), String.valueOf(this.FS_WITH_PLACE) };
 		table.add(getLocalizedSmallText("child_care.placed_children_in_queue","Children with placement"), column++, row);
 		table.add(getSmallText(String.valueOf(getBusiness().getOldQueueTotal(placedType, false))), column++, row);
 		table.add(getSmallText(String.valueOf(getBusiness().getOldQueueTotal(placedType, true))), column++, row++);
 		column = 1;
 		
-		String[] nonPlacedType = { String.valueOf(DBV_WITHOUT_PLACE), String.valueOf(FS_WITHOUT_PLACE) };
+		String[] nonPlacedType = { String.valueOf(this.DBV_WITHOUT_PLACE), String.valueOf(this.FS_WITHOUT_PLACE) };
 		table.add(getLocalizedSmallText("child_care.non_placed_children_in_queue","Children without placement"), column++, row);
 		table.add(getSmallText(String.valueOf(getBusiness().getOldQueueTotal(nonPlacedType, false))), column++, row);
 		table.add(getSmallText(String.valueOf(getBusiness().getOldQueueTotal(nonPlacedType, true))), column++, row++);

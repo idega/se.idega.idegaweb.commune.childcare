@@ -43,7 +43,7 @@ import com.idega.util.PersonalIDFormatter;
 /**
  * ChildCareOfferTable
  * @author <a href="mailto:roar@idega.is">roar</a>
- * @version $Id: ChildCareCustomerApplicationTable.java,v 1.118 2006/04/05 15:06:35 dainis Exp $
+ * @version $Id: ChildCareCustomerApplicationTable.java,v 1.119 2006/04/09 11:45:19 laddi Exp $
  * @since 12.2.2003 
  */
 
@@ -100,24 +100,24 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			return;
 		}
 		
-		childID = getChildId(iwc);
+		this.childID = getChildId(iwc);
 		
 		setCacheable(false);
-		childCarebusiness = getChildCareBusiness(iwc);
+		this.childCarebusiness = getChildCareBusiness(iwc);
 		
 		if (isAdministrator(iwc)){
-			hasPermission = true;
+			this.hasPermission = true;
 		}
 		else{
 		User parent = iwc.getCurrentUser();
-		Collection children = childCarebusiness.getUserBusiness().getChildrenForUser(parent);
+		Collection children = this.childCarebusiness.getUserBusiness().getChildrenForUser(parent);
 		Iterator theChild = children.iterator();
 			while(theChild.hasNext()){
 				User userChild = (User) theChild.next();
 				
 				int userChildId = ((Integer) userChild.getPrimaryKey()).intValue();
-				if (userChildId == childID){
-					hasPermission = true;
+				if (userChildId == this.childID){
+					this.hasPermission = true;
 					break;
 				}
 								
@@ -125,10 +125,10 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		}
 		
 		
-		if (_renewQueuePage != null) {
-			if (_showOnlyChildcare && childCarebusiness.hasPendingApplications(childID, _caseCode)) {
-				getChildCareSession(iwc).setChildID(childID);
-				iwc.forwardToIBPage(getParentPage(), _renewQueuePage);
+		if (this._renewQueuePage != null) {
+			if (this._showOnlyChildcare && this.childCarebusiness.hasPendingApplications(this.childID, this._caseCode)) {
+				getChildCareSession(iwc).setChildID(this.childID);
+				iwc.forwardToIBPage(getParentPage(), this._renewQueuePage);
 			}
 		}
 
@@ -166,8 +166,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 						if (getEndPage() != null) {
 							iwc.forwardToIBPage(getParentPage(), getEndPage());
 						}
-						else
+						else {
 							iwc.forwardToIBPage(getParentPage(), getChildCareBusiness(iwc).getUserBusiness().getHomePageForUser(iwc.getCurrentUser()));
+						}
 					}
 					else {						
 						form.setOnSubmit(createPagePhase2(iwc, layoutTbl, applications));
@@ -225,10 +226,12 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				break;
 
 			case CCConstants.ACTION_SUBMIT_CONFIRM :
-				if (getEndPage() != null)
+				if (getEndPage() != null) {
 					iwc.forwardToIBPage(getParentPage(), getEndPage());
-				else
+				}
+				else {
 					iwc.forwardToIBPage(getParentPage(), getChildCareBusiness(iwc).getUserBusiness().getHomePageForUser(iwc.getCurrentUser()));
+				}
 				break;
 
 			case ACTION_DELETE_OFFER :
@@ -243,7 +246,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				form.setOnSubmit(createPagePhase1(iwc, layoutTbl, applications));
 
 		}
-		if (hasPermission){
+		if (this.hasPermission){
 			form.add(layoutTbl);
 			add(form);	
 		}
@@ -262,7 +265,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			AcceptedStatus status = (AcceptedStatus) iter.next();
 
 			if (status.isDefined()) {
-				ChildCareApplication applicationToBeRemoved = childCarebusiness.getApplicationByPrimaryKey(status._appid);
+				ChildCareApplication applicationToBeRemoved = this.childCarebusiness.getApplicationByPrimaryKey(status._appid);
 				if (status.isAccepted()) {
 					acceptedChoiceNumber = applicationToBeRemoved.getChoiceNumber();
 					applications.remove(applicationToBeRemoved);
@@ -276,7 +279,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			int deleteFromChoice = acceptedChoiceNumber == 1 ? 2 : acceptedChoiceNumber;			
 			for (Iterator i = listOfDecisions.iterator();i.hasNext();) {
 				AcceptedStatus status = (AcceptedStatus) i.next();
-				ChildCareApplication app = childCarebusiness.getApplicationByPrimaryKey(status._appid);
+				ChildCareApplication app = this.childCarebusiness.getApplicationByPrimaryKey(status._appid);
 				int choiceNumber = app.getChoiceNumber();
 				
 				if (choiceNumber > deleteFromChoice) {
@@ -300,15 +303,15 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			return CCConstants.ACTION_REQUEST_INFO;
 		} 
 
-		_caseCode = null;
-		if (_showOnlyChildcare) {
-			_caseCode = CareConstants.CASE_CODE_KEY;
+		this._caseCode = null;
+		if (this._showOnlyChildcare) {
+			this._caseCode = CareConstants.CASE_CODE_KEY;
 		}
-		else if (_showOnlyAfterSchoolCare) {
-			_caseCode = CareConstants.AFTER_SCHOOL_CASE_CODE_KEY;
+		else if (this._showOnlyAfterSchoolCare) {
+			this._caseCode = CareConstants.AFTER_SCHOOL_CASE_CODE_KEY;
 		}
 		else {
-			_caseCode = null;
+			this._caseCode = null;
 		}
 		
 		if (iwc.isParameterSet(PARAMETER_DELETE_OFFER)) {
@@ -375,14 +378,15 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			AcceptedStatus status = (AcceptedStatus) i.next();
 
 			if (status.isDefined()) {
-				ChildCareApplication application = childCarebusiness.getApplicationByPrimaryKey(status._appid);
+				ChildCareApplication application = this.childCarebusiness.getApplicationByPrimaryKey(status._appid);
 				User child = application.getChild();
 				String subject =
 					localize(
 						"ccot_offer_answer_subject",
 						"Svar på erbjudande om plats");
-				if (childCarebusiness.isAfterSchoolApplication(application))
+				if (this.childCarebusiness.isAfterSchoolApplication(application)) {
 					isAfterSchoolApplication = true;
+				}
 
 				if (!saveToDatabase) {
 					continue;
@@ -460,7 +464,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		
 					if (app.getChoiceNumber() > deleteFromChoice //TODO: This is probably not nessesary anymore (Roar)
 					|| (acceptedChoiceNumber == 2 && app.getChoiceNumber() == 1 && isAccepted(app))) {
-						childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner());
+						this.childCarebusiness.removeFromQueue(app.getNodeID(), app.getOwner());
 						//app.setApplicationStatus(childCarebusiness.getStatusCancelled());
 						
 						deleteApplication(app);
@@ -497,7 +501,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	 */
 	private boolean isAccepted(ChildCareApplication application) throws RemoteException {
 
-		return application.getStatus().equals(STATUS_PREL) && application.getApplicationStatus() == childCarebusiness.getStatusParentsAccept();
+		return application.getStatus().equals(STATUS_PREL) && application.getApplicationStatus() == this.childCarebusiness.getStatusParentsAccept();
 	}
 
 	private void deleteApplication(ChildCareApplication application) throws RemoteException {
@@ -508,7 +512,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		}*/
 		//The application is given status TYST/Z, so that it will be rendered correctly (red font)
 		//		application.setMessage("Deleted!"); //Todo Roar for debugging only
-		application.setApplicationStatus(childCarebusiness.getStatusRejected());
+		application.setApplicationStatus(this.childCarebusiness.getStatusRejected());
 		application.setStatus(STATUS_TYST);
 		application.store();
 		//deletedApps.add(application);
@@ -565,7 +569,9 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 				if(index_exist[i]){
 					int choiceNumberCounter=1;
 					for(int j=1;j<=5;j++){
-						   if ((index_place[j]>0)&&(index_place[j] < index_place[i])) choiceNumberCounter++; 	
+						   if ((index_place[j]>0)&&(index_place[j] < index_place[i])) {
+								choiceNumberCounter++;
+							} 	
 					}
 					index_place[i] = choiceNumberCounter;
 				}
@@ -612,42 +618,42 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		int _choiceNumber;
 
 		AcceptedStatus(String appId, String status, String day, String month, String year) {
-			_appid = appId;
-			_status = status;
+			this._appid = appId;
+			this._status = status;
 
 			if (day != null && month != null && year != null) {
 				try {
 					IWTimestamp stamp = new IWTimestamp(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year));
 
-					_date = stamp.getDate();
+					this._date = stamp.getDate();
 				}
 				catch (NumberFormatException ex) {
-					_date = new Date(0);
+					this._date = new Date(0);
 				}
 				catch (IllegalArgumentException ex) {
-					_date = new Date(0);
+					this._date = new Date(0);
 				}
 			}
 		}
 
 		boolean equals(String status) {
-			return _status.equals(status);
+			return this._status.equals(status);
 		}
 
 		boolean isAccepted() {
-			return _status != null && _status.equals(CCConstants.YES);
+			return this._status != null && this._status.equals(CCConstants.YES);
 		}
 
 		boolean isRejected() {
-			return _status != null && _status.equals(CCConstants.NO);
+			return this._status != null && this._status.equals(CCConstants.NO);
 		}
 
 		boolean isRejectedNewDate() {
-			return _status != null && _status.equals(CCConstants.NO_NEW_DATE);
+			return this._status != null && this._status.equals(CCConstants.NO_NEW_DATE);
 		}
 
 		boolean isDefined() {
-			return _status != null;
+			return this._status != null;
 		}
 
 	} // End class
@@ -672,25 +678,25 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	 * @throws RemoteException
 	 */
 	private String createPagePhase1(IWContext iwc, Table layoutTbl, Collection applications) throws RemoteException {
-		int numberOfApplications = getChildCareBusiness(iwc).getNumberOfApplicationsForChildNotInactive(childID, _caseCode);
+		int numberOfApplications = getChildCareBusiness(iwc).getNumberOfApplicationsForChildNotInactive(this.childID, this._caseCode);
 		if (numberOfApplications == 0) {
 			layoutTbl.add(getSmallErrorText(localize(NO_APPLICATION)), 1, 1);
 			return "";
 		}	
 		
 		layoutTbl.add(new HiddenInput(CCConstants.ACTION, String.valueOf(CCConstants.ACTION_SUBMIT_1)), 1, 1);
-		boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(childID, _caseCode);
+		boolean hasActiveApplication = getChildCareBusiness(iwc).hasActiveApplication(this.childID, this._caseCode);
 		Table placementInfo = getPlacedAtSchool(iwc, hasActiveApplication);
 
-		boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(childID, _caseCode);
+		boolean hasOffer = getChildCareBusiness(iwc).hasOutstandingOffers(this.childID, this._caseCode);
 
-        ChildCarePlaceOfferTable1 appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication, _hasAcceptedApplication);
+        ChildCarePlaceOfferTable1 appTable = new ChildCarePlaceOfferTable1(iwc, this, sortApplications(applications, false), hasOffer, hasActiveApplication, this._hasAcceptedApplication);
 		
 		GenericButton cancelBtn = getButton(new GenericButton("cancel", localize(CANCEL)));
 		cancelBtn.setPageToOpen(getParentPageID());
 		cancelBtn.addParameterToPage(CCConstants.ACTION, CCConstants.ACTION_CANCEL_1);
 
-		String[] submitName =_showOnlyAfterSchoolCare ? SUBMIT_ANSWER : SUBMIT;
+		String[] submitName =this._showOnlyAfterSchoolCare ? SUBMIT_ANSWER : SUBMIT;
 		SubmitButton submitBtn = (SubmitButton) getButton(new SubmitButton(localize(submitName)));
 		
 		int row = 1;
@@ -741,16 +747,16 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 		//User child = UserBusiness.getUser(Integer.parseInt(childId));
 		//User child = UserBusiness.getUser(childID);
 		
-		User child = getChildCareBusiness(iwc).getUserBusiness().getUser(childID);		
+		User child = getChildCareBusiness(iwc).getUserBusiness().getUser(this.childID);		
 		layoutTbl.add(getSmallHeader(localize(NAME) + ":"), 1, row);
 		layoutTbl.add(getSmallText(child.getName()), 3, row++);
 		layoutTbl.add(getSmallHeader(localize(PERSONAL_ID) + ":"), 1, row);
 		layoutTbl.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), 3, row++);
 		
 		ChildCareApplication acceptedApplication = getChildCareBusiness(iwc)
-			.getAcceptedChildCareOrAfterSchoolCareApplicationByChild(childID);		
-		_hasAcceptedApplication = acceptedApplication != null;
-		if (_hasAcceptedApplication) {
+			.getAcceptedChildCareOrAfterSchoolCareApplicationByChild(this.childID);		
+		this._hasAcceptedApplication = acceptedApplication != null;
+		if (this._hasAcceptedApplication) {
 			IWTimestamp fromDate = new IWTimestamp(acceptedApplication.getFromDate());
 			layoutTbl.setHeight(row++, 12);
 			layoutTbl.add(getSmallHeader(localize("child_care.in_process", "In process") + ":"), 1, row);
@@ -769,7 +775,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			hasBankId = new NBSLoginBusinessBean().hasBankLogin(acceptedApplication.getOwner());
 
 			if (hasBankId){
-				Collection contracts = childCarebusiness.getContractsByApplication(acceptedApplication.getNodeID());
+				Collection contracts = this.childCarebusiness.getContractsByApplication(acceptedApplication.getNodeID());
 				Iterator i = contracts.iterator();
 				while (i.hasNext()){
 					Contract c = ((ChildCareContract) i.next()).getContract();
@@ -797,7 +803,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			
 		}
 		
-		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getActiveApplicationByChild(childID); 
+		ChildCareApplication activeApplication = this.getChildCareBusiness(iwc).getActiveApplicationByChild(this.childID); 
 		
 		if (activeApplication != null) {
 			ChildCareContract archive = getChildCareBusiness(iwc).getValidContract(((Integer)activeApplication.getPrimaryKey()).intValue());
@@ -824,7 +830,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			cancelledContractStillActive |= activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusParentTerminated();
 			if (activeApplication.getApplicationStatus() == getChildCareBusiness(iwc).getStatusReady() || cancelledContractStillActive) {
 				layoutTbl.setHeight(row++, 12);
-				Collection contracts = childCarebusiness.getContractsByApplication(((Integer)activeApplication.getPrimaryKey()).intValue());
+				Collection contracts = this.childCarebusiness.getContractsByApplication(((Integer)activeApplication.getPrimaryKey()).intValue());
 				Iterator iter = contracts.iterator();
 				
 				while (iter.hasNext()){
@@ -1014,7 +1020,7 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			*/
 			
 			
-			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(childID, _caseCode);
+			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByChild(this.childID, this._caseCode);
 			
 			
 			//Add canceled and removed applications from this session	
@@ -1038,8 +1044,8 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	}
 
 	private int getChildId(IWContext iwc) {
-		if (iwc.isParameterSet(CHILD_UNIQUE_ID)){
-			String childUniqueId = iwc.getParameter(CHILD_UNIQUE_ID);
+		if (iwc.isParameterSet(this.CHILD_UNIQUE_ID)){
+			String childUniqueId = iwc.getParameter(this.CHILD_UNIQUE_ID);
 			User child = null;
 			Object objChildId = null;
 			if (childUniqueId != null){
@@ -1056,16 +1062,18 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 					log (re);
 				}
 				
-				if (child != null)
+				if (child != null) {
 					objChildId = child.getPrimaryKey();
+				}
 				
 				if(objChildId != null) {
 					int childId = ((Integer) (objChildId)).intValue();
-					iwc.setSessionAttribute(CHILD_ID, String.valueOf(childId));
+					iwc.setSessionAttribute(this.CHILD_ID, String.valueOf(childId));
 					return childId;
 				}
-				else
-				    return -1;
+				else {
+					return -1;
+				}
 				
 			}
 			else {
@@ -1073,17 +1081,19 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 			}
 		}
 		else {
-			String childId = iwc.getParameter(CHILD_ID);
+			String childId = iwc.getParameter(this.CHILD_ID);
 			if (childId != null) {
-				iwc.setSessionAttribute(CHILD_ID, childId);
+				iwc.setSessionAttribute(this.CHILD_ID, childId);
 			}
 			else {
-				childId = (String) iwc.getSessionAttribute(CHILD_ID);
+				childId = (String) iwc.getSessionAttribute(this.CHILD_ID);
 			}
-			if(childId!=null)
-			    return Integer.parseInt(childId);
-			else
-			    return -1;
+			if(childId!=null) {
+				return Integer.parseInt(childId);
+			}
+			else {
+				return -1;
+			}
 		}
 	}
 	
@@ -1147,11 +1157,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	 * @param page The page to return after finshed or cancelled
 	 */
 	public void setEndPage(ICPage page) {
-		_endPage = page;
+		this._endPage = page;
 	}
 
 	public ICPage getEndPage() {
-		return _endPage;
+		return this._endPage;
 	}
 
 	//Because these methods is made protected in CommuneBlock, 
@@ -1224,11 +1234,11 @@ public class ChildCareCustomerApplicationTable extends CommuneBlock { // changed
 	private boolean _debug = false;
 
 	public void setDebug(boolean debug) {
-		_debug = debug;
+		this._debug = debug;
 	}
 
 	public boolean getDebug() {
-		return _debug;
+		return this._debug;
 	}
 
 	/**

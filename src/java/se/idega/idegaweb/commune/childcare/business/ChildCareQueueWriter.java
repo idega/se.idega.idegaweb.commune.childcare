@@ -90,14 +90,14 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 	
 	public void init(HttpServletRequest req, IWContext iwc) {
 		try {
-			locale = iwc.getApplicationSettings().getApplicationLocale();
-			business = getChildCareBusiness(iwc);
+			this.locale = iwc.getApplicationSettings().getApplicationLocale();
+			this.business = getChildCareBusiness(iwc);
 		
-			iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(locale);
+			this.iwrb = iwc.getIWMainApplication().getBundle(CommuneBlock.IW_BUNDLE_IDENTIFIER).getResourceBundle(this.locale);
 			
 			if (req.getParameter(PARAMETER_PROVIDER_ID) != null) {
 				//int groupID = Integer.parseInt(req.getParameter(PARAMETER_GROUP_ID));
-				providerId = Integer.parseInt(req.getParameter(PARAMETER_PROVIDER_ID));
+				this.providerId = Integer.parseInt(req.getParameter(PARAMETER_PROVIDER_ID));
 				int sortBy = Integer.parseInt(req.getParameter(PARAMETER_SORT_BY));
 				int numberPerPage = Integer.parseInt(req.getParameter(PARAMETER_NUMBER_PER_PAGE));
 				int start = Integer.parseInt(req.getParameter(PARAMETER_START));
@@ -108,27 +108,30 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 				IWTimestamp stampTo = null;
 				
 				
-				if (fromDate != null)
+				if (fromDate != null) {
 					stampFrom = new IWTimestamp(fromDate);
-				if (toDate != null) 
+				}
+				if (toDate != null) {
 					stampTo = new IWTimestamp(toDate);
+				}
 					
 				Collection applications = null;
-				if (stampFrom != null && stampTo != null)
-					applications = getApplicationCollection(iwc, providerId, sortBy, numberPerPage, start, stampFrom.getDate(), stampTo.getDate());
-				else {
-					applications = getApplicationCollection(iwc, providerId, sortBy, numberPerPage, start, null, null);
+				if (stampFrom != null && stampTo != null) {
+					applications = getApplicationCollection(iwc, this.providerId, sortBy, numberPerPage, start, stampFrom.getDate(), stampTo.getDate());
 				}
-				schoolName = business.getSchoolBusiness().getSchool(new Integer(providerId)).getSchoolName();
+				else {
+					applications = getApplicationCollection(iwc, this.providerId, sortBy, numberPerPage, start, null, null);
+				}
+				this.schoolName = this.business.getSchoolBusiness().getSchool(new Integer(this.providerId)).getSchoolName();
 								
 				String type = req.getParameter(PARAMETER_TYPE);
 				if (type.equals(PDF)) {
-					buffer = writePDF(applications, iwc);
-					setAsDownload(iwc,"childcare_queue.pdf",buffer.length());
+					this.buffer = writePDF(applications, iwc);
+					setAsDownload(iwc,"childcare_queue.pdf",this.buffer.length());
 				}
 				else if (type.equals(XLS)) {
-					buffer = writeXLS(applications, iwc);
-					setAsDownload(iwc,"childcare_queue.xls",buffer.length());
+					this.buffer = writeXLS(applications, iwc);
+					setAsDownload(iwc,"childcare_queue.xls",this.buffer.length());
 				}
 				
 			}
@@ -139,22 +142,24 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 	}
 	
 	public String getMimeType() {
-		if (buffer != null)
-			return buffer.getMimeType();
+		if (this.buffer != null) {
+			return this.buffer.getMimeType();
+		}
 		return super.getMimeType();
 	}
 	
 	public void writeTo(OutputStream out) throws IOException {
-		if (buffer != null) {
-			MemoryInputStream mis = new MemoryInputStream(buffer);
+		if (this.buffer != null) {
+			MemoryInputStream mis = new MemoryInputStream(this.buffer);
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 			while (mis.available() > 0) {
 				baos.write(mis.read());
 			}
 			baos.writeTo(out);
 		}
-		else
+		else {
 			System.err.println("buffer is null");
+		}
 	}
 	
 	public MemoryFileBuffer writeXLS(Collection applications, IWContext iwc)
@@ -164,7 +169,7 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
         if (!applications.isEmpty()) {
             HSSFWorkbook wb = new HSSFWorkbook();
             
-            String sheetTitle = schoolName.length() <= 31 ? schoolName : schoolName.substring(0, 31); //the name of worksheet can be 31 symbols max
+            String sheetTitle = this.schoolName.length() <= 31 ? this.schoolName : this.schoolName.substring(0, 31); //the name of worksheet can be 31 symbols max
             HSSFSheet sheet = wb.createSheet(sheetTitle);
             
             sheet.setColumnWidth((short) 0, (short) (30 * 256));
@@ -185,14 +190,14 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
             int cellRow = 0;
             HSSFRow row = sheet.createRow((short) cellRow++);
             HSSFCell cell = row.createCell((short) 0);
-            cell.setCellValue(schoolName);
+            cell.setCellValue(this.schoolName);
             cell.setCellStyle(style);
             cell = row.createCell((short) 1);
 
-            if (groupName != null) {
+            if (this.groupName != null) {
                 row = sheet.createRow((short) cellRow++);
                 cell = row.createCell((short) 0);
-                cell.setCellValue(groupName);
+                cell.setCellValue(this.groupName);
                 cell.setCellStyle(style);
             }
 
@@ -201,35 +206,35 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
             row = sheet.createRow((short) cellRow++);
 
             cell = row.createCell((short) 0);
-            cell.setCellValue(iwrb
+            cell.setCellValue(this.iwrb
                     .getLocalizedString("child_care.name", "Name"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 1);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.personal_id",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.personal_id",
                     "Personal ID"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 2);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.queue_date",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.queue_date",
                     "Queue date"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 3);
-            cell.setCellValue(iwrb.getLocalizedString(
+            cell.setCellValue(this.iwrb.getLocalizedString(
                     "child_care.placement_date", "Placement date"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 4);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.order",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.order",
                     "Order"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 5);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.queue_order",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.queue_order",
                     "Queue order"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 6);
-            cell.setCellValue(iwrb.getLocalizedString("child_care.status",
+            cell.setCellValue(this.iwrb.getLocalizedString("child_care.status",
                     "Status"));
             cell.setCellStyle(style);
             cell = row.createCell((short) 7);
-            cell.setCellValue(iwrb.getLocalizedString(
+            cell.setCellValue(this.iwrb.getLocalizedString(
                     "child_care.current_provider", "Current provider"));
             cell.setCellStyle(style);
 
@@ -243,7 +248,7 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
             int queueOrder = -1;
             int netOrder = -1;
 
-            int ordering = getOrdering(providerId); 
+            int ordering = getOrdering(this.providerId); 
             
             Iterator iter = applications.iterator();
             while (iter.hasNext()) {
@@ -269,11 +274,13 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
                 }
 
                 if (application.getApplicationStatus() == getChildCareBusiness(
-                        iwc).getStatusSentIn())
-                    netOrder = getChildCareBusiness(iwc)
-                            .getNumberInQueueByStatus(application, ordering);
-                else
-                    netOrder = -1;
+                        iwc).getStatusSentIn()) {
+									netOrder = getChildCareBusiness(iwc)
+									        .getNumberInQueueByStatus(application, ordering);
+								}
+								else {
+									netOrder = -1;
+								}
 
                 // hasOtherPlacing =
                 // getChildCareBusiness(iwc).hasBeenPlacedWithOtherProvider(application.getChildId(),
@@ -283,10 +290,10 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
                 Name name = new Name(child.getFirstName(), child
                         .getMiddleName(), child.getLastName());
                 row.createCell((short) 0).setCellValue(
-                        name.getName(locale, true));
+                        name.getName(this.locale, true));
                 row.createCell((short) 1).setCellValue(
                         PersonalIDFormatter.format(child.getPersonalID(),
-                                locale));
+                                this.locale));
 
                 if (queueDate != null) {
                     row.createCell((short) 2).setCellValue(
@@ -296,11 +303,13 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
                     row.createCell((short) 3).setCellValue(
                             placementDate.getLocaleDate(IWCalendar.SHORT));
                 }
-                if (netOrder != -1)
-                    row.createCell((short) 4).setCellValue(netOrder);
+                if (netOrder != -1) {
+									row.createCell((short) 4).setCellValue(netOrder);
+								}
 
-                if (queueOrder != -1)
-                    row.createCell((short) 5).setCellValue(queueOrder);
+                if (queueOrder != -1) {
+									row.createCell((short) 5).setCellValue(queueOrder);
+								}
 
                 row.createCell((short) 6).setCellValue(statusCC);
 
@@ -322,21 +331,21 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 		if (!applications.isEmpty()) {
 			Document document = new Document(PageSize.A4, 50, 50, 50, 50);
 			PdfWriter writer = PdfWriter.getInstance(document, mos);
-			document.addTitle(schoolName);
+			document.addTitle(this.schoolName);
 			document.addAuthor("Idega Reports");
-			document.addSubject(schoolName);
+			document.addSubject(this.schoolName);
 			document.open();
 			
-			document.add(new Phrase(schoolName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
+			document.add(new Phrase(this.schoolName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
 			//if (groupName != null)
 			//	document.add(new Phrase(groupName+"\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
 			document.add(new Phrase("\n", new Font(Font.HELVETICA, 12, Font.BOLD)));
 			
 			Cell cell;
 			
-			String[] headers = {iwrb.getLocalizedString("child_care.name","Name"), iwrb.getLocalizedString("child_care.personal_id","Personal ID"),
-					iwrb.getLocalizedString("child_care.queue_date","Queue date"), iwrb.getLocalizedString("child_care.placement_date_pdf","Placement date"),
-					iwrb.getLocalizedString("child_care.current_provider_pdf","Current provider")};
+			String[] headers = {this.iwrb.getLocalizedString("child_care.name","Name"), this.iwrb.getLocalizedString("child_care.personal_id","Personal ID"),
+					this.iwrb.getLocalizedString("child_care.queue_date","Queue date"), this.iwrb.getLocalizedString("child_care.placement_date_pdf","Placement date"),
+					this.iwrb.getLocalizedString("child_care.current_provider_pdf","Current provider")};
 		
 			
 			
@@ -367,11 +376,11 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 				
 				Name name = new Name(child.getFirstName(), child.getMiddleName(), child.getLastName());
 				
-				cell = new Cell(new Phrase(name.getName(locale, true), new Font(Font.HELVETICA, 10, Font.BOLD)));
+				cell = new Cell(new Phrase(name.getName(this.locale, true), new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
 				datatable.addCell(cell);
 
-				cell = new Cell(new Phrase(PersonalIDFormatter.format(child.getPersonalID(), locale), new Font(Font.HELVETICA, 10, Font.BOLD)));
+				cell = new Cell(new Phrase(PersonalIDFormatter.format(child.getPersonalID(), this.locale), new Font(Font.HELVETICA, 10, Font.BOLD)));
 				cell.setBorder(Rectangle.NO_BORDER);
 				datatable.addCell(cell);
 				
@@ -417,8 +426,9 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 		datatable.setSpacing(0.0f);
 		datatable.setBorder(Rectangle.NO_BORDER);
 		datatable.setWidth(100);
-		if (sizes != null)
+		if (sizes != null) {
 			datatable.setWidths(sizes);
+		}
 		for (int i = 0; i < headers.length; i++) {
 			Cell cell = new Cell(new Phrase(headers[i], new Font(Font.HELVETICA, 12, Font.BOLD)));
 			cell.setBorder(Rectangle.BOTTOM);
@@ -435,12 +445,14 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
         
         int ordering = getOrdering(childcareId); 
         
-		if (sortBy != -1 && fromDate != null && toDate != null) // && sortBy != SORT_ALL)
+		if (sortBy != -1 && fromDate != null && toDate != null) {
 			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, numberPerPage, start, sortBy, fromDate, toDate, ordering);
-		else
-		    //applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId);
-            //Dainis 2005-09-30: lets use the same method as in ChildCareAdmin instead
-            applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, Integer.MAX_VALUE, 0, ordering);
+		}
+		else {
+			//applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId);
+			//Dainis 2005-09-30: lets use the same method as in ChildCareAdmin instead
+			applications = getChildCareBusiness(iwc).getUnhandledApplicationsByProvider(childcareId, Integer.MAX_VALUE, 0, ordering);
+		}
 		
 		return applications;
 	}
@@ -454,7 +466,7 @@ public class ChildCareQueueWriter extends DownloadWriter implements MediaWritabl
 	}
     
     private int getOrdering(int providerId) throws RemoteException {
-        School provider = business.getSchoolBusiness().getSchool(new Integer(providerId));
+        School provider = this.business.getSchoolBusiness().getSchool(new Integer(providerId));
         int ordering = provider.getSortByBirthdate() ? ChildCareAdmin.ORDER_BY_DATE_OF_BIRTH : ChildCareAdmin.ORDER_BY_QUEUE_DATE;
         return ordering;
     }    

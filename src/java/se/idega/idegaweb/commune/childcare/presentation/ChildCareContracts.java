@@ -52,16 +52,17 @@ public class ChildCareContracts extends ChildCareBlock {
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
 	public void init(IWContext iwc) throws Exception {
-		if (iwc.isParameterSet(PARAMETER_STATUS_SORT))
-			sort = Integer.parseInt(iwc.getParameter(PARAMETER_STATUS_SORT));
+		if (iwc.isParameterSet(PARAMETER_STATUS_SORT)) {
+			this.sort = Integer.parseInt(iwc.getParameter(PARAMETER_STATUS_SORT));
+		}
 		
-		if (sort != -1) {
-			switch (sort) {
+		if (this.sort != -1) {
+			switch (this.sort) {
 			case STATUS_ACTIVE :
-				showNotYetActive = false;
+				this.showNotYetActive = false;
 				break;
 			case STATUS_NOT_YET_ACTIVE :
-				showNotYetActive = true;
+				this.showNotYetActive = true;
 				break;
 			}
 		}
@@ -71,10 +72,12 @@ public class ChildCareContracts extends ChildCareBlock {
 			table.setCellpadding(getCellpadding());
 			table.setCellspacing(getCellspacing());
 			
-			if (allowAlter)
+			if (this.allowAlter) {
 				table.setColumns(9);
-			else
+			}
+			else {
 				table.setColumns(8);
+			}
 			
 			
 			if (useStyleNames()) {
@@ -110,8 +113,9 @@ public class ChildCareContracts extends ChildCareBlock {
 			}
 			
 				
-			if(isCommuneAdministrator(iwc))
+			if(isCommuneAdministrator(iwc)) {
 				table.add(getLocalizedSmallHeader("child_care.invoice_receiver","Invoice Receiver"), column++, row);
+			}
 			
 			row++;
 	
@@ -142,10 +146,12 @@ public class ChildCareContracts extends ChildCareBlock {
 			IWTimestamp stamp = new IWTimestamp();
 			
 			Collection students = null;
-			if (sort != -1)
-				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate(), showNotYetActive);
-			else
+			if (this.sort != -1) {
+				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate(), this.showNotYetActive);
+			}
+			else {
 				students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate());
+			}
 			
 			if (students != null){
 				ChildCareContract contract=null;
@@ -165,8 +171,9 @@ public class ChildCareContracts extends ChildCareBlock {
 				while (iter.hasNext()) {
 					column = 1;
 					student = (SchoolClassMember) iter.next();
-					if(child != null && student.getStudent().getPrimaryKey().equals(child.getPrimaryKey()) )
+					if(child != null && student.getStudent().getPrimaryKey().equals(child.getPrimaryKey()) ) {
 						continue;
+					}
 				
 					child = student.getStudent();
 					contract = getBusiness().getValidContractByPlacement(student);
@@ -182,10 +189,12 @@ public class ChildCareContracts extends ChildCareBlock {
 						table.setCellpaddingRight(table.getColumns(), row, 12);
 					}
 					else {
-						if (row % 2 == 0)
+						if (row % 2 == 0) {
 							table.setRowColor(row, getZebraColor1());
-						else
+						}
+						else {
 							table.setRowColor(row, getZebraColor2());
+						}
 					}
 					
 					if (contract != null) {
@@ -194,24 +203,29 @@ public class ChildCareContracts extends ChildCareBlock {
 						waiting = application.getApplicationStatus() == getBusiness().getStatusWaiting();
 						
 						created = new IWTimestamp(contract.getCreatedDate());
-						if (contract.getValidFromDate() != null)
+						if (contract.getValidFromDate() != null) {
 							validFrom = new IWTimestamp(contract.getValidFromDate());
-						else
+						}
+						else {
 							validFrom = null;
+						}
 						
 						if (application.getRejectionDate() != null) {
 							IWTimestamp cancelledDate = new IWTimestamp(application.getRejectionDate());
 							isCancelled = cancelledDate.isEarlierThan(dateNow);
 						}
-						else
+						else {
 							isCancelled = false;
+						}
 						
 						
 						if (validFrom != null) {
-							if (dateNow.isEarlierThan(validFrom))
+							if (dateNow.isEarlierThan(validFrom)) {
 								isNotYetActive = true;
-							else
+							}
+							else {
 								isNotYetActive = false;
+							}
 						}
 						else {
 							isNotYetActive = false;
@@ -254,7 +268,7 @@ public class ChildCareContracts extends ChildCareBlock {
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_PAGE_ID, getParentPageID());
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 						}
-						if (_alwaysShowDeleteContract) {
+						if (this._alwaysShowDeleteContract) {
 							delete.addParameter(ChildCareAdminWindow.PARAMETER_CANCEL_CONTRACT_DIRECTLY, String.valueOf(true));
 						}
 						
@@ -273,8 +287,9 @@ public class ChildCareContracts extends ChildCareBlock {
 								table.add(getSmallErrorText("+"), column, row);
 							}
 							
-							if (hasComment)
+							if (hasComment) {
 								table.add(getSmallErrorText(Text.NON_BREAKING_SPACE), column, row);
+							}
 							if (getResponsePage() != null) {
 								name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
 								archive = getSmallLink(name);
@@ -290,14 +305,18 @@ public class ChildCareContracts extends ChildCareBlock {
 							}
 							table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
 							table.add(getSmallText(created.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-							if (validFrom != null)
+							if (validFrom != null) {
 								table.add(getSmallText(validFrom.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
-							else
+							}
+							else {
 								table.add(getSmallText("-"), column++, row);
-							if (application.getApplicationStatus() == getBusiness().getStatusCancelled() && isCancelled)
+							}
+							if (application.getApplicationStatus() == getBusiness().getStatusCancelled() && isCancelled) {
 								table.add(getSmallText(localize("child_care.status_cancelled","Cancelled")), column, row);
-							else
+							}
+							else {
 								table.add(getSmallText(localize("child_care.status_active","Active")), column, row);
+							}
 							column++;
 							
 							if (iwc.getApplicationSettings().getBoolean(CCConstants.ATTRIBUTE_SHOW_FEE, false)) {
@@ -321,17 +340,20 @@ public class ChildCareContracts extends ChildCareBlock {
 							table.setWidth(column, row, 12);
 							table.add(viewContract, column++, row);
 							
-							if (allowAlter) {
+							if (this.allowAlter) {
 								table.setWidth(column, row, 12);
 								int futureContractCount = getBusiness().getNumberOfFutureContracts(((Integer)application.getPrimaryKey()).intValue());
-								if ( futureContractCount < allowedFutureContracts)
+								if ( futureContractCount < this.allowedFutureContracts) {
 									table.add(alterCareTime, column++, row);
-								else
+								}
+								else {
 									table.add(getInformationIcon(localize("child_care.to_many_future_contracts","To many future contracts")),column,row);
+								}
 							}
 							
-							if (student.getRemovedDate() == null && (_alwaysShowDeleteContract || parentCancelled || waiting))
+							if (student.getRemovedDate() == null && (this._alwaysShowDeleteContract || parentCancelled || waiting)) {
 								table.add(delete, column++, row);
+							}
 							
 							if (parentCancelled) {
 								table.setRowColor(row, CONTRACT_COLOR);
@@ -381,11 +403,13 @@ public class ChildCareContracts extends ChildCareBlock {
 				}
 			}
 			String localized = "";
-			if (getSession().getGroupID() != -1)
+			if (getSession().getGroupID() != -1) {
 				localized = localize("child_care.change_group", "Change group");
-			else
+			}
+			else {
 				localized = localize("child_care.create_group", "Create group");
-			if (showCreateGroupBtn && getSession().getProvider() != null){
+			}
+			if (this.showCreateGroupBtn && getSession().getProvider() != null){
 				GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
 				createGroup.setWindowToOpen(ChildCareWindow.class);
 				createGroup.addParameterToWindow(ChildCareAdminWindow.PARAMETER_METHOD, ChildCareAdminWindow.METHOD_CREATE_GROUP);
@@ -685,19 +709,20 @@ public class ChildCareContracts extends ChildCareBlock {
 		statusSort.addMenuElement("-1", localize("child_care.show_all_statuses","Show all"));
 		statusSort.addMenuElement(STATUS_ACTIVE, localize("child_care.show_active","Show active"));
 		statusSort.addMenuElement(STATUS_NOT_YET_ACTIVE, localize("child_care.show_not_yet_active","Show not yet active"));
-		statusSort.setSelectedElement(sort);
+		statusSort.setSelectedElement(this.sort);
 		statusSort.setToSubmit();
 		
 		table.add(getSmallHeader(localize("child_care.status_sort","Sorting")+":"), 5, 1);
 		table.add(statusSort, 7, 1);
 		
 		boolean hasShowNotYetActive = false;
-		if (sort != -1)
+		if (this.sort != -1) {
 			hasShowNotYetActive = true;
+		}
 		
-		table.add(getPDFLink(showNotYetActive, hasShowNotYetActive), 10, 1);
+		table.add(getPDFLink(this.showNotYetActive, hasShowNotYetActive), 10, 1);
 		table.add(Text.getNonBrakingSpace(), 10, 1);
-		table.add(getXSLLink(showNotYetActive, hasShowNotYetActive), 10, 1);
+		table.add(getXSLLink(this.showNotYetActive, hasShowNotYetActive), 10, 1);
 
 		return form;
 	}
@@ -721,8 +746,9 @@ public class ChildCareContracts extends ChildCareBlock {
 		//link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_GROUP_ID, getSession().getGroupID());
-		if (hasShowNotYetActive)
+		if (hasShowNotYetActive) {
 			link.addParameter(ChildCareGroupWriter.PARAMETER_SHOW_NOT_YET_ACTIVE, String.valueOf(showNotYetActive));
+		}
 		
 		return link;
 	}
@@ -736,15 +762,16 @@ public class ChildCareContracts extends ChildCareBlock {
 		//link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_GROUP_ID, getSession().getGroupID());
-		if (hasShowNotYetActive)
+		if (hasShowNotYetActive) {
 			link.addParameter(ChildCareGroupWriter.PARAMETER_SHOW_NOT_YET_ACTIVE, String.valueOf(showNotYetActive));
+		}
 		
 		return link;
 	}
 	
 	protected boolean canSeeContracts(IWContext iwc) {
 		boolean hasPrognosis = false;
-		if (_requiresPrognosis) {
+		if (this._requiresPrognosis) {
 			try {
 				hasPrognosis = getSession().hasPrognosis();
 			}
@@ -752,8 +779,9 @@ public class ChildCareContracts extends ChildCareBlock {
 				hasPrognosis = false;
 			}
 		}
-		else
+		else {
 			hasPrognosis = true;
+		}
 		return hasPrognosis || isCommuneAdministrator(iwc);
 	}
 	
@@ -761,11 +789,11 @@ public class ChildCareContracts extends ChildCareBlock {
 	 * @param b
 	 */
 	public void setAllowAlter(boolean b) {
-		allowAlter = b;
+		this.allowAlter = b;
 	}
 	
 	public void setRequiresPrognosis(boolean requiresPrognosis) {
-		_requiresPrognosis = requiresPrognosis;
+		this._requiresPrognosis = requiresPrognosis;
 	}
 
 	/**
@@ -786,10 +814,10 @@ public class ChildCareContracts extends ChildCareBlock {
 	
 		
 	public void setAlwaysShowDeleteContract(boolean b) {
-		_alwaysShowDeleteContract = b;
+		this._alwaysShowDeleteContract = b;
 	}
 	
 	public boolean getAlwaysShowDeleteContract() {
-		return _alwaysShowDeleteContract;
+		return this._alwaysShowDeleteContract;
 	}
 }

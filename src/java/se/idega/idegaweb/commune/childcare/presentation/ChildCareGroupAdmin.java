@@ -67,12 +67,14 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 			table.add(getNavigationTable(), 1, 1);
 			table.add(getChildrenTable(iwc), 1, 3);
 			
-			if (iShowGroupButtons) {
+			if (this.iShowGroupButtons) {
 				String localized = "";
-				if (getSession().getGroupID() != -1)
+				if (getSession().getGroupID() != -1) {
 					localized = localize("child_care.change_group", "Change group");
-				else
+				}
+				else {
 					localized = localize("child_care.create_group", "Create group");
+				}
 		
 				GenericButton createGroup = getButton(new GenericButton("create_change_group", localized));
 				createGroup.setWindowToOpen(ChildCareWindow.class);
@@ -97,7 +99,7 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 
 	protected boolean canSeePlacings() {
 		boolean hasPrognosis = false;
-		if (_requiresPrognosis) {
+		if (this._requiresPrognosis) {
 			try {
 				hasPrognosis = getSession().hasPrognosis();
 			}
@@ -105,8 +107,9 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 				hasPrognosis = false;
 			}
 		}
-		else
+		else {
 			hasPrognosis = true;
+		}
 		
 		return hasPrognosis;
 	}
@@ -116,10 +119,12 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		table.setWidth(Table.HUNDRED_PERCENT);
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		if (sort == STATUS_NOT_YET_ACTIVE)
+		if (this.sort == STATUS_NOT_YET_ACTIVE) {
 			table.setColumns(7);
-		else
+		}
+		else {
 			table.setColumns(6);
+		}
 		if (useStyleNames()) {
 			table.setRowStyleClass(1, getHeaderRowClass());
 		}
@@ -137,10 +142,12 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		table.add(getLocalizedSmallHeader("child_care.personal_id","Personal ID"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.address","Address"), column++, row);
 		table.add(getLocalizedSmallHeader("child_care.phone","Phone"), column++, row);
-		if (sort == STATUS_NOT_YET_ACTIVE)
+		if (this.sort == STATUS_NOT_YET_ACTIVE) {
 			table.add(getLocalizedSmallHeader("child_care.valid_from","Valid from"), column++, row++);
-		else
+		}
+		else {
 			row++;
+		}
 			
 		SchoolClassMember student;
 		User child;
@@ -158,10 +165,12 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		
 		IWTimestamp stamp = new IWTimestamp();
 		Collection students = null;
-		if (sort != -1)
-			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate(), showNotYetActive);
-		else
+		if (this.sort != -1) {
+			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate(), this.showNotYetActive);
+		}
+		else {
 			students = getBusiness().getSchoolBusiness().findStudentsInSchoolByDate(getSession().getChildCareID(), getSession().getGroupID(), getBusiness().getSchoolBusiness().getCategoryChildcare().getCategory(), stamp.getDate());
+		}
 		
 		Iterator iter = students.iterator();
 		while (iter.hasNext()) {
@@ -192,10 +201,12 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 				table.setCellpaddingRight(table.getColumns(), row, 12);
 			}
 			else {
-				if (row % 2 == 0)
+				if (row % 2 == 0) {
 					table.setRowColor(row, getZebraColor1());
-				else
+				}
+				else {
 					table.setRowColor(row, getZebraColor2());
+				}
 			}
 
 			if (student.getRemovedDate() != null) {
@@ -225,8 +236,9 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 				delete.addParameter(ChildCareAdminWindow.PARAMETER_USER_ID, student.getClassMemberId());
 			}
 
-			if (hasComments)
+			if (hasComments) {
 				table.add(getSmallText(Text.NON_BREAKING_SPACE), column, row);
+			}
 			if (getResponsePage() != null) {
 				name = getBusiness().getUserBusiness().getNameLastFirst(child, true);
 				childInfo = getSmallLink(name);
@@ -240,22 +252,27 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 				table.add(getSmallText(userName.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), column++, row);
 			}
 			table.add(getSmallText(PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale())), column++, row);
-			if (address != null)
+			if (address != null) {
 				table.add(getSmallText(address.getStreetAddress()), column, row);
+			}
 			column++;
-			if (phone != null)
+			if (phone != null) {
 				table.add(getSmallText(phone.getNumber()), column, row);
+			}
 			column++;
-			if (sort == STATUS_NOT_YET_ACTIVE)
+			if (this.sort == STATUS_NOT_YET_ACTIVE) {
 				table.add(getSmallText(registered.getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT)), column++, row);
+			}
 			
 			table.setWidth(column, row, 12);
 			table.add(move, column++, row);
 			table.setWidth(column, row, 12);
-			if (student.getRemovedDate() == null)
+			if (student.getRemovedDate() == null) {
 				table.add(delete, column++, row++);
-			else
+			}
+			else {
 				row++;
+			}
 		}
 		
 		if (showComment) {
@@ -304,19 +321,20 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		statusSort.addMenuElement("-1", localize("child_care.show_all_statuses","Show all"));
 		statusSort.addMenuElement(STATUS_ACTIVE, localize("child_care.show_active","Show active"));
 		statusSort.addMenuElement(STATUS_NOT_YET_ACTIVE, localize("child_care.show_not_yet_active","Show not yet active"));
-		statusSort.setSelectedElement(sort);
+		statusSort.setSelectedElement(this.sort);
 		statusSort.setToSubmit();
 		
 		table.add(getSmallHeader(localize("child_care.status_sort","Sorting")+":"), 5, 1);
 		table.add(statusSort, 7, 1);
 		
 		boolean hasShowNotYetActive = false;
-		if (sort != -1)
+		if (this.sort != -1) {
 			hasShowNotYetActive = true;
+		}
 			
-		table.add(getPDFLink(showNotYetActive, hasShowNotYetActive), 10, 1);
+		table.add(getPDFLink(this.showNotYetActive, hasShowNotYetActive), 10, 1);
 		table.add(Text.getNonBrakingSpace(), 10, 1);
-		table.add(getXSLLink(showNotYetActive, hasShowNotYetActive), 10, 1);
+		table.add(getXSLLink(this.showNotYetActive, hasShowNotYetActive), 10, 1);
 
 		return form;
 	}
@@ -331,8 +349,9 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		//link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_GROUP_ID, getSession().getGroupID());
-		if (hasShowNotYetActive)
+		if (hasShowNotYetActive) {
 			link.addParameter(ChildCareGroupWriter.PARAMETER_SHOW_NOT_YET_ACTIVE, String.valueOf(showNotYetActive));
+		}
 		
 		return link;
 	}
@@ -346,8 +365,9 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 		//link.addParameter(MediaWritable.PRM_WRITABLE_CLASS, IWMainApplication.getEncryptedClassName(ChildCareGroupWriter.class));
 		link.addParameter(ChildCareGroupWriter.PARAMETER_PROVIDER_ID, getSession().getChildCareID());
 		link.addParameter(ChildCareGroupWriter.PARAMETER_GROUP_ID, getSession().getGroupID());
-		if (hasShowNotYetActive)
+		if (hasShowNotYetActive) {
 			link.addParameter(ChildCareGroupWriter.PARAMETER_SHOW_NOT_YET_ACTIVE, String.valueOf(showNotYetActive));
+		}
 		
 		return link;
 	}
@@ -371,16 +391,17 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	}
 	
 	private void parse(IWContext iwc) {
-		if (iwc.isParameterSet(PARAMETER_STATUS_SORT))
-			sort = Integer.parseInt(iwc.getParameter(PARAMETER_STATUS_SORT));
+		if (iwc.isParameterSet(PARAMETER_STATUS_SORT)) {
+			this.sort = Integer.parseInt(iwc.getParameter(PARAMETER_STATUS_SORT));
+		}
 			
-		if (sort != -1) {
-			switch (sort) {
+		if (this.sort != -1) {
+			switch (this.sort) {
 				case STATUS_ACTIVE :
-					showNotYetActive = false;
+					this.showNotYetActive = false;
 					break;
 				case STATUS_NOT_YET_ACTIVE :
-					showNotYetActive = true;
+					this.showNotYetActive = true;
 					break;
 			}
 		}
@@ -394,6 +415,6 @@ public class ChildCareGroupAdmin extends ChildCareBlock {
 	}
 	
 	public void setShowGroupButtons(boolean showButtons) {
-		iShowGroupButtons = showButtons;
+		this.iShowGroupButtons = showButtons;
 	}
 }

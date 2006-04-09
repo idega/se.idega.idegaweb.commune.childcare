@@ -40,7 +40,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 	 * @return
 	 */
 	public ICFile getStatisticsFolder() {
-		return statisticsFolder;
+		return this.statisticsFolder;
 	}
 
 	/**
@@ -86,7 +86,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.create_report", "Create report")));
 		form.add(button);
 		
-		if (createReport && !reportCreated) {
+		if (this.createReport && !this.reportCreated) {
 			form.add(Text.getNonBrakingSpace());
 			form.add(getSmallErrorText(localize("child_care.create_report_failed", "Failed to create report. Possibly no changes found.")));
 		}
@@ -113,7 +113,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 		table.setNoWrap(column, row);
 		table.add(getLocalizedSmallHeader("child_care.mimetype","Mimetype"), column++, row++);
 		
-		Iterator iter = statisticsFolder.getChildrenIterator();
+		Iterator iter = this.statisticsFolder.getChildrenIterator();
 		if (iter != null) {
 			while (iter.hasNext()) {
 				column = 1;
@@ -122,10 +122,12 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 				double size = (double) file.getFileSize().intValue() / (double) 1024;
 				DecimalFormat format = new DecimalFormat("0.0 KB");
 
-				if (row % 2 == 0)
+				if (row % 2 == 0) {
 					table.setRowColor(row, getZebraColor1());
-				else
+				}
+				else {
 					table.setRowColor(row, getZebraColor2());
+				}
 	
 				Link link = getSmallLink(file.getName());
 				link.setFile(file);
@@ -147,15 +149,15 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 
 	private void parseAction(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_CREATE_REPORT)) {
-			createReport = true;
+			this.createReport = true;
 			ChildCareStatisticsWriter statistics = new ChildCareStatisticsWriter();
-			reportCreated = statistics.createReport(iwc, statisticsFolder, iwc.getCurrentLocale());
+			this.reportCreated = statistics.createReport(iwc, this.statisticsFolder, iwc.getCurrentLocale());
 		}
 	}
 
 	
 	public boolean isUseAsContractAndPlacementChangesExport() {
-		return useAsContractAndPlacementChangesExport;
+		return this.useAsContractAndPlacementChangesExport;
 	}
 
 	
@@ -177,10 +179,10 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 	private boolean exportCreated = false;		
 	
 	private void parseAction() {		
-		if (iwc.isParameterSet(PARAMETER_CREATE_REPORT)) {
+		if (this.iwc.isParameterSet(PARAMETER_CREATE_REPORT)) {
 			this.createExport = true;
 			
-			Date reportDate = new IWTimestamp(iwc.getParameter(PARAMETER_REPORT_DATE)).getDate();
+			Date reportDate = new IWTimestamp(this.iwc.getParameter(PARAMETER_REPORT_DATE)).getDate();
 			
 //			ContractAndPlacementChangesExportWriter writer = 
 //					new ContractAndPlacementChangesExportWriter();
@@ -195,7 +197,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 	private void createGui() {
 		PresentationObjectContainer poc = new PresentationObjectContainer();
 		
-		if (exportFolder != null ) {
+		if (this.exportFolder != null ) {
 			Table table = new Table(1, 3);
 			table.setCellpadding(0);
 			table.setCellspacing(0);
@@ -255,10 +257,12 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 					}
 					DecimalFormat format = new DecimalFormat("0.0 KB");
 	
-					if (row % 2 == 0)
+					if (row % 2 == 0) {
 						table.setRowColor(row, getZebraColor1());
-					else
+					}
+					else {
 						table.setRowColor(row, getZebraColor2());
+					}
 		
 					Link link = getSmallLink(file.getName());
 					link.setFile(file);
@@ -267,7 +271,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 					table.setNoWrap(column, row);
 					table.add(getSmallText(format.format(size)), column++, row);
 					table.setNoWrap(column, row);
-					table.add(getSmallText(new IWTimestamp(file.getCreationDate()).getLocaleDateAndTime(iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), column++, row);
+					table.add(getSmallText(new IWTimestamp(file.getCreationDate()).getLocaleDateAndTime(this.iwc.getCurrentLocale(), IWTimestamp.SHORT, IWTimestamp.SHORT)), column++, row);
 					//table.setNoWrap(column, row);
 					//table.add(getSmallText(file.getMimeType()), column++, mos.write(new String("hello, world").getBytes()););
 					row++;	
@@ -298,7 +302,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 		SubmitButton button = (SubmitButton) getButton(new SubmitButton(localize("child_care.create_report", "Create report")));
 		form.add(button);
 		
-		if (createExport && !exportCreated) {
+		if (this.createExport && !this.exportCreated) {
 			form.add(Text.getNonBrakingSpace());
 			form.add(getSmallErrorText(localize("child_care.create_report_failed", "Failed to create report. Possibly no changes found.")));
 		}
@@ -308,7 +312,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 	
 
 	public ICFile getExportFolder() {
-		return exportFolder;
+		return this.exportFolder;
 	}
 
 	public void setExportFolder(ICFile statisticsFolder) {
@@ -316,7 +320,7 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 	}
 	
 	public IWContext getIwc() {
-		return iwc;
+		return this.iwc;
 	}
 	
 	public void setIwc(IWContext iwc) {
@@ -334,11 +338,15 @@ public class ChildCareContractStatistics extends ChildCareBlock {
 			Timestamp t1 = f1.getCreationDate();
 			Timestamp t2 = f2.getCreationDate();
 			
-			if (t1.equals(t2)) return 0;
-			if (t1.before(t2))
+			if (t1.equals(t2)) {
+				return 0;
+			}
+			if (t1.before(t2)) {
 				return 1;
-			else
+			}
+			else {
 				return -1;
+			}
 
 		}
 	}
