@@ -29,14 +29,14 @@ public class ChildCarePrognosisBMPBean extends GenericEntity implements ChildCar
 	private final static String PROVIDER_COMMENTS = "PROVIDER_COMMENTS";
 
 	/**
-	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
+	 * @see com.idega.data.IDOEntity#getEntityName()
 	 */
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
 
 	/**
-	 * @see com.idega.data.IDOLegacyEntity#initializeAttributes()
+	 * @see com.idega.data.IDOEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());

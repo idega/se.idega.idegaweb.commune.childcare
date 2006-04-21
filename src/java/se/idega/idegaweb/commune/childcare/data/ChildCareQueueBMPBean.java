@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareQueueBMPBean.java,v 1.17 2006/04/09 11:45:19 laddi Exp $
+ * $Id: ChildCareQueueBMPBean.java,v 1.18 2006/04/21 15:46:11 laddi Exp $
  *
  * Copyright (C) 2002 Idega hf. All Rights Reserved.
  *
@@ -69,14 +69,14 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	}
 
 	/**
-	 * @see com.idega.data.IDOLegacyEntity#getEntityName()
+	 * @see com.idega.data.IDOEntity#getEntityName()
 	 */
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
 
 	/**
-	 * @see com.idega.data.IDOLegacyEntity#initializeAttributes()
+	 * @see com.idega.data.IDOEntity#initializeAttributes()
 	 */
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
