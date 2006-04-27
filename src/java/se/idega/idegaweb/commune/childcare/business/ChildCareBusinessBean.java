@@ -1474,7 +1474,14 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				if (getNumberOfFutureContracts(childcareContract.getApplicationID()) == 0 && application.getApplicationStatus() != getStatusReady()) {
 					createCancelForm(application, endDate, locale);
 				}
+				application.setCancelFormFile(null);
+				application.store();
+				createCancelForm(application, endDate, locale);
 			}
+			else{
+				application.setCancelFormFile(null); 
+			}
+				
 
 			if (invoiceReceiver > 0) {
 				childcareContract.setInvoiceReceiverID(invoiceReceiver);
@@ -1496,6 +1503,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				application.setContractFileId(((Integer) contractFile.getPrimaryKey()).intValue());
 			}
 			verifyApplication(childcareContract, application, null, performer, schoolType, schoolClass, false, oldStartDate);
+			
 			application.store();
 
 			trans.commit();
@@ -1540,7 +1548,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	public ICFile recreateContractFile(ChildCareContract archive, Locale locale) throws IDORemoveRelationshipException, RemoteException, IWBundleDoesNotExist, IDOAddRelationshipException {
 		Contract contract = archive.getContract();
 		contract.removeFileFromContract(archive.getContractFile());
-
+		
 		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
         boolean useAlternativePDFGenerationMethod =  bundle.getBooleanProperty(PROPERTY_CHILDCARE_CONTRACT_ALTERNATIVE_PDF, false);
 		
@@ -2014,7 +2022,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
             getPrintingService().printDocument(pcx);
             ICFile file = createFile(null, "cancel_form", mis, buffer.length());
 
-            application.setCancelFormFile(file);
+			application.setCancelFormFile(file);
             application.store();
 
             t.commit();
