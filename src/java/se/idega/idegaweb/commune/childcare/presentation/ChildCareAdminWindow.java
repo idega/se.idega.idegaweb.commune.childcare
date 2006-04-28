@@ -1409,26 +1409,27 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add("  ", 1, row);
 		table.add(textInput, 1, row++);
 
-		// school types
-
 		School school = getSession().getProvider();
 		Collection availableTypes = new ArrayList();
 		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
 		SchoolCategory schcategory = schBuiz.getCategoryChildcare();		
-		
-		try {
-			availableTypes = school.findRelatedSchoolTypes(schcategory); //school.getSchoolTypes();
-		}
-		catch (IDORelationshipException ex) {
-			ex.printStackTrace();
-		}
 
+		try {
+			availableTypes = getBusiness().getSchoolBusiness().getSchoolTypeHome().findAllByCategory(schcategory.getPrimaryKey().toString());
+		}
+		catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		catch (FinderException e) {
+			e.printStackTrace();
+		}
+		
 		DropdownMenu types = getDropdownMenuLocalized(PARAMETER_SCHOOL_TYPES, availableTypes, "getLocalizationKey", "");
 		if (currentType != null) {
 			types.setSelectedElement(localize(currentType.getLocalizationKey(), ""));
 		}
 		table.add(getSmallHeader(localize("child_care.choose_school_type", "Choose school type:")), 1, row++);
-		table.add(getSmallText(localize("child_care.school_type", "School type")), 1, row);
+		table.add(getSmallText(localize("child_care.school_type", "School type")+";"), 1, row);
 		table.add("  ", 1, row);
 		table.add(types, 1, row++);
 
