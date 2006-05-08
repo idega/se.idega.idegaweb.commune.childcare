@@ -41,7 +41,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
 	private IWTimestamp endFromTimestamp;
 	private IWTimestamp endToTimestamp;	
     
-    public final static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.childcare";
+    public final static String CHILDCARE_IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune.childcare";
     
 	private IWResourceBundle iwrb = null;
     
@@ -51,7 +51,7 @@ public class ChildCareProviderDatesForChanges extends ChildCareBlock {
     public void init(IWContext iwc) throws Exception {
         if (isCommuneAdministrator(iwc)) {
             
-            setIwrb(iwc.getIWMainApplication().getBundle(IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc));
+            setIwrb(iwc.getIWMainApplication().getBundle(CHILDCARE_IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc));
             
             parse(iwc);
             add(getGui(iwc));

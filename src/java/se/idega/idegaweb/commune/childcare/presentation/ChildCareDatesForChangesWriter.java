@@ -52,7 +52,7 @@ public class ChildCareDatesForChangesWriter extends DownloadWriter implements
 
 	public void init(HttpServletRequest req, IWContext iwc) {
 		try {
-            setIwrb(iwc.getIWMainApplication().getBundle(ChildCareProviderDatesForChanges.IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc));
+            setIwrb(iwc.getIWMainApplication().getBundle(ChildCareProviderDatesForChanges.CHILDCARE_IW_BUNDLE_IDENTIFIER).getResourceBundle(iwc));
             
 			// parse params
             Integer providerId = new Integer(req.getParameter(ChildCareProviderDatesForChanges.PARAMETER_PROVIDER_ID));
