@@ -3654,6 +3654,32 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return false;
 	}
 
+	public boolean hasSchoolPlacement(User child, School school) {
+		try {
+			return getSchoolBusiness().getSchoolClassMemberHome().getNumberOfPlacingsAtSchool(child, school) > 0;
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (IDOException ie) {
+			log(ie);
+		}
+		return false;
+	}
+	
+	public SchoolClassMember getActivePlacement(User child, School school) {
+		try {
+			return getSchoolBusiness().getSchoolClassMemberHome().findNotTerminatedByStudentSchoolAndCategory(new Integer(child.getPrimaryKey().toString()).intValue(), new Integer(school.getPrimaryKey().toString()).intValue(), getSchoolBusiness().getCategoryElementarySchool());
+		}
+		catch (RemoteException re) {
+			throw new IBORuntimeException(re);
+		}
+		catch (FinderException fe) {
+			log(fe);
+		}
+		return null;
+	}
+
 	private ChildCareContract addContractToArchive(int contractFileID, int oldArchiveID, boolean createNew, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID, int invoiceReceiverId, User user, boolean createNewStudent, int schoolTypeId, int schoolClassId, SchoolClassMember oldStudent) throws NoPlacementFoundException {
 		try {
 			ChildCareContract archive = null, oldArchive = null;

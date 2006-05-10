@@ -663,6 +663,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	public boolean assignApplication(String[] ids, User user, String subject, String body) throws java.rmi.RemoteException;
 
 	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getActivePlacement
+	 */
+	public SchoolClassMember getActivePlacement(User child, School school) throws java.rmi.RemoteException;
+
+	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getGrantedApplicationsByUser
 	 */
 	public Collection getGrantedApplicationsByUser(User owner) throws java.rmi.RemoteException;
@@ -816,6 +821,11 @@ public interface ChildCareBusiness extends IBOService, CaseBusiness, EmploymentT
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasSchoolPlacement
 	 */
 	public boolean hasSchoolPlacement(User child) throws java.rmi.RemoteException;
+
+	/**
+	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#hasSchoolPlacement
+	 */
+	public boolean hasSchoolPlacement(User child, School school) throws java.rmi.RemoteException;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.business.ChildCareBusinessBean#getContractFile
