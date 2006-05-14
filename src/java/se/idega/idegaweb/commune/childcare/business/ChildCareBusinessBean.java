@@ -2136,11 +2136,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		UserTransaction t = getSessionContext().getUserTransaction();
 		try {
 			t.begin();
-			CaseBusiness caseBiz = (CaseBusiness) getServiceInstance(CaseBusiness.class);
 			IWTimestamp now = new IWTimestamp();
 			application.setRejectionDate(now.getDate());
 			application.setApplicationStatus(getStatusRejected());
-			caseBiz.changeCaseStatus(application, getCaseStatusInactive().getStatus(), user);
+			changeCaseStatus(application, getCaseStatusInactive().getStatus(), user, (Group) null);
 
 			String subject = getLocalizedString("child_care.rejected_offer_subject", "A placing offer replied to.");
 			String body = getLocalizedString("child_care.rejected_offer_body", "Custodian for {0}, {5} rejects an offer for placing at {1}.");
@@ -2153,7 +2152,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 					if (element instanceof ChildCareApplication) {
 						application = (ChildCareApplication) element;
 						application.setApplicationStatus(getStatusSentIn());
-						caseBiz.changeCaseStatus(application, getCaseStatusOpen().getStatus(), user);
+						changeCaseStatus(application, getCaseStatusOpen().getStatus(), user, (Group) null);
 					}
 				}
 			}
@@ -2425,7 +2424,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 
 	public void parentsAgree(ChildCareApplication application, User user, String subject, String message) {
 		application.setApplicationStatus(this.getStatusParentsAccept());
-		changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user);
+		changeCaseStatus(application, getCaseStatusPreliminary().getStatus(), user, (Group) null);
 		sendMessageToProvider(application, subject, message);
 	}
 
