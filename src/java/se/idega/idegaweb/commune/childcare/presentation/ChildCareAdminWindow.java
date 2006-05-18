@@ -1410,16 +1410,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add("  ", 1, row);
 		table.add(textInput, 1, row++);
 		
-		School school = getSession().getProvider();
 		Collection availableTypes = new ArrayList();
 		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
 		SchoolCategory schcategory = schBuiz.getCategoryChildcare();		
 
-
 		try {
-			String category = schcategory.getPrimaryKey().toString();	
 			availableTypes = getBusiness().getSchoolBusiness().getSchoolTypeHome().findAllByCategory(schcategory.getPrimaryKey().toString());
-			
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
