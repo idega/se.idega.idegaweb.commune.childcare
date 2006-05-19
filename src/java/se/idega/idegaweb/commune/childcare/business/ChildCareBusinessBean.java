@@ -2788,7 +2788,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
         ICFile contractFile = null;
         try {
 			getPrintingService().printDocument(pcx);
-			contractFile = createFile(null, "child_care_contract_form", mis, buffer.length());
+			contractFile = createFile(null, pcx.getFileName() != null ? pcx.getFileName() : "child_care_contract_form", mis, buffer.length());
 			String contractText = null; //XXX this should be text of the contract! must find the way to make the textual representation
 			
 			ContractService service = (ContractService) getServiceInstance(ContractService.class);
