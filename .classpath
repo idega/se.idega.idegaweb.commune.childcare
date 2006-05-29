@@ -7,7 +7,7 @@
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/jasperreports/jars/jasperreports-0.6.1.jar">
   </classpathentry>
-  <classpathentry kind="var" path="MAVEN_REPO/nexus-pki/jars/nbs-server-1.0.jar">
+  <classpathentry kind="var" path="MAVEN_REPO/nexus-pki/jars/nbs-server-1.1.3.jar">
   </classpathentry>
   <classpathentry kind="var" path="MAVEN_REPO/itext/jars/itext-xml-1.02.jar">
   </classpathentry>
