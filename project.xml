@@ -91,7 +91,7 @@
     <dependency>
       <groupId>ujac</groupId>
       <artifactId>ujac</artifactId>
-      <version>0.9.18</version>
+      <version>0.9.25</version>
       <type>jar</type>
       <url>http://ujac.sourceforge.net/</url>
     </dependency>
