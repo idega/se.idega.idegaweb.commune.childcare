@@ -151,7 +151,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 	}
 	
 	public boolean hasOpenApplication(User child, SchoolSeason season, int choiceNumber) {
-		String[] caseStatus = { getCaseStatusReady().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusGranted().getStatus() };
+		String[] caseStatus = { getCaseStatusPreliminary().getStatus(), getCaseStatusReady().getStatus(), getCaseStatusContract().getStatus(), getCaseStatusGranted().getStatus() };
 		try{
 			getAfterSchoolChoiceHome().findByChildAndChoiceNumberAndSeason((Integer) child.getPrimaryKey(), new Integer(choiceNumber), (Integer) season.getPrimaryKey(), caseStatus);
 			return false;
