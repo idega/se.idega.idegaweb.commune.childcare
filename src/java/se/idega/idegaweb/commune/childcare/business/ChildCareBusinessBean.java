@@ -513,6 +513,12 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 							updateQueue(appl);
 						}
 						applications.add(appl);
+						
+						if (sendMessages) {
+							String providerSubject = getLocalizedString("application.provider_application_received_subject", "Child care application received");
+							String providerBody = getLocalizedString("application.provider_application_received_body", "You have received a new childcare application for {0}, {3} from {2}.");
+							sendMessageToProvider(appl, providerSubject, providerBody, user);
+						}
 					}
 				}
 			}
@@ -755,7 +761,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			// application.getProvider().getSchoolName(), new
 			// IWTimestamp(application.getFromDate()).toSQLDateString(),
 			// child.getPersonalID()}; //Malin 040824
-			Object[] arguments = { child.getName(), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), child.getPersonalID() };
+			Object[] arguments = { child.getName(), application.getProvider().getSchoolName(), new IWTimestamp(application.getFromDate()).toSQLDateString(), PersonalIDFormatter.format(child.getPersonalID(), getIWApplicationContext().getApplicationSettings().getDefaultLocale()) };
 
 			if (users != null) {
 				CommuneMessageBusiness messageBiz = getMessageBusiness();
@@ -763,12 +769,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				while (it.hasNext()) {
 					SchoolUser providerUser = (SchoolUser) it.next();
 					User user = providerUser.getUser();
-					System.out.println("School user: " + user.getName());
 					messageBiz.createUserMessage(application, user, sender, MessageFormat.format(subject, arguments), MessageFormat.format(message, arguments), false);
 				}
 			}
 			else {
-				System.out.println("Got no users for provider " + application.getProviderId());
 			}
 		}
 		catch (RemoteException re) {
