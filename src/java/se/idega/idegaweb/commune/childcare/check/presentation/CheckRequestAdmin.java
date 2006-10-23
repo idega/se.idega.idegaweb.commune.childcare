@@ -160,7 +160,7 @@ public class CheckRequestAdmin extends CommuneBlock {
 				
 			String caseStatus = null;												
 			if (!caseStatusMap.containsKey(check.getStatus())) {			
-				caseStatus = getCheckBusiness(iwc).getLocalizedCaseStatusDescription(check.getCaseStatus(), iwc.getCurrentLocale());
+				caseStatus = getCheckBusiness(iwc).getLocalizedCaseStatusDescription(check, check.getCaseStatus(), iwc.getCurrentLocale());
 				caseStatusMap.put(check.getStatus(), caseStatus);
 			}
 			else {
