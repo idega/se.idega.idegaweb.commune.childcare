@@ -194,7 +194,7 @@ public class ChildCareContractSigner extends Block implements Builderaware {
 			return "";
 		}
 
-		StringBuffer sb = new StringBuffer();
+		/*StringBuffer sb = new StringBuffer();
 		int n = s.length();
 		for (int i = 0; i < n; i++) {
 			char c = s.charAt(i);
@@ -335,7 +335,8 @@ public class ChildCareContractSigner extends Block implements Builderaware {
 					break;
 			}
 		}
-		return sb.toString();
+		return sb.toString();*/
+		return s;
 	}
 
 }
