@@ -397,7 +397,6 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	
 	public boolean insertApplications(User user, int provider[], String[] dates, String message, Time fromTime, Time toTime, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
 		UserTransaction t = getSessionContext().getUserTransaction();
-		IWBundle bundle = getIWApplicationContext().getIWMainApplication().getBundle(getBundleIdentifier());
 
 		try {
 			t.begin();
@@ -405,8 +404,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			User child = getUserBusiness().getUser(childId);
 			IWTimestamp now = new IWTimestamp();
 			String[] caseStatus = { getCaseStatusOpen().getStatus(), getCaseStatusGranted().getStatus() };
-			boolean hasThreeMonthsRule = bundle.getBooleanProperty(PROPERTY_HAS_THREE_MONTHS_RULE, true);
-			boolean sendJointMessageToOtherCustodian = bundle.getBooleanProperty(PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN, false);
+			boolean hasThreeMonthsRule = this.getIWApplicationContext().getApplicationSettings().getBoolean(PROPERTY_HAS_THREE_MONTHS_RULE, false);
+			boolean sendJointMessageToOtherCustodian = this.getIWApplicationContext().getApplicationSettings().getBoolean(PROPERTY_SEND_JOINT_MESSAGE_TO_OTHER_CUSTODIAN, false);
 			Collection applications = new ArrayList();
 
 			if (hasThreeMonthsRule) {
