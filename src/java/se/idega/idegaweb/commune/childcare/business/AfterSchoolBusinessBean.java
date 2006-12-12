@@ -9,22 +9,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+
 import javax.ejb.CreateException;
 import javax.ejb.FinderException;
-import javax.ejb.RemoveException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
+
 import se.idega.idegaweb.commune.business.Constants;
 import se.idega.idegaweb.commune.care.business.CareBusiness;
 import se.idega.idegaweb.commune.care.business.PlacementHelper;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoice;
 import se.idega.idegaweb.commune.care.data.AfterSchoolChoiceHome;
-import se.idega.idegaweb.commune.care.data.ChildCareApplication;
-import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDays;
-import se.idega.idegaweb.commune.childcare.data.AfterSchoolCareDaysHome;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessage;
 import se.idega.idegaweb.commune.message.data.PrintedLetterMessageHome;
 import se.idega.idegaweb.commune.school.business.SchoolChoiceBusiness;
+
 import com.idega.block.process.business.CaseBusiness;
 import com.idega.block.process.business.CaseBusinessBean;
 import com.idega.block.process.data.Case;
@@ -63,15 +62,6 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 	private AfterSchoolChoiceHome getAfterSchoolChoiceHome() {
 		try {
 			return (AfterSchoolChoiceHome) IDOLookup.getHome(AfterSchoolChoice.class);
-		}
-		catch (IDOLookupException e) {
-			throw new IBORuntimeException(e.getMessage());
-		}
-	}
-
-	private AfterSchoolCareDaysHome getAfterSchoolCareDaysHome() {
-		try {
-			return (AfterSchoolCareDaysHome) IDOLookup.getHome(AfterSchoolCareDays.class);
 		}
 		catch (IDOLookupException e) {
 			throw new IBORuntimeException(e.getMessage());
@@ -475,58 +465,6 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		return users;
 	}
 	
-	public Collection getDays(AfterSchoolChoice choice) {
-		try {
-			return getAfterSchoolCareDaysHome().findAllByApplication(choice);
-		}
-		catch (FinderException fe) {
-			fe.printStackTrace();
-			return new ArrayList();
-		}
-	}
-	
-	public AfterSchoolCareDays getDay(AfterSchoolChoice choice, int dayOfWeek) throws FinderException {
-		return getAfterSchoolCareDaysHome().findByApplicationAndDayOfWeek(choice, dayOfWeek);
-	}
-	
-	public void storeDays(ChildCareApplication application, int[] dayOfWeek, String[] timeOfDeparture, boolean[] pickedUp) {
-		try {
-			try {
-				Collection days = getAfterSchoolCareDaysHome().findAllByApplication(application);
-				Iterator iter = days.iterator();
-				while (iter.hasNext()) {
-					AfterSchoolCareDays day = (AfterSchoolCareDays) iter.next();
-					try {
-						day.remove();
-					}
-					catch (RemoveException re) {
-						re.printStackTrace();
-					}
-				}
-			}
-			catch (FinderException fe) {
-				//Nothing found...
-			}
-			
-			for (int a = 0; a < dayOfWeek.length; a++) {
-				if (timeOfDeparture[a] != null && timeOfDeparture[a].length() > 0) {
-					AfterSchoolCareDays days = getAfterSchoolCareDaysHome().create();
-					days.setApplication(application);
-					days.setDayOfWeek(dayOfWeek[a]);
-					days.setPickedUp(pickedUp[a]);
-					
-					IWTimestamp stamp = new IWTimestamp(timeOfDeparture[a]);
-					stamp.setAsTime();
-					days.setTimeOfDeparture(stamp.getTime());
-					days.store();
-				}
-			}
-		}
-		catch (CreateException ce) {
-			ce.printStackTrace();
-		}
-	}
-
 	public SchoolClass getDefaultGroup(Object schoolPK, Object seasonPK) {
 		try {
 			School school = getChildCareBusiness().getSchoolBusiness().getSchool(schoolPK);
@@ -571,11 +509,7 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 		}
 	}
 
-	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
-		return storeAfterSchoolCare(stamp, user, child, provider, message, season, days, timeOfDeparture, pickedUp, false, payerName, payerPersonalID, cardType, cardNumber, validMonth, validYear);
-	}
-	
-	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, int[] days, String[] timeOfDeparture, boolean[] pickedUp, boolean wantsRefreshments, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
+	public AfterSchoolChoice storeAfterSchoolCare(IWTimestamp stamp, User user, User child, School provider, String message, SchoolSeason season, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		try {
 			String subject = getLocalizedString("application.after_school_choice_received_subject", "After school care choice received");
 			String body = getLocalizedString("application.after_school_choice_received_body", "{1} has received the application for an after school care placing for {0}, {2}.  The application will be processed.");
@@ -587,11 +521,8 @@ public class AfterSchoolBusinessBean extends CaseBusinessBean implements CaseBus
 			choice.setCardNumber(cardNumber);
 			choice.setCardValidMonth(validMonth);
 			choice.setCardValidYear(validYear);
-			choice.setWantsRefreshments(wantsRefreshments);
 			choice.store();
 			
-			storeDays(choice, days, timeOfDeparture, pickedUp);
-
 			// returns false if storing failed else true
 			return choice;
 		}

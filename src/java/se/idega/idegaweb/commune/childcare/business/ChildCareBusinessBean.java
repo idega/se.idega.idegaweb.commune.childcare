@@ -392,10 +392,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public boolean insertApplications(User user, int provider[], String[] dates, String message, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
-		return insertApplications(user, provider, dates, message, null, null, checkId, childId, subject, body, freetimeApplication, sendMessages, queueDates, hasPriority);
+		return insertApplications(user, provider, dates, message, null, null, checkId, childId, subject, body, freetimeApplication, sendMessages, queueDates, hasPriority, null, null, null, null, -1, -1);
 	}
 	
-	public boolean insertApplications(User user, int provider[], String[] dates, String message, Time fromTime, Time toTime, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority) {
+	public boolean insertApplications(User user, int provider[], String[] dates, String message, Time fromTime, Time toTime, int checkId, int childId, String subject, String body, boolean freetimeApplication, boolean sendMessages, Date[] queueDates, boolean[] hasPriority, String payerName, String payerPersonalID, String cardType, String cardNumber, int validMonth, int validYear) {
 		UserTransaction t = getSessionContext().getUserTransaction();
 
 		try {
@@ -497,6 +497,13 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 								appl.setHasQueuePriority(true);
 							}
 						}
+
+						appl.setPayerName(payerName);
+						appl.setPayerPersonalID(payerPersonalID);
+						appl.setCardType(cardType);
+						appl.setCardNumber(cardNumber);
+						appl.setCardValidMonth(validMonth);
+						appl.setCardValidYear(validYear);
 
 						if (checkId != -1) {
 							appl.setCheckId(checkId);
@@ -1412,7 +1419,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			changeCaseStatus(application, getCaseStatusReady().getStatus(), user);
 		}
 		
-		addContractToArchive(oldFileID, -1, false, application, -1, fromDate.getDate(), employmentTypeID, -1, user, false, -1, -1, null);
+		addContractToArchive(oldFileID, -1, false, application, -1, fromDate.getDate(), application.getFromTime() != null ? new IWTimestamp(application.getFromTime()).getTimestamp() : null, application.getToTime() != null ? new IWTimestamp(application.getToTime()).getTimestamp() : null, employmentTypeID, -1, user, false, -1, -1, null);
 		application.store();
 		
 		try {
@@ -2583,10 +2590,10 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 	}
 
 	public ICFile assignContractToApplication(ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) {
-		return assignContractToApplication(null, application, archiveID, childCareTime, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId, sendMessages);
+		return assignContractToApplication(null, application, archiveID, childCareTime, null, null, validFrom, employmentTypeID, user, locale, changeStatus, createNewStudent, schoolTypeId, schoolClassId, sendMessages, false);
 	}
 	
-	public ICFile assignContractToApplication(PrintingContext printingContext, ChildCareApplication application, int archiveID, String childCareTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages) {
+	public ICFile assignContractToApplication(PrintingContext printingContext, ChildCareApplication application, int archiveID, String childCareTime, Timestamp fromTime, Timestamp toTime, IWTimestamp validFrom, int employmentTypeID, User user, Locale locale, boolean changeStatus, boolean createNewStudent, int schoolTypeId, int schoolClassId, boolean sendMessages, boolean createNewContract) {
 		UserTransaction transaction = getSessionContext().getUserTransaction();
 		try {
 			transaction.begin();
@@ -2651,6 +2658,9 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 			if (oldContractFileID == -1) {
 				createNew = true;
 			}
+			if (createNewContract) {
+				createNew = true;
+			}
 
 			boolean hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
 			
@@ -2685,7 +2695,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			}
 
-			addContractToArchive(oldContractFileID, oldArchiveID, createNew, application, application.getContractId(), validFrom.getDate(), employmentTypeID, invoiceReceiverId, user, createNewStudent, schoolTypeId, schoolClassId, oldStudent);
+			addContractToArchive(oldContractFileID, oldArchiveID, createNew, application, application.getContractId(), validFrom.getDate(), fromTime, toTime, employmentTypeID, invoiceReceiverId, user, createNewStudent, schoolTypeId, schoolClassId, oldStudent);
 			application.store();
 
 			transaction.commit();
@@ -3682,7 +3692,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return null;
 	}
 
-	private ChildCareContract addContractToArchive(int contractFileID, int oldArchiveID, boolean createNew, ChildCareApplication application, int contractID, Date validFrom, int employmentTypeID, int invoiceReceiverId, User user, boolean createNewStudent, int schoolTypeId, int schoolClassId, SchoolClassMember oldStudent) throws NoPlacementFoundException {
+	private ChildCareContract addContractToArchive(int contractFileID, int oldArchiveID, boolean createNew, ChildCareApplication application, int contractID, Date validFrom, Timestamp fromTime, Timestamp toTime, int employmentTypeID, int invoiceReceiverId, User user, boolean createNewStudent, int schoolTypeId, int schoolClassId, SchoolClassMember oldStudent) throws NoPlacementFoundException {
 		try {
 			ChildCareContract archive = null, oldArchive = null;
 
@@ -3716,6 +3726,8 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 				}
 			}
 			
+			archive.setFromTime(fromTime);
+			archive.setToTime(toTime);
 			archive.setContractFileID(application.getContractFileId());
 			if (contractID != -1) {
 				archive.setContractID(contractID);
@@ -5299,7 +5311,7 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 						}
 					}
 
-					addContractToArchive(-1, -1, false, application, contractID, fromDate.getDate(), employmentTypeID, ((Integer) parent.getPrimaryKey()).intValue(), admin, false, -1, groupID, null);
+					addContractToArchive(-1, -1, false, application, contractID, fromDate.getDate(), null, null, employmentTypeID, ((Integer) parent.getPrimaryKey()).intValue(), admin, false, -1, groupID, null);
 					/*
 					 * included in the addContractToArchive if (archive != null) {
 					 * archive.setInvoiceReceiver(parent); archive.store(); }
@@ -5765,11 +5777,11 @@ public class ChildCareBusinessBean extends CaseBusinessBean implements ChildCare
 		return helper;
 	}
 
-	public boolean setUserAsDeceased(Integer userID, java.util.Date deceasedDate) throws RemoteException {
+	public boolean setUserAsDeceased(Integer userID, Date deceasedDate) throws RemoteException {
 		// Remove the deceased user as invoice receiver for
 		try {
 			ChildCareContractHome ccch = (ChildCareContractHome) getIDOHome(ChildCareContract.class);
-			Collection activeOrFutureContracts = ccch.findByInvoiceReceiverActiveOrFuture(userID, new java.sql.Date(deceasedDate.getTime()));
+			Collection activeOrFutureContracts = ccch.findByInvoiceReceiverActiveOrFuture(userID, deceasedDate);
 			for (Iterator iter = activeOrFutureContracts.iterator(); iter.hasNext();) {
 				ChildCareContract contract = (ChildCareContract) iter.next();
 				contract.setInvoiceReceiverID(null);

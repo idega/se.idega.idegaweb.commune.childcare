@@ -1,5 +1,5 @@
 /*
- * $Id: ChildCareDeceasedUserBusiness.java,v 1.1 2004/10/05 18:44:43 thomas Exp $
+ * $Id: ChildCareDeceasedUserBusiness.java,v 1.2 2006/12/12 10:14:45 laddi Exp $
  * Created on Oct 5, 2004
  *
  * Copyright (C) 2004 Idega Software hf. All Rights Reserved.
@@ -10,7 +10,7 @@
 package se.idega.idegaweb.commune.childcare.business;
 
 import java.rmi.RemoteException;
-import java.util.Date;
+import java.sql.Date;
 import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
@@ -19,10 +19,10 @@ import com.idega.idegaweb.IWApplicationContext;
 
 /**
  * 
- *  Last modified: $Date: 2004/10/05 18:44:43 $ by $Author: thomas $
+ *  Last modified: $Date: 2006/12/12 10:14:45 $ by $Author: laddi $
  * 
  * @author <a href="mailto:thomas@idega.com">thomas</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ChildCareDeceasedUserBusiness implements DeceasedUserBusiness {
 
