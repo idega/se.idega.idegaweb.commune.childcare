@@ -13,6 +13,7 @@ import se.idega.idegaweb.commune.care.business.AlreadyCreatedException;
 
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolCategory;
 import com.idega.core.location.data.Address;
 import com.idega.presentation.IWContext;
 import com.idega.presentation.Table;
@@ -32,12 +33,12 @@ import com.idega.util.text.Name;
 public class ChildCareAdminPlacer extends ChildCareBlock {
 
 	private User child;
-	
+
 	private final static int ACTION_VIEW_FORM = 1;
 	private final static int ACTION_SUBMIT = 2;
-	
+
 	private int _action = -1;
-	
+
 	private final static String PARAMETER_ACTION = "cca_action";
 	private final static String PARAM_FROM_DATE = "cca_from_date";
 	private final static String PARAM_TO_DATE = "cca_to_date";
@@ -50,9 +51,10 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 	/* (non-Javadoc)
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
+	@Override
 	public void init(IWContext iwc) throws Exception {
 		parseAction(iwc);
-		
+
 		switch (this._action) {
 			case ACTION_VIEW_FORM :
 				viewForm(iwc);
@@ -73,22 +75,22 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 				hasPlacing = false;
 			}
 		}
-		
+
 		if (!this._noChildError && !hasPlacing) {
 			Form form = new Form();
-		
+
 			Table table = new Table();
 			table.setWidth(getWidth());
 			table.setCellpadding(0);
 			table.setCellspacing(0);
 			form.add(table);
-		
+
 			int row = 1;
 			table.add(getChildInfoTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
 			table.add(getInputTable(iwc), 1, row++);
 			table.setHeight(row++, 12);
-	
+
 			SubmitButton submit = (SubmitButton)getButton(new SubmitButton(localize("child_care.place_child", "Place child"), PARAMETER_ACTION, String.valueOf(ACTION_SUBMIT)));
 			try {
 				User parent = getBusiness().getUserBusiness().getCustodianForChild(this.child);
@@ -101,13 +103,13 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 			}
 
 			table.add(submit, 1, row);
-			
+
 			if (submit.getDisabled()) {
 				row++;
 				table.setHeight(row++, 6);
 				table.add(getSmallErrorText(localize("child_care.no_parent_found", "No parent found")), 1, row);
 			}
-	
+
 			add(form);
 		}
 		else {
@@ -121,7 +123,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 			add(new UserHomeLink());
 		}
 	}
-	
+
 	private Table getChildInfoTable(IWContext iwc) {
 		Table table = new Table(3,3);
 		table.setColumns(3);
@@ -129,7 +131,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		table.setCellspacing(0);
 		table.setWidth(1, 100);
 		table.setWidth(2, 8);
-		
+
 		table.add(getSmallHeader(localize("child_care.name", "Name")+":"), 1, 1);
 		table.add(getSmallHeader(localize("child_care.personal_id", "Personal ID")+":"), 1, 2);
 		table.add(getSmallHeader(localize("child_care.address", "Address")+":"), 1, 3);
@@ -138,7 +140,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, 1);
 		String personalID = PersonalIDFormatter.format(this.child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 		table.add(getSmallText(personalID), 3, 2);
-		
+
 		try {
 			Address address = getBusiness().getUserBusiness().getUsersMainAddress(this.child);
 			if (address != null) {
@@ -171,23 +173,23 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		date.setYearRange(stamp.getYear() - 5, stamp.getYear() + 5);
 		inputTable.add(getSmallHeader(localize("child_care.from_date", "From") + ":"), 1, row);
 		inputTable.add(date, 3, row++);
-		
+
 		DateInput toDate = (DateInput)getStyledInterface(new DateInput(PARAM_TO_DATE));
 		toDate.setYearRange(stamp.getYear() - 5, stamp.getYear() + 5);
 		inputTable.add(getSmallHeader(localize("child_care.to_date", "To") + ":"), 1, row);
 		inputTable.add(toDate, 3, row++);
-		
+
 		inputTable.setHeight(row++, 6);
-		
+
 		TextInput careTime = (TextInput) getStyledInterface(new TextInput(PARAM_CARE_TIME));
 		careTime.setAsIntegers(localize("child_care.only_allows_integers", "Only integers allowed"));
 		careTime.setAsNotEmpty(localize("child_care.must_select_care_time", "You have to select a care time."));
 		inputTable.add(getSmallHeader(localize("child_care.care_time", "Care time") + ":"), 1, row);
 		inputTable.add(careTime, 3, row++);
-		
+
 		inputTable.setWidth(1, 100);
 		inputTable.setWidth(2, 8);
-		
+
 		return inputTable;
 	}
 
@@ -201,7 +203,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 			if (iwc.isParameterSet(PARAM_TO_DATE)) {
 				toDate = new IWTimestamp(iwc.getParameter(PARAM_TO_DATE));
 			}
-			
+
 			User parent = getBusiness().getUserBusiness().getCustodianForChild(this.child);
 			getBusiness().importChildToProvider(-1, getSession().getChildID(), providerID, -1, careTime, -1, -1, null, fromDate, toDate, iwc.getCurrentLocale(), parent, iwc.getCurrentUser());
 			done = true;
@@ -231,11 +233,12 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		ProviderDropdownDouble dropdown = new ProviderDropdownDouble(primaryName, secondaryName);
 		String emptyString = localize("child_care.select_provider","Select provider...");
 		dropdown.addEmptyElement(localize("child_care.select_area","Select area..."), emptyString);
-		
+
 		try {
-			Collection areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
+			SchoolCategory schooleCategory = null;
+			Collection areas = getBusiness().getSchoolBusiness().findAllSchoolAreas(schooleCategory);
 			Map providerMap = getBusiness().getProviderAreaMap(areas, locale, emptyString, false);
-				
+
 			if (areas != null && providerMap != null) {
 				Iterator iter = areas.iterator();
 				while (iter.hasNext()) {
@@ -247,7 +250,7 @@ public class ChildCareAdminPlacer extends ChildCareBlock {
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
+
 		return dropdown;
 	}
 

@@ -1,5 +1,7 @@
 package se.idega.idegaweb.commune.childcare.presentation;
 
+import is.idega.block.pki.business.PKILoginBusinessBean;
+
 import java.rmi.RemoteException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
@@ -11,10 +13,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+
 import javax.ejb.CreateException;
 import javax.ejb.EJBException;
 import javax.ejb.FinderException;
-import se.idega.block.pki.business.NBSLoginBusinessBean;
+
 import se.idega.block.pki.data.NBSSignedEntity;
 import se.idega.block.pki.presentation.NBSSigningBlock;
 import se.idega.idegaweb.commune.business.CommuneUserBusiness;
@@ -24,6 +27,7 @@ import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.care.data.ChildCareContract;
 import se.idega.idegaweb.commune.childcare.business.NoPlacementFoundException;
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
+
 import com.idega.block.contract.data.Contract;
 import com.idega.block.contract.data.ContractHome;
 import com.idega.block.contract.data.ContractTag;
@@ -138,15 +142,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	public static final String PARAMETER_PLACEMENT_ID = "cc_placement_id";
 
 	public static final String PARAMETER_SCHOOL_CLASS = "cc_sch_class";
-	
+
 	public static final String PARAMETER_IS_ENDDATE_SET = "cc_end_date_set";
 
 	public static final String PARAMETER_CANCEL_CONTRACT_DIRECTLY = "cc_cancel_contract_directly";
-	
+
 	public static final String PARAMETER_CLOSE = "cc_close";
-	
+
 	public static final String PARAMETER_FEE = "cc_fee";
-	
+
 	// private static final String PROPERTY_RESTRICT_DATES =
 	// "child_care_restrict_alter_date";
 
@@ -252,15 +256,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private boolean _showEmploymentDrop;
 
 	private boolean _showPreSchool;
-	
+
 	private boolean _showParental;
-	
+
 	private boolean _markChildrenOutsideCommune;
 
 	// private IWTimestamp earliestDate;
 
 	private CloseButton close;
-	
+
 	private Form form;
 
 	// private boolean restrictDates = false;
@@ -271,17 +275,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private boolean _addCareTimeScript = false;
 
 	private User _child = null;
-	
+
 	private SubmitButton _submitButton = null;
-	
+
 	private boolean isEndDateSet = false;
-    
+
     private static final int ORDER_BY_QUEUE_DATE = 1;    // see ChildCareApplicationBMPBean ORDER_BY_QUEUE_DATE
-    private static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH    
-		
+    private static final int ORDER_BY_DATE_OF_BIRTH = 2; // see ChildCareApplicationBMPBean ORDER_BY_DATE_OF_BIRTH
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
+	@Override
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
 		switch (this._action) {
@@ -391,19 +396,19 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		contentTable.setHeight(Table.HUNDRED_PERCENT);
 		table.add(contentTable, 2, 4);
 
-		
+
 		//close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
 		//close.setPageToOpen(getParentPageID());
 		//close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
 		//close button doesn't seem to be working to reload parent page so use submit instead to close
-	  
+
 		//close = getStyledInterface(new GenericButton(localize("close_window", "Close"), PARAMETER_ACTION, String.valueOf(ACTION_CLOSE)));
 
 		//	ac - okt 2005 - instead of above mentioned - why do you need reloading the parent?
 		//and if you want to do that please use setParentPageToOpen(_pageID); instead, but actually closing the window is enough here!
 		this.close = (CloseButton) getStyledInterface(new CloseButton(localize("close_window", "Close")));
 		this.close.addParameterToPage(PARAMETER_ACTION, ACTION_CLOSE);
-	  
+
 		String userName = null;
 		String personalId = null;
 		String personalIdUserName = "";
@@ -435,7 +440,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		this._addCareTimeScript = false;
 		this._addCheckGroupScript = false;
-		
+
 		switch (this._method) {
 			case METHOD_GRANT_PRIORITY:
 				headerTable.add(getHeader(localize("child_care.grant_priority", "Grant priority") + personalIdUserName), 1, 1);
@@ -521,9 +526,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				break;
 
 		}
-		
+
 		add(this.form);
-		
+
 		if (this._addCareTimeScript) {
 			this._submitButton.setOnSubmitFunction("checkCareTime", getSubmitCheckCareTimeScript(iwc, this._child, this._method == METHOD_PLACE_IN_GROUP, this._addCheckGroupScript));
 		} else if (this._addCheckGroupScript) {
@@ -594,11 +599,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		if (iwc.getApplicationSettings().getBoolean(CCConstants.ATTRIBUTE_SHOW_FEE, false)) {
 			TextInput feeInput = (TextInput) getStyledInterface(new TextInput(PARAMETER_FEE));
-	
+
 			table.add(getSmallHeader(localize("child_care.childcare_fee", "Fee") + ":"), 1, row++);
 			table.add(feeInput, 1, row++);
 		}
-		
+
 		HiddenInput action = new HiddenInput(PARAMETER_ACTION);
 		action.setValue(String.valueOf(ACTION_OFFER));
 		table.add(action, 1, 1);
@@ -793,7 +798,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				textInput.setAsIntegers(localize("child_care.only_integers_allowed", "Not a valid child care time."));
 				table.add(textInput, 1, row++);
 			}
-			
+
 			Collection types = null;
 			SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
 			SchoolCategory typeChildcare = schBuiz.getCategoryChildcare();
@@ -879,7 +884,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		boolean hasBankId = false;
 
-		hasBankId = new NBSLoginBusinessBean().hasBankLogin(application.getOwner());
+		hasBankId = PKILoginBusinessBean.createNBSLoginBusiness().hasPKILogin(application.getOwner());
 
 		if (hasBankId) {
 			table.add(getSmallText(localize("child_care.child_care_time", "Time") + ":"), 1, row);
@@ -1096,21 +1101,21 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			dateInput.setEarliestPossibleDate(date.getDate(), localize(helper.getEarliestPlacementMessage().getKey(), helper.getEarliestPlacementMessage().getMessage()));
 			dateInput.setDate(date.getDate());
 		}
-				
+
 		try { // admins can enter dates backwards in time
-			if (isAdministrator(iwc)) {				
+			if (isAdministrator(iwc)) {
 				IWTimestamp eigthYearsAgo = new IWTimestamp(stamp); // minus 8 years
 				eigthYearsAgo.addYears(-8);
-				
+
 				dateInput.setYearRange(eigthYearsAgo.getYear(), stamp.getYear() + 5);
-				//dateInput.setEarliestPossibleDate(eigthYearsAgo.getDate(), localize(helper.getEarliestPlacementMessage().getKey(), helper.getEarliestPlacementMessage().getMessage()));			    
+				//dateInput.setEarliestPossibleDate(eigthYearsAgo.getDate(), localize(helper.getEarliestPlacementMessage().getKey(), helper.getEarliestPlacementMessage().getMessage()));
 			}
 		}
 		catch (Exception e1) {
 			e1.printStackTrace();
 		}
-		
-		
+
+
 		dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 		table.add(getSmallHeader(localize("child_care.new_date", "Select the new placement date")), 1, row++);
 		table.add(dateInput, 1, row++);
@@ -1182,7 +1187,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		this.form.add(new HiddenInput(PARAMETER_CLOSE, "false"));
 		this.form.setToDisableOnSubmit(placeInGroup, true);
 		table.add(placeInGroup, 1, row);
-		table.add(Text.getNonBrakingSpace(), 1, row);		
+		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(this.close, 1, row);
 		table.setHeight(row, Table.HUNDRED_PERCENT);
 		table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_BOTTOM);
@@ -1214,7 +1219,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				placementDatePlusTwoDays.addDays(2);
 
 				String earliestPossibleMessage = localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time.");
-				
+
 				IWTimestamp earliestTerminationDate = new IWTimestamp();
 				if (placementDatePlusTwoDays.isLaterThan(earliestTerminationDate)) {
 					earliestTerminationDate = placementDatePlusTwoDays;
@@ -1231,7 +1236,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					if (helper.hasDeadlinePassed()) {
 						if (deadlinePeriod.getFirstTimestamp().isLaterThan(earliestTerminationDate)) {
 							earliestTerminationDate = deadlinePeriod.getFirstTimestamp();
-							earliestPossibleMessage = localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate());							
+							earliestPossibleMessage = localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate());
 						}
 						else {
 							earliestPossibleMessage = localize("childcare.earliest_possible_termination_date", "Student has future contracts/logs so the earliest possible date remove date is ") + format.format(earliestTerminationDate.getDate());
@@ -1258,7 +1263,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 							RadioButton other = getRadioButton(PARAMETER_CANCEL_REASON, String.valueOf(false));
 							other.keepStatusOnAction(true);
 							other.setSelected(true);
-							
+
 							table.add(getSmallHeader(localize("child_care.enter_cancel_information", "Enter cancel information:")), 1, row++);
 							table.add(parentalLeave, 1, row);
 							table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_parental_leave", "Cancel because of parental leave")), 1, row);
@@ -1266,22 +1271,22 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 							table.add(other, 1, row);
 							table.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
 						}
-						
+
 					}
-					
+
 					DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
 					dateInput.setEarliestPossibleDate(earliestTerminationDate.getDate(), earliestPossibleMessage);
 					dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 					dateInput.keepStatusOnAction(true);
-					
+
 					if (application.getRequestedCancelDate() != null) {
 						dateInput.setDate(application.getRequestedCancelDate());
 					}
 					else {
 						dateInput.setDate(earliestTerminationDate.getDate());
 					}
-					
-					table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);					
+
+					table.add(getSmallHeader(localize("child_care.cancel_date", "Cancel date") + ":"), 1, row++);
 					table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_TOP);
 					table.add(getSmallText(localize("child_care.cancel_info", "Info about cancelling")), 1, row++);
 					table.add(dateInput, 1, row++);
@@ -1301,7 +1306,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					if (this.isEndDateSet){
 						GenericButton showForm = getButton(new GenericButton("cancel_form", localize("child_care.show_cancel_form", "Show cancel form")));
 						showForm.setFileToOpen(application.getCancelFormFileID());
-						table.add(getSmallHeader(localize("child_care.show_cancel_contract_form", "Show cancel contract form") + ":"), 1, row++); 					
+						table.add(getSmallHeader(localize("child_care.show_cancel_contract_form", "Show cancel contract form") + ":"), 1, row++);
 						table.setRowVerticalAlignment(row, Table.VERTICAL_ALIGN_TOP);
 						table.add(getSmallText(localize("child_care.show_cancel_contract_form_info", "Info about the cancel form")), 1, row++);
 						table.add(showForm, 1, row);
@@ -1311,11 +1316,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 						IWTimestamp stampNow = new IWTimestamp();
 						DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
 						dateInput.setDate(stampNow.getDate());
-						
+
 						table.add(getSmallHeader(localize("child_care.cancel_confirmation_received", "Cancel confirmation received") + ":"), 1, row++);
 						table.add(getSmallText(localize("child_care.cancel_confirmation_info", "Info about cancel confirmation received")), 1, row++);
 						table.add(dateInput, 1, row++);
-						
+
 						SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.set_received", "Set"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
 						this.form.setToDisableOnSubmit(cancelContract, true);
 						table.add(cancelContract, 1, row);
@@ -1324,12 +1329,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				}
 				IWTimestamp stampNow = new IWTimestamp();
 				stampNow.addDays(-1);
-				
+
 				DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
 				dateInput.setEarliestPossibleDate(earliestTerminationDate.getDate(), earliestPossibleMessage);
 				dateInput.setAsNotEmpty(localize("child_care.must_select_date", "You must select a date."));
 				dateInput.keepStatusOnAction(true);
-				
+
 				if (application.getRequestedCancelDate() != null) {
 					dateInput.setDate(application.getRequestedCancelDate());
 				}
@@ -1338,15 +1343,15 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				IWTimestamp stampNow = new IWTimestamp();
 				DateInput dateInput = (DateInput) getStyledInterface(new DateInput(PARAMETER_CANCEL_DATE));
 				dateInput.setDate(stampNow.getDate());
-				
+
 				table.add(getSmallHeader(localize("child_care.cancel_confirmation_received", "Cancel confirmation received") + ":"), 1, row++);
 				table.add(dateInput, 1, row++);
-				
+
 				SubmitButton cancelContract = (SubmitButton) getStyledInterface(new SubmitButton(localize("child_care.cancel_contract", "Cancel contract"), PARAMETER_ACTION, String.valueOf(ACTION_CANCEL_CONTRACT)));
 				this.form.setToDisableOnSubmit(cancelContract, true);
 				table.add(cancelContract, 1, row);
 				table.add(Text.getNonBrakingSpace(), 1, row);
-				
+
 				GenericButton showForm = getButton(new GenericButton("cancel_form", localize("child_care.show_cancel_form", "Show cancel form")));
 				showForm.setFileToOpen(application.getCancelFormFileID());
 				table.add(showForm, 1, row);
@@ -1366,9 +1371,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		return table;
 	}
-	
-	
-	
+
+
+
 	/*private Table getCancelFormButton(ChildCareApplication application){
 		Table table = new Table();
 		table.setCellpadding(5);
@@ -1376,12 +1381,12 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.setHeight(Table.HUNDRED_PERCENT);
 		int row = 1;
 		IWTimestamp placementDate = null;
-		
+
 		GenericButton showForm = getButton(new GenericButton("cancel_form", localize("child_care.show_cancel_form", "Show cancel form")));
 		showForm.setFileToOpen(application.getCancelFormFileID());
 		table.add(showForm, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
-		
+
 		return table;
 	}*/
 
@@ -1409,10 +1414,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		table.add(getSmallText(localize("child_care.group_name", "Name")), 1, row);
 		table.add("  ", 1, row);
 		table.add(textInput, 1, row++);
-		
+
 		Collection availableTypes = new ArrayList();
 		SchoolBusiness schBuiz = getBusiness().getSchoolBusiness();
-		SchoolCategory schcategory = schBuiz.getCategoryChildcare();		
+		SchoolCategory schcategory = schBuiz.getCategoryChildcare();
 
 		try {
 			availableTypes = getBusiness().getSchoolBusiness().getSchoolTypeHome().findAllByCategory(schcategory.getPrimaryKey().toString());
@@ -1423,7 +1428,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		catch (FinderException e) {
 			e.printStackTrace();
 		}
-		
+
 		DropdownMenu types = getDropdownMenuLocalized(PARAMETER_SCHOOL_TYPES, availableTypes, "getLocalizationKey", "");
 		if (currentType != null) {
 			types.setSelectedElement(localize(currentType.getLocalizationKey(), ""));
@@ -1442,7 +1447,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		}
 
 		SubmitButton createGroup = (SubmitButton) getStyledInterface(new SubmitButton(localized, PARAMETER_ACTION, String.valueOf(ACTION_CREATE_GROUP)));
-		
+
 		table.add(createGroup, 1, row);
 		table.add(Text.getNonBrakingSpace(), 1, row);
 		table.add(this.close, 1, row);
@@ -1539,7 +1544,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		if (prognosis != null && prognosis.getOneYearPriority() != -1) {
 			oneYearPriority.setContent(String.valueOf(prognosis.getOneYearPriority()));
 		}
-		
+
 		table.add(getSmallText(localize("child_care.one_year_prognosis", "Twelve months prognosis") + ":"), 1, row);
 		table.add(oneYear, 2, row);
 		if (showPriorities) {
@@ -1549,7 +1554,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		else {
 			row++;
 		}
-		
+
 		// //////////////// added provider capacity 040402 Malin
 		table.mergeCells(1, row, 4, row);
 		table.add(getSmallHeader(localize("child_care.capacity_information", "Enter the provider capacity.")), 1, row++);
@@ -1607,7 +1612,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	/**
 	 * Shows the providerqueue without personal information. Used by citizen.
-	 * 
+	 *
 	 * @param iwc
 	 * @return
 	 * @throws Exception
@@ -1641,11 +1646,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			while (i.hasNext()) {
 				ChildCareApplication app = (ChildCareApplication) i.next();
 
-				Text queueOrder = getSmallText("" + getBusiness().getNumberInQueue(app, ordering)); 
-                
-                Date date = school.getSortByBirthdate() ? app.getChild().getDateOfBirth() : app.getQueueDate();              
-                Text queueDate = getSmallText(date.toString()); 
-                
+				Text queueOrder = getSmallText("" + getBusiness().getNumberInQueue(app, ordering));
+
+                Date date = school.getSortByBirthdate() ? app.getChild().getDateOfBirth() : app.getQueueDate();
+                Text queueDate = getSmallText(date.toString());
+
                 Text fromDate = getSmallText(app.getFromDate().toString());
 				// currentAppId = style.getSmallText(""+app.getNodeID()); //debug only
                 CommuneUserBusiness communeUserService = (CommuneUserBusiness)IBOLookup.getServiceInstance(this.getIWApplicationContext(),CommuneUserBusiness.class);
@@ -1659,9 +1664,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
                 catch (FinderException fe){
                 	log(fe);
                 }
-                
+
                 int communeGroupID = ((Integer) communeGroup.getPrimaryKey()).intValue();
-                
+
                 if (this._markChildrenOutsideCommune){
                 	  if (communeGroupID != app.getChild().getPrimaryGroupID() && app.getNodeID() != new Integer(appId).intValue()){
     					//make children red and bold if child is outside of commune living
@@ -1670,9 +1675,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
                     	makeRedAndBold(fromDate);
     				}
                 }
-              
-                
-                
+
+
+
 				appTbl.add(queueOrder, 1, row);
 				appTbl.add(queueDate, 2, row);
 				appTbl.add(fromDate, 3, row);
@@ -1715,7 +1720,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		layoutTbl.add(getSmallText(prognosisText), 2, row++);
 
 		layoutTbl.setRowHeight(row++, "20px");
-		
+
 		layoutTbl.add(appTbl, 1, row);
 		layoutTbl.mergeCells(1, row, 2, row);
 		row++;
@@ -1775,11 +1780,11 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			layoutTbl.add(new Break(), 1, row);
 			layoutTbl.add(other, 1, row);
 			layoutTbl.add(getSmallText(Text.NON_BREAKING_SPACE + localize("child_care.cancel_other", "Other reason")), 1, row++);
-	
+
 			TextArea textArea = (TextArea) getStyledInterface(new TextArea(PARAMETER_REJECT_MESSAGE));
 			textArea.setWidth(Table.HUNDRED_PERCENT);
 			textArea.setRows(7);
-	
+
 			layoutTbl.mergeCells(1, row, 2, row);
 			layoutTbl.add(getSmallHeader(localize("child_care.cancel_message_info", "Message")), 1, row);
 			layoutTbl.add(new Break(), 1, row);
@@ -1852,7 +1857,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param iwc
 	 * @return Object array of size 2, first (Boolean) is true iff signwindow is
 	 *         shown, second is the Table containing the form
@@ -1992,30 +1997,37 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				return this;
 			}
 
+			@Override
 			public void setXmlSignedData(String data) {
 				this._contract.setXmlSignedData(data);
 			}
 
+			@Override
 			public void setSignedBy(int userId) {
 				this._contract.setSignedBy(new Integer(userId));
 			}
 
+			@Override
 			public void setSignedDate(java.sql.Date time) {
 				this._contract.setSignedDate(time);
 			}
 
+			@Override
 			public void setSignedFlag(boolean flag) {
 				this._contract.setSignedFlag(new Boolean(flag));
 			}
 
+			@Override
 			public void setText(String text) {
 				this._contract.setText(text);
 			}
 
+			@Override
 			public void store() {
 				this._contract.store();
 			}
 
+			@Override
 			public String getText() {
 				return this._contract.getText();
 			}
@@ -2054,7 +2066,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param iwc
 	 * @return the contract specified by the ChildCareContractSigner_CONTRACT_ID
 	 *         parameter, null if errors or no contract
@@ -2245,7 +2257,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				fee = 0;
 			}
 		}
-		
+
 		getBusiness().acceptApplication(this._applicationID, validUntil, fee, messageHeader, messageBody, iwc.getCurrentUser());
 
 		close();
@@ -2351,25 +2363,25 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 
 	private void sendExtraMessage(IWContext iwc,ChildCareApplication application,IWTimestamp date,char c) throws RemoteException {
-		
+
 		if((c!='F')&&(c!='R')) {
 			return;
 		}
-		User ch = application.getChild(); 
+		User ch = application.getChild();
 		String messageBody,messageSubject;
 		Object[] arguments = { ch.getName(), PersonalIDFormatter.format(ch.getPersonalID(), iwc.getCurrentLocale()), date.getDateString("yyyy-MM-dd"), application.getProvider().getSchoolName() };
-		messageBody =  localize("ccaw_extra_message_body","Contract for {0}, {1} has been ended from {2}. You will receive the termination contract in regular mail in a couple of days. Please sign it and return it to the provider as soon as possible. Your placement won�t be completely ended until it is returned. \r\n \r\n Best regards, \r\n {3}"); 
-		
+		messageBody =  localize("ccaw_extra_message_body","Contract for {0}, {1} has been ended from {2}. You will receive the termination contract in regular mail in a couple of days. Please sign it and return it to the provider as soon as possible. Your placement won�t be completely ended until it is returned. \r\n \r\n Best regards, \r\n {3}");
+
 		messageBody = MessageFormat.format(messageBody, arguments);
 		messageSubject = localize("ccaw_extra_message_subject", "End of contract");
 		getBusiness().sendMessageToParents(application, messageSubject,messageBody);
-	}	
+	}
 
 	private void cancelContract(IWContext iwc) throws RemoteException {
 		ChildCareApplication application = getBusiness().getApplicationForChildAndProvider(this._userID, getSession().getChildCareID());
 
 		IWTimestamp date = new IWTimestamp(iwc.getParameter(PARAMETER_CANCEL_DATE));
-		
+
 		if (application != null) {
 			if (application.getApplicationStatus() == getBusiness().getStatusReady() || application.getApplicationStatus() == getBusiness().getStatusParentTerminated()) {
 			//if (application.getApplicationStatus() == getBusiness().getStatusReady()) {
@@ -2382,9 +2394,9 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 					application.setRequestedCancelDate(date.getDate());
 					application.setParentalLeave(parentalLeave);
 					application.store();
-					
+
 			        sendExtraMessage(iwc,application,date,application.getApplicationStatus());
-					
+
 				}
 				getBusiness().createCancelForm(application, date.getDate(), iwc.getCurrentLocale());
 				this.isEndDateSet = true;
@@ -2404,19 +2416,19 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				else {
 					reasonMessage = localize("child_care.cancellation_other_reason", "Other reason");
 				}
-	
+
 				Object[] arguments = { "{0}", "{1}", reasonMessage, new IWTimestamp(application.getRequestedCancelDate()).getLocaleDate(iwc.getCurrentLocale(), IWTimestamp.SHORT) };
-	
+
 				String subject = localize("child_care.cancel_contract_subject", "Your child care contract has been terminated.");
 				String body = localize("child_care.cancel_contract_body", "Your contract for {0} at {1} has been terminated because of {2}. The termination will be active on {3}.");
-	
+
 				getBusiness().cancelContract(application, application.getParentalLeave(), new IWTimestamp(application.getRequestedCancelDate()), reasonMessage, subject, MessageFormat.format(body, arguments), iwc.getCurrentUser());
 				getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, this._pageID));
 				getParentPage().close();
 			}
 		}
-	}		
-	
+	}
+
 	private void moveToGroup(IWContext iwc) throws RemoteException {
 		int groupID = Integer.parseInt(iwc.getParameter(getSession().getParameterGroupID()));
 		getBusiness().moveToGroup(this._placementID, groupID, iwc.getCurrentUser());
@@ -2434,7 +2446,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 	private void updatePrognosis(IWContext iwc) throws RemoteException {
 		boolean showPriorities = getBusiness().showPriorities();
-		
+
 		int vacancies = -1;
 		int threeMonths = Integer.parseInt(iwc.getParameter(PARAMETER_THREE_MONTHS_PROGNOSIS));
 		int oneYear = Integer.parseInt(iwc.getParameter(PARAMETER_ONE_YEAR_PROGNOSIS));
@@ -2448,7 +2460,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		String providerComments = iwc.getParameter(PARAMETER_PROVIDER_COMMENTS);
 		getBusiness().updatePrognosis(getSession().getChildCareID(), threeMonths, oneYear, threeMonthsPriority, oneYearPriority, providerCapacity, vacancies, providerComments);
 
-		getSession().setHasPrognosis(true); 
+		getSession().setHasPrognosis(true);
 		getSession().setHasOutdatedPrognosis(false);
 
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, this._pageID));
@@ -2460,19 +2472,19 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 
 		ChildCareApplication application = getBusiness().getApplication(this._applicationID);
 		application.setApplicationStatus(getBusiness().getStatusParentTerminated());
-		application.setCancelMessage(iwc.getParameter(PARAMETER_REJECT_MESSAGE));        		
+		application.setCancelMessage(iwc.getParameter(PARAMETER_REJECT_MESSAGE));
         application.setCancelRequestReceived(new IWTimestamp(new Date()).getDate());
-        application.setCancelDateRequested(stamp.getDate());                     
-		application.setRequestedCancelDate(stamp.getDate());        
+        application.setCancelDateRequested(stamp.getDate());
+		application.setRequestedCancelDate(stamp.getDate());
 		application.setParentalLeave(parentalLeave);
 		application.setPrognosis(String.valueOf( iwc.getCurrentUserId() )); // SAVE UserId who has canceled contract
 		// TODO
-		// 2006/03/30 Igors 
+		// 2006/03/30 Igors
 		// save ContractCanceledUserId using Prognosis field is not right way, but It's all what I can do right now to get userId who canceled contract
-		// for adding methods appilcation.setContractCanceledUserId(int userId) and appilcation.getContractCanceledUserId() 
+		// for adding methods appilcation.setContractCanceledUserId(int userId) and appilcation.getContractCanceledUserId()
 
 		application.store();
-		
+
 		User owner = iwc.getCurrentUser();
 		com.idega.core.user.data.User child = UserBusiness.getUser(application.getChildId());
 		getBusiness().sendMessageToParents(application, localize("ccecw_encon_par1", "Beg???ran om upps???gning av kontrakt gjord"), localize("ccecw_encon_par2", "Du har skickat en beg???ran om upps???gning av kontrakt f???r") + " " + child.getName() + " " + PersonalIDFormatter.format(child.getPersonalID(), iwc.getCurrentLocale()) + " " + localize("ccecw_encon_par3", "fr.o.m.") + " " + stamp.getDateString("yyyy-MM-dd") + ".");
@@ -2498,7 +2510,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		getParentPage().setParentToReload();
 		getParentPage().close();
 	}
-	
+
 	private void close(IWContext iwc) {
 		getParentPage().setParentToRedirect(BuilderLogic.getInstance().getIBPageURL(iwc, this._pageID));
 		getParentPage().close();
@@ -2531,17 +2543,18 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 	private PlacementHelper getPlacementHelper() throws RemoteException {
 		return getBusiness().getPlacementHelper(new Integer(this._applicationID));
 	}
-	
+
 	private PlacementHelper getPlacementHelper(ChildCareApplication application) throws RemoteException {
 		return getBusiness().getPlacementHelper(application);
 	}
-	
+
+	@Override
 	protected DropdownMenu getCareTimeMenu(String parameter) {
 		DropdownMenu menu = super.getCareTimeMenu(parameter);
 		menu.addMenuElementFirst("", localize("child_care.select_care_time", "Select care time"));
 		return menu;
 	}
-	
+
 	private String getSubmitCheckCareTimeScript(IWContext iwc, User child, boolean useApplication, boolean checkGroupPlacement) throws RemoteException {
 		String childDate = child.getDateOfBirth().toString();
 		String childYear = childDate.substring(0, 4);
@@ -2553,7 +2566,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			buffer.append(getCheckGroupScript(iwc, false));
 		} else {
 			buffer.append("\n\t var close = ").append("findObj('").append(PARAMETER_CLOSE).append("').value;");
-			buffer.append("\n\t if (close == 'true') return true;");			
+			buffer.append("\n\t if (close == 'true') return true;");
 		}
 		buffer.append("\n\t var message = '';");
 		buffer.append("\n\t var childYear = " + childYear + ";");
@@ -2626,24 +2639,24 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\n\t\t alert(message);");
 		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
-		
+
 		buffer.append("\n\t return true;");
 
 		buffer.append("\n }");
 
 		return buffer.toString();
 	}
-	
+
 	private String getCheckGroupScript(IWContext iwc, boolean isSeparateFunction) throws RemoteException {
 		StringBuffer buffer = new StringBuffer();
 		if (isSeparateFunction) {
 			buffer.append("\nfunction checkGroup(){\n\t");
 		}
-		
+
 		PlacementHelper helper = getPlacementHelper();
 		String currentCareTime = helper.getCurrentCareTimeHours();
 		Integer currentSchoolTypeId = helper.getCurrentSchoolTypeID();
-		Integer currentGroupId = helper.getCurrentClassID();		
+		Integer currentGroupId = helper.getCurrentClassID();
 
 		try {
 			ChildCareContract contract = getBusiness().getValidContract(this._applicationID);
@@ -2654,10 +2667,10 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 			SchoolClassMemberLog log = getBusiness().getSchoolBusiness().getSchoolClassMemberLogHome().findByPlacementAndDateBack(member, new java.sql.Date(System.currentTimeMillis()));
 			currentGroupId = new Integer(log.getSchoolClassID());
 		} catch (Exception e) {}
-		
+
 
 		buffer.append("\n\t var close = ").append("findObj('").append(PARAMETER_CLOSE).append("').value;");
-		buffer.append("\n\t if (close == 'true') return true;");			
+		buffer.append("\n\t if (close == 'true') return true;");
 
 		buffer.append("\n\t var careTimeInput = ").append("findObj('").append(PARAMETER_CHILDCARE_TIME).append("');");
 		if (isUsePredefinedCareTimeValues()) {
@@ -2697,7 +2710,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		buffer.append("\n\t if (hasChanged) {");
 
 		TimePeriod deadlinePeriod = helper.getValidPeriod();
-		
+
 		if (deadlinePeriod != null && deadlinePeriod.getFirstTimestamp() != null) {
 			DateFormat format = DateFormat.getDateInstance(DateFormat.SHORT, iwc.getCurrentLocale());
 			buffer.append("\n\t\t if (d < ").append(deadlinePeriod.getFirstTimestamp().getDateString("yyyyMMdd")).append(") {");
@@ -2705,7 +2718,7 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_passed", "Deadline has passed earliest date possible is ") + " " + format.format(deadlinePeriod.getFirstTimestamp().getDate())).append("';");
 			} else {
 				buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.deadline_still_within", "You can not choose a date back in time.")).append("';");
-			}			
+			}
 		} else {
 			buffer.append("\n\t\t if (d < ").append(IWTimestamp.RightNow().getDateString("yyyyMMdd")).append(") {");
 			buffer.append("\n\t\t\t dateMessage = '").append(localize("school.dates_back_in_time_not_allowed", "You can not choose a date back in time.")).append("';");
@@ -2716,16 +2729,16 @@ public class ChildCareAdminWindow extends ChildCareBlock {
 		/* commented out so two future contracts can be created
 		if (getBusiness().hasFutureContracts(_applicationID)) {
 			if (isUsePredefinedCareTimeValues()) {
-				buffer.append("\n\t\t if (careTime != oldCareTime || schoolType != oldSchoolType) {"); 					
+				buffer.append("\n\t\t if (careTime != oldCareTime || schoolType != oldSchoolType) {");
 			}
 			else {
-				buffer.append("\n\t\t if (careTimeCode != oldCareTime || schoolType != oldSchoolType) {"); 
+				buffer.append("\n\t\t if (careTimeCode != oldCareTime || schoolType != oldSchoolType) {");
 			}
 			buffer.append("\n\t\t\t dateMessage = '").append(localize("childcare.future_contracts_must_be_removed", "Future contracts must be removed before care time can be altered.")).append("';");
-			buffer.append("\n\t\t }");			
+			buffer.append("\n\t\t }");
 		}
 		*/
-		
+
 		buffer.append("\n\t }");
 
 		buffer.append("\n\t if (dateMessage != '') {");

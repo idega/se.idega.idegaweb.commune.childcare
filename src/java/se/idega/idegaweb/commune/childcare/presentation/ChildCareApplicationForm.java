@@ -24,6 +24,7 @@ import se.idega.idegaweb.commune.presentation.CommuneBlock;
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.builder.data.ICPage;
 import com.idega.core.location.data.Address;
@@ -47,7 +48,7 @@ import com.idega.util.text.Name;
 
 /**
  * This class does something very clever.....
- * 
+ *
  * @author palli
  * @version 1.0
  */
@@ -95,11 +96,12 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	protected Collection _areas = null;
 	protected Collection _providers = null;
-	protected Collection _schoolTypes = null;
+	protected Collection<SchoolType> _schoolTypes = null;
 
 	/**
 	 * @see com.idega.presentation.PresentationObject#main(IWContext)
 	 */
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		this._iwb = getBundle(iwc);
 		this._iwrb = getResourceBundle(iwc);
@@ -154,7 +156,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 
 	/**
 	 * Displays a list of checks this user has got.
-	 * 
+	 *
 	 * @param iwc The IdegaWeb context
 	 */
 	private void viewChecks(IWContext iwc) {
@@ -162,14 +164,14 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		Table T = new Table();
 		T.setCellpadding(0);
 		T.setCellspacing(0);
-		
+
 		int row = 1;
-		
+
 		T.add(getSmallText(localize(SELECT_CHILD,"Select the appropriate child") + ":"),1,row++);
 		T.setHeight(row++,12);
-						
+
 		Collection children = null;
-		
+
 		try {
 			children = getUserBusiness(iwc).getMemberFamilyLogic().getChildrenFor(this._user);
 		}
@@ -206,7 +208,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		else {
 			add(getErrorText(localize(ERROR_NO_CHECKS, "This user has no checks")));
 		}
-		
+
 		f.add(T);
 		add(f);
 	}
@@ -215,12 +217,12 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		Form form = new Form();
 		form.setName(PARAM_FORM_NAME);
 		form.setOnSubmit("return checkApplication()");
-		
+
 		Table T = new Table();
 		T.setWidth(getWidth());
 		T.setCellpadding(0);
 		T.setCellspacing(0);
-		
+
 		String checkId = iwc.getParameter(PARAM_CHECK_ID);
 		form.addParameter(PARAM_CHECK_ID, checkId);
 		GrantedCheck check = null;
@@ -247,7 +249,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		nameTable.setColumns(3);
 		nameTable.setCellpadding(2);
 		nameTable.setCellspacing(0);
-		
+
 		nameTable.add(getSmallHeader(this._iwrb.getLocalizedString(NAME, "Name")+":"), 1, 1);
 		nameTable.add(getSmallHeader(this._iwrb.getLocalizedString(PID, "Personal ID")+":"), 1, 2);
 		nameTable.add(getSmallHeader(this._iwrb.getLocalizedString(ADDRESS, "Address")+":"), 1, 3);
@@ -267,7 +269,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		catch (RemoteException e) {
 		}
 		catch (Exception e) {
-		}		
+		}
 
 		nameTable.setWidth(1, "100");
 		nameTable.setWidth(2, "8");
@@ -315,10 +317,10 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		T.setHeight(row2++, 12);
 
 		SubmitButton submit = (SubmitButton)getButton(new SubmitButton(PARAM_FORM_SUBMIT, localize(PARAM_FORM_SUBMIT, "Submit application")));
-		
+
 		T.add(submit, 1, row2);
 		T.add(new HiddenInput(PARAM_CHILD_ID, child.getPrimaryKey().toString()));
-		
+
 		form.add(T);
 
 		Page p = this.getParentPage();
@@ -349,7 +351,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				}*/
 				Date[] queueDates = new Date[this._valProvider.length];
 				String[] valDates = new String[this._valProvider.length];
-				
+
 				Collection applications = business.getApplicationsForChild(Integer.parseInt(childId));
 				loop:
 				for (int i = 0; i < this._valProvider.length; i++){
@@ -363,7 +365,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 						}
 					}
 				}
-								
+
 				String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
 				String message = localize(EMAIL_PROVIDER_MESSAGE, "You have received a new childcare application");
 
@@ -396,7 +398,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		return this._presentationPage;
 	}
 
-	private Collection getSchoolTypes(IWContext iwc, String category) {
+	private Collection<SchoolType> getSchoolTypes(IWContext iwc, String category) {
 		try {
 			SchoolBusiness sBuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 			return sBuiz.findAllSchoolTypesInCategory(category);
@@ -407,7 +409,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 		return null;
 	}
 
-	private Collection getAreas(IWContext iwc) {
+	private Collection<SchoolArea> getAreas(IWContext iwc) {
 		try {
 			SchoolBusiness sBuiz = (SchoolBusiness) IBOLookup.getServiceInstance(iwc, SchoolBusiness.class);
 			return sBuiz.findAllSchoolAreasByTypes(this._schoolTypes);
@@ -510,7 +512,7 @@ public class ChildCareApplicationForm extends CommuneBlock {
 				Integer aPK = (Integer) area.getPrimaryKey();
 				if (!aHash.containsKey(aPK)) {
 					aHash.put(aPK, aPK);
-					schools = this.getProviders(iwc, aPK.intValue()); 
+					schools = this.getProviders(iwc, aPK.intValue());
 					if (schools != null) {
 						Iterator iter3 = schools.iterator();
 						a.append("if(selected == \"").append(aPK.toString()).append("\"){").append("\n\t\t");

@@ -13,16 +13,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.Vector;
+
 import se.idega.idegaweb.commune.childcare.data.ChildCarePrognosis;
 import se.idega.idegaweb.commune.presentation.CommuneBlock;
+
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.business.SchoolComparator;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.block.school.data.SchoolAreaHome;
 import com.idega.block.school.data.SchoolSubArea;
 import com.idega.block.school.data.SchoolType;
 import com.idega.business.IBOLookup;
 import com.idega.core.location.business.CommuneBusiness;
+import com.idega.data.IDOLookup;
 import com.idega.data.IDORelationshipException;
 import com.idega.idegaweb.IWApplicationContext;
 import com.idega.presentation.ExceptionWrapper;
@@ -63,8 +67,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 	protected static final int QUEUE_TYPE_ALL = 1;
 	protected static final int QUEUE_TYPE_NETTO = 2;
 	protected static final int QUEUE_TYPE_BRUTTO = 3;
-	
-	protected static final String ELEMENTARY_SCHOOL_TYPE = "ELEMENTARY_SCHOOL"; 
+
+	protected static final String ELEMENTARY_SCHOOL_TYPE = "ELEMENTARY_SCHOOL";
 	private int _action = ORDER_BY_ALL_CHOICES;
 	private int _areaID = -1;
 	private int _subAreaID = -1;
@@ -72,20 +76,21 @@ public class ChildCareStatistics extends ChildCareBlock {
 	private int _queueType = QUEUE_TYPE_ALL;
 	private Date _fromDate = null;
 	private Date _toDate = null;
-	
+
 	private boolean _useSorting = false;
-    
-    private boolean containsSortedByBirthdateProvider = false;     
-	
+
+    private boolean containsSortedByBirthdateProvider = false;
+
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
+	@Override
 	public void init(IWContext iwc) throws Exception {
 		parse(iwc);
-		
+
 		add(getNavigationTable(iwc));
 		add(new Break());
-		
+
 		switch (this._action) {
 			case ORDER_BY_ALL_CHOICES :
 				add(getAllProviderTable(iwc, false));
@@ -95,7 +100,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 				break;
 		}
 	}
-	
+
 	private PresentationObjectContainer getAllProviderTable(IWContext iwc, boolean isFirstHandOnly)	throws RemoteException {
 
 		ScrollTable table = new ScrollTable();
@@ -184,7 +189,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 					        if (type.getSchoolCategory().matches(ELEMENTARY_SCHOOL_TYPE)){
 								isElementary = true;
 								break;
-							}	
+							}
 						}
 					}
 				}
@@ -261,7 +266,7 @@ public class ChildCareStatistics extends ChildCareBlock {
 					}
 				}// isElementarySchool
 			} // end while
-			
+
 			column = 1;
 			table.add(getLocalizedSmallHeader("child_care.sum", "Sum"), column++, row);
 			table.add(getSmallHeader(String.valueOf(queueOrderSum)), column++, row);
@@ -285,14 +290,14 @@ public class ChildCareStatistics extends ChildCareBlock {
 		container.add(table);
 		return container;
 	}
-	
+
 	private Form getNavigationTable(IWContext iwc) throws RemoteException {
 		Form form = new Form();
-		
+
 		Table table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		
+
 		IWTimestamp stamp = new IWTimestamp();
 
 		table.add(getSmallHeader(localize("child_care.from", "From")), 1, 1);
@@ -304,11 +309,11 @@ public class ChildCareStatistics extends ChildCareBlock {
 		}
 		from.setYearRange(stamp.getYear() - 2, stamp.getYear() + 5);
 		table.add(from, 2, 1);
-		
+
 		table.add(getSmallHeader(localize("child_care.to", "To")), 3, 1);
 		DateInput to = new DateInput(PARAMETER_TO_DATE);
 		to.setToDisplayDayLast(true);
-		to = (DateInput) getStyledInterface(to);		
+		to = (DateInput) getStyledInterface(to);
 		if (this._toDate != null) {
 			to.setDate(this._toDate);
 		}
@@ -316,22 +321,22 @@ public class ChildCareStatistics extends ChildCareBlock {
 		table.add(to, 4, 1);
 		form.add(table);
 		form.add(Text.getBreak());
-		
+
 		table = new Table();
 		table.setCellpadding(getCellpadding());
 		table.setCellspacing(getCellspacing());
-		
+
 		DropdownMenu menu = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_ACTION));
 		menu.addMenuElement(ORDER_BY_ALL_CHOICES, localize("child_care.show_provider_statistics","Show by area"));
 		menu.addMenuElement(ORDER_BY_FIRST_HAND_CHOICES, localize("child_care.show_first_hand_statistics","Show by first hand choices"));
 		menu.setSelectedElement(this._action);
 		table.add(menu, 1, 1);
-		
+
 
 		SelectDropdownDouble areas = new SelectDropdownDouble(PARAMETER_AREA, PARAMETER_SUB_AREA);
 		areas.setLayoutVertical(true);
 		areas.setVerticalSpaceBetween(7);
-		areas = (SelectDropdownDouble) getStyledInterface(areas);	
+		areas = (SelectDropdownDouble) getStyledInterface(areas);
 
 		Iterator iter = getSchoolAreas(iwc).iterator();
 		areas.addMenuElement("-1", localize("child_care.all_areas","All areas"), new HashMap());
@@ -339,14 +344,14 @@ public class ChildCareStatistics extends ChildCareBlock {
 			SchoolArea area = (SchoolArea) iter.next();
 			areas.addMenuElement(area.getPrimaryKey().toString(), area.getName(), getSchoolSubAreas(iwc, area.getPrimaryKey().toString()));
 		}
-		
-		
+
+
 		areas.setSelectedValues(iwc.getParameter(PARAMETER_AREA),iwc.getParameter(PARAMETER_SUB_AREA));
 
 		table.mergeCells(2, 1, 2, 2);
 		table.add(areas, 2, 1);
-				
-		
+
+
 		DropdownMenu schoolTypes = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_SCHOOL_TYPES));
 		schoolTypes.addMenuElement(SCHOOL_TYPES_CHILD_CARE, localize("child_care.all_operations", "All operations"));
 		schoolTypes.addMenuElement(SCHOOL_TYPES_PRE_SCHOOL, localize("child_care.pre_schools","Pre-schools"));
@@ -356,32 +361,32 @@ public class ChildCareStatistics extends ChildCareBlock {
 		}
 		schoolTypes.setSelectedElement(this._schoolTypes);
 		table.add(schoolTypes, 1, 2);
-		
+
 		DropdownMenu queueType = (DropdownMenu) getStyledInterface(new DropdownMenu(PARAMETER_QUEUE_TYPE));
 		queueType.addMenuElement(QUEUE_TYPE_ALL, localize("child_care.all_in_queue", "All in queue"));
 		queueType.addMenuElement(QUEUE_TYPE_NETTO, localize("child_care.netto_queue","Netto queue"));
 		queueType.addMenuElement(QUEUE_TYPE_BRUTTO, localize("child_care.brutto_queue","Brutto queue"));
 		queueType.setSelectedElement(this._queueType);
 		table.add(queueType, 3, 1);
-		
+
 		SubmitButton submit = (SubmitButton) getButton(new SubmitButton(localize("child_care.get", "Get")));
 		table.add(submit, 4, 1);
-		
+
 		form.add(table);
-				
+
 		return form;
 	}
-	
-	private Collection getSchoolAreas(IWContext iwc) {
-		Collection c = null;
+
+	private Collection<SchoolArea> getSchoolAreas(IWContext iwc) {
 		try {
-			c = getSchoolBusiness(iwc).findAllSchoolAreas();
-		} catch (RemoteException e) {
+			SchoolAreaHome schoolAreaHome = (SchoolAreaHome) IDOLookup.getHome(SchoolArea.class);
+			return schoolAreaHome.getAllScoolAreas();
+		} catch (Exception e) {
 			add(new ExceptionWrapper(e));
 		}
-		return c;
+		return Collections.emptyList();
 	}
-		
+
 	private Map getSchoolSubAreas(IWContext iwc, String schoolArea) {
 		Collection c = null;
 		Map m = new TreeMap();
@@ -398,8 +403,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 		}
 
 		return m;
-	}	
-	
+	}
+
 	/*
 	 * Returns a school business object
 	 */
@@ -411,8 +416,8 @@ public class ChildCareStatistics extends ChildCareBlock {
 			add(new ExceptionWrapper(e));
 		}
 		return sb;
-	}	
-	
+	}
+
 	private void parse(IWContext iwc) {
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			this._action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
@@ -442,28 +447,28 @@ public class ChildCareStatistics extends ChildCareBlock {
 			}
 		}
 	}
-	
+
 	/**
 	 * @param useSorting
 	 */
 	public void setUseSorting(boolean useSorting) {
 		this._useSorting = useSorting;
 	}
-	
+
 	protected CommuneBusiness getCommuneBusiness(IWApplicationContext iwac) throws RemoteException {
 		return (CommuneBusiness) IBOLookup.getServiceInstance(iwac, CommuneBusiness.class);
 	}
-    
+
     private PresentationObjectContainer getProviderName(School provider) {
-        PresentationObjectContainer nameContainer = new PresentationObjectContainer();        
-        if (provider.getSortByBirthdate()) {            
+        PresentationObjectContainer nameContainer = new PresentationObjectContainer();
+        if (provider.getSortByBirthdate()) {
             Text star = new Text("* ");
-            star.setStyleClass("commune_" + CommuneBlock.STYLENAME_SMALL_EXPLANATION_STAR_TEXT);            
-            nameContainer.add(star);            
-            
+            star.setStyleClass("commune_" + CommuneBlock.STYLENAME_SMALL_EXPLANATION_STAR_TEXT);
+            nameContainer.add(star);
+
             this.containsSortedByBirthdateProvider = true;
-        }  
-        nameContainer.add(getSmallText(provider.getSchoolName()));        
+        }
+        nameContainer.add(getSmallText(provider.getSchoolName()));
         return nameContainer;
-    }    
+    }
 }

@@ -6,11 +6,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
+
 import javax.ejb.FinderException;
+
 import se.idega.idegaweb.commune.care.business.CareConstants;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 import se.idega.idegaweb.commune.care.data.ChildCareApplication;
 import se.idega.idegaweb.commune.childcare.check.business.CheckBusiness;
+
 import com.idega.block.navigation.presentation.UserHomeLink;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
@@ -38,12 +41,12 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 	private User child;
 	private GrantedCheck check;
-	
+
 	private final static int ACTION_VIEW_FORM = 1;
 	private final static int ACTION_SUBMIT = 2;
-	
+
 	private int _action = -1;
-	
+
 	private final static String PARAMETER_ACTION = "cca_action";
 	private final static String PARAM_FORM_SUBMIT = "cca_submit";
 	private final static String PARAM_DATE = "cca_date";
@@ -63,8 +66,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 	private final static String EMAIL_PROVIDER_SUBJECT = "child_care.application_received_subject";
 	private final static String EMAIL_PROVIDER_MESSAGE = "child_care.application_received_body";
-        
-	private Collection areas;
+
+	private Collection<SchoolArea> areas;
 	private Map providerMap;
 	private School currentProvider;
 
@@ -79,17 +82,18 @@ public class ChildCareChildApplication extends ChildCareBlock {
 	private boolean hasActivePlacement = false;
 
 	private boolean hasPermission = false;
-    
+
     private boolean showQueueSortedByBirthdateMessage = false;
 
 	/**
 	 * @see se.idega.idegaweb.commune.childcare.presentation.ChildCareBlock#init(com.idega.presentation.IWContext)
 	 */
+	@Override
 	public void init(IWContext iwc) throws Exception {
 		parseAction(iwc);
-		
+
 		if (this.child != null) {
-			try {				
+			try {
 				this.currentProvider = getBusiness().getCurrentProviderByNotTerminatedPlacement(((Integer) this.child.getPrimaryKey()).intValue());
 				this.hasActivePlacement = getBusiness().hasActiveApplication(((Integer) this.child.getPrimaryKey()).intValue(), CareConstants.CASE_CODE_KEY);
 			}
@@ -98,30 +102,30 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				this.hasActivePlacement = false;
 			}
 		}
-		
+
 		if (this.hasPermission){
 			switch (this._action) {
 			case ACTION_VIEW_FORM :
 				viewForm(iwc);
-				break;	
-				
+				break;
+
 			case ACTION_SUBMIT :
 				submitForm(iwc);
 				break;
-                
+
 			}
 		}
 		else{
 			viewNotPermitted();
 		}
-		
+
 	}
-	
+
 	protected boolean isAdmin(IWContext iwc) {
 		if (iwc.hasEditPermission(this)) {
 			return true;
 		}
-			
+
 		try {
 			return getBusiness().getUserBusiness().isRootCommuneAdministrator(iwc.getCurrentUser());
 		}
@@ -129,10 +133,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			return false;
 		}
 	}
-	
+
 	private void parseAction(IWContext iwc) throws RemoteException {
 		this.isAdmin = isAdmin(iwc);
-		
+
 		if (iwc.isParameterSet(PARAMETER_ACTION)) {
 			this._action = Integer.parseInt(iwc.getParameter(PARAMETER_ACTION));
 		}
@@ -163,10 +167,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 					this.hasPermission = true;
 					break;
 				}
-								
+
 			}
 		}
-		
+
 		if (isCheckRequired()) {
 			try {
 				this.check = getCheckBusiness(iwc).getGrantedCheckByChild(this.child);
@@ -188,7 +192,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		table.add(getErrorText(localize("not_permitted", "You do not have permission")), 1, 1);
 		add(table);
 	}
-	  
+
 	private void viewForm(IWContext iwc) throws RemoteException {
 		boolean hasOffers = false;
 		boolean hasPendingApplications = false;
@@ -201,28 +205,28 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				hasOffers = false;
 			}
 		}
-		
+
 		if ((!this._noCheckError && !hasOffers && !hasPendingApplications) || this.isAdmin) {
 
-			
+
 			Form form = new Form();
 			Table table = new Table();
 			table.setWidth(getWidth());
 			table.setCellpadding(0);
 			table.setCellspacing(0);
 			form.add(table);
-            
-            Table inputTable = getInputTable(iwc); 
-		
+
+            Table inputTable = getInputTable(iwc);
+
 			int row = 1;
 			table.add(getChildInfoTable(iwc), 1, row++);
-			table.setHeight(row++, 12);            
+			table.setHeight(row++, 12);
 			table.add(inputTable, 1, row++);
 			table.setHeight(row++, 12);
-	
+
 			GenericButton showPrognosis = getButton(new GenericButton("show_prognosis", localize("child_care.view_prognosis", "View prognosis")));
 			showPrognosis.setWindowToOpen(ChildCarePrognosisWindow.class);
-			
+
 			SubmitButton submit = (SubmitButton)getButton(new SubmitButton(localize(PARAM_FORM_SUBMIT, "Submit application"), PARAMETER_ACTION, String.valueOf(ACTION_SUBMIT)));
 			if (this.isAdmin) {
 				try {
@@ -235,19 +239,19 @@ public class ChildCareChildApplication extends ChildCareBlock {
 					submit.setDisabled(true);
 				}
 			}
-			
+
 			table.add(showPrognosis, 1, row);
 			table.add(Text.getNonBrakingSpace(), 1, row);
 			table.add(submit, 1, row);
 			submit.setOnSubmitFunction("checkApplication", getSubmitCheckScript());
 			form.setToDisableOnSubmit(submit, true);
-			
+
 			if (submit.getDisabled()) {
 				row++;
 				table.setHeight(row++, 6);
 				table.add(getSmallErrorText(localize("child_care.no_parent_found", "No parent found")), 1, row);
 			}
-	
+
 			add(form);
 		}
 		else {
@@ -264,8 +268,8 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			add(new UserHomeLink());
 		}
 	}
-	
-	
+
+
 	private void submitForm(IWContext iwc) {
 		boolean done = false;
 
@@ -273,36 +277,36 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		try {
 			ChildCareApplication app=null;
 			app = null;
-			
+
 			//boolean dateIsCorrect=true;
 			app = getBusiness().getAcceptedApplicationsByChild(((Integer)this.child.getPrimaryKey()).intValue());
 			if(app!=null){
 					char c = app.getApplicationStatus();
-					
+
 				if( (c=='C')||
 					(c=='D')||
 					(c=='E')||
-					(c=='F'))							
+					(c=='F'))
 				{
 					inProcess = true;
 				}
 			}
 		}
 		catch (RemoteException re) {
-		   
+
 		}
-		
+
 		try {
-			int numberOfApplications = 4;	
+			int numberOfApplications = 4;
 			if ((!this.hasActivePlacement)&&(!inProcess)) {
 				numberOfApplications = 5;
 			}
-			
-			
+
+
 			int[] providers = new int[numberOfApplications];
 			String[] dates = new String[numberOfApplications];
 			Date[] queueDates = new Date[numberOfApplications];
-			
+
 			for (int i = 0; i < numberOfApplications; i++) {
 					try{
 				    providers[i] = iwc.isParameterSet(PARAM_PROVIDER + "_" + (i + 1)) ? Integer.parseInt(iwc.getParameter(PARAM_PROVIDER + "_" + (i + 1))) : -1;
@@ -318,10 +322,10 @@ public class ChildCareChildApplication extends ChildCareBlock {
 					}  catch(NullPointerException e) {
 					     //TODO
 				       }
-					
+
 			}
 
-			
+
 			if (!this.isAdmin) {
 				Collection applications = getBusiness().getApplicationsForChild(this.child);
 				loop:
@@ -336,7 +340,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 					}
 				}
 			}
-						
+
 			String message = iwc.getParameter(PARAM_MESSAGE);
 
 			String subject = localize(EMAIL_PROVIDER_SUBJECT, "Child care application received");
@@ -352,15 +356,15 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 
 			done = getBusiness().insertApplications(parent, providers, dates, message, this.check != null ? ((Integer) this.check.getPrimaryKey()).intValue() : -1, ((Integer) this.child.getPrimaryKey()).intValue(), subject, body, false, sendMessages, queueDates, null);
-			
 
-			
+
+
 		}
 		catch (RemoteException e) {
 			e.printStackTrace();
 			done = false;
 		}
-  
+
 		if (done) {
 			if (getResponsePage() != null) {
 				iwc.forwardToIBPage(getParentPage(), getResponsePage());
@@ -373,15 +377,15 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			add(new Text(localize(APPLICATION_FAILURE, "Failed to submit application")));
 		}
 	}
-	
+
 
 	private void updateChoiceNumber()  {
-		
+
 		int first_index = 0;
 		int second_index = 0;
 		ChildCareApplication app=null;
 
-		
+
 		for (int i = 1; i <= 5; i++) {
 			app = null;
 			try {
@@ -397,11 +401,11 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			   app=null;
 			}
 		}
-        
+
 		if(first_index >= 4) {
 			return;
 		}
-		
+
 		for (int i = first_index+1; i <= 5; i++) {
 			app = null;
 			try {
@@ -413,7 +417,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				else if(i == 5) {
 					return;
 				}
-				
+
 			}
 			catch (RemoteException re) {
 			   app=null;
@@ -423,13 +427,13 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			app.setChoiceNumber(first_index+1);
 			app.store();
 		}
-		
+
 		updateChoiceNumber();
-		
-	}	
-		
+
+	}
+
 	private Table getInputTable(IWContext iwc) throws RemoteException {
-		
+
 		updateChoiceNumber();
 		boolean inProcess = false;
 			try {
@@ -437,22 +441,22 @@ public class ChildCareChildApplication extends ChildCareBlock {
 				app = null;
 				app = getBusiness().getAcceptedApplicationsByChild(((Integer)this.child.getPrimaryKey()).intValue());
 				if(app!=null){
- 					char c = app.getApplicationStatus(); 
+ 					char c = app.getApplicationStatus();
 					if( (c=='C')||
  					    (c=='D')||
 						(c=='E')||
-						(c=='F'))							
+						(c=='F'))
 					{
 						inProcess = true;
 					}
 				}
 			}
 			catch (RemoteException re) {
-			   
+
 			}
-		
+
 		Table inputTable = new Table();
-		inputTable.setCellspacing(0);  
+		inputTable.setCellspacing(0);
 		inputTable.setCellpadding(2);
 		inputTable.setColumns(3);
 
@@ -462,7 +466,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		String provider = localize(PARAM_PROVIDER, "Provider");
 		String from = localize(CARE_FROM, "From") + ":";
-		String message = null; 
+		String message = null;
 		Text providerText = null;
 		Text fromText = getSmallHeader(from);
 		Text queueDateText = getSmallHeader(localize("child_care.queue_data", "Queue date") + ":");
@@ -470,19 +474,19 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		ChildCareApplication application = null;
 		int areaID = -1;
-	     
-		int numberOfApplications = 4;		
+
+		int numberOfApplications = 4;
 		if ((!this.hasActivePlacement)&&(!inProcess)) {
 			numberOfApplications = 5;
 		}
 
-		
+
 		for (int i = 1; i < (numberOfApplications + 1); i++) {
-            
+
 			application = null;
 			try {
 
-				
+
 				application = getBusiness().getNonActiveApplication(((Integer) this.child.getPrimaryKey()).intValue(), i);
 				if (application != null) {
                    try{
@@ -503,13 +507,13 @@ public class ChildCareChildApplication extends ChildCareBlock {
 					}
 				    }  catch(NullPointerException e) {
 				     //TODO
-			       }					
-					
+			       }
+
 					areaID = application.getProvider().getSchoolAreaId();
 					message = application.getMessage();
-					
+
 				}
-				
+
 			}
 			catch (RemoteException re) {
 				application = null;
@@ -521,7 +525,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 
 			providerText = getSmallHeader(provider + Text.NON_BREAKING_SPACE + i + ":");
-			
+
 			inputTable.add(providerText, 1, row);
 			//inputTable.setVerticalAlignment(1, row, Table.VERTICAL_ALIGN_TOP);
 			inputTable.add(dropdown, 3, row++);
@@ -529,19 +533,19 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			DateInput date = (DateInput)getStyledInterface(new DateInput(PARAM_DATE + "_" + i));
 			if (application != null){
 				IWTimestamp fromDate = new IWTimestamp(application.getFromDate());
-				
+
 				if (fromDate.isEarlierThan(stamp)) {
 					if (!this.isAdmin) {
 						date.setEarliestPossibleDate(application.getFromDate(), localize("child_care.no_date_back_prev", "You cannot set a date before the previous start date"));
-					}	
+					}
 				}
 				else {
 					if (!this.isAdmin) {
 						date.setEarliestPossibleDate(stamp.getDate(), localize("child_care.no_date_back_in_time", "You cannot set a date back in time"));
-					}	
+					}
 				}
 				date.setDate(application.getFromDate());
-				
+
 			}
 			else {
 				if (!this.isAdmin) {
@@ -555,7 +559,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 			}
 			inputTable.add(fromText, 1, row);
 			inputTable.add(date, 3, row++);
-			
+
 			if (this.isAdmin) {
 				DateInput queueDate = (DateInput)getStyledInterface(new DateInput(PARAM_QUEUE_DATE + "_" + i));
 				if (application != null) {
@@ -573,7 +577,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 			inputTable.setHeight(row++, 12);
 	   }
-		
+
 		TextArea messageArea = (TextArea) getStyledInterface(new TextArea(PARAM_MESSAGE));
 		messageArea.setRows(4);
 		messageArea.setWidth(Table.HUNDRED_PERCENT);
@@ -587,7 +591,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 
 		inputTable.setWidth(1, 100);
 		inputTable.setWidth(2, 8);
-		
+
 		return inputTable;
 	}
 
@@ -598,7 +602,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		table.setCellspacing(0);
 		table.setWidth(1, 100);
 		table.setWidth(2, 8);
-		
+
 		table.add(getSmallHeader(localize(NAME, "Name")+":"), 1, 1);
 		table.add(getSmallHeader(localize(PID, "Personal ID")+":"), 1, 2);
 		table.add(getSmallHeader(localize(ADDRESS, "Address")+":"), 1, 3);
@@ -607,7 +611,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		table.add(getSmallText(name.getName(iwc.getApplicationSettings().getDefaultLocale(), true)), 3, 1);
 		String personalID = PersonalIDFormatter.format(this.child.getPersonalID(), iwc.getIWMainApplication().getSettings().getApplicationLocale());
 		table.add(getSmallText(personalID), 3, 2);
-		
+
 		try {
 			Address address = getUserBusiness(iwc).getUsersMainAddress(this.child);
 			if (address != null) {
@@ -617,12 +621,12 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		catch (RemoteException e) {
 			// empty
 		}
-        
+
         if (this.showQueueSortedByBirthdateMessage) {
-            table.setHeight(4, 12);  
-            table.add(getSortedByBirthdateExplanation(), 3, 5); 
+            table.setHeight(4, 12);
+            table.add(getSortedByBirthdateExplanation(), 3, 5);
         }
-        
+
 		return table;
 	}
 
@@ -641,13 +645,13 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t var four = 0;");
 		buffer.append("\n\t var five = 0;");
 		buffer.append("\n\t var length = 0;");
-        
-		
+
+
 		buffer.append("\n\n\t if (dropOne.selectedIndex > 0) {\n\t\t one = dropOne.options[dropOne.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropTwo.selectedIndex > 0) {\n\t\t two = dropTwo.options[dropTwo.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropThree.selectedIndex > 0) {\n\t\t three = dropThree.options[dropThree.selectedIndex].value;\n\t\t length++;\n\t }");
 		buffer.append("\n\t if (dropFour.selectedIndex > 0) {\n\t\t four = dropFour.options[dropFour.selectedIndex].value;\n\t\t length++;\n\t }");
-		
+
 		buffer.append("\n\t var dateDayOne = ").append("findObj('").append(PARAM_DATE + "_1_day").append("');");
 		buffer.append("\n\t var dateDayTwo = ").append("findObj('").append(PARAM_DATE + "_2_day").append("');");
 		buffer.append("\n\t var dateDayThree = ").append("findObj('").append(PARAM_DATE + "_3_day").append("');");
@@ -657,19 +661,19 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t var dateMonthTwo = ").append("findObj('").append(PARAM_DATE + "_2_month").append("');");
 		buffer.append("\n\t var dateMonthThree = ").append("findObj('").append(PARAM_DATE + "_3_month").append("');");
 		buffer.append("\n\t var dateMonthFour = ").append("findObj('").append(PARAM_DATE + "_4_month").append("');");
-		
+
 		buffer.append("\n\t var dateYearOne = ").append("findObj('").append(PARAM_DATE + "_1_year").append("');");
 		buffer.append("\n\t var dateYearTwo = ").append("findObj('").append(PARAM_DATE + "_2_year").append("');");
 		buffer.append("\n\t var dateYearThree = ").append("findObj('").append(PARAM_DATE + "_3_year").append("');");
 		buffer.append("\n\t var dateYearFour = ").append("findObj('").append(PARAM_DATE + "_4_year").append("');");
-		
+
 		if (!this.hasActivePlacement) {
 			buffer.append("\n\t if (dropFive.selectedIndex > 0) {\n\t\t five = dropFive.options[dropFive.selectedIndex].value;\n\t\t length++;\n\t }");
 			buffer.append("\n\t var dateDayFive = ").append("findObj('").append(PARAM_DATE + "_5_day").append("');");
 			buffer.append("\n\t var dateMonthFive = ").append("findObj('").append(PARAM_DATE + "_5_month").append("');");
 			buffer.append("\n\t var dateYearFive = ").append("findObj('").append(PARAM_DATE + "_5_year").append("');");
 		}
-	
+
 		buffer.append("\n\t if(one > 0 && (dateDayOne.selectedIndex <= 0 || dateMonthOne.selectedIndex <= 0 || dateYearOne.selectedIndex <= 0)){");
 		String message = localize("must_set_date", "Please set the date.");
 		buffer.append("\n\t\t\t alert('").append(message).append("');");
@@ -697,7 +701,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t\t\t return false;");
 		buffer.append("\n\t\t }");
 		}
-		
+
 		buffer.append("\n\t if(length > 0){");
 		buffer.append("\n\t\t if(one > 0 && (one == two || one == three || one == four || one == five)){");
 		message = localize("child_care.must_not_be_the_same", "Please do not choose the same provider more than once.");
@@ -730,129 +734,129 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
 		buffer.append("\n\t }");
-		
+
 		if (!this.hasActivePlacement) {
 			message = localize("child_care.less_than_five_chosen", "You have chosen less than five choices.  An offer can not be guaranteed within three months.");
 			buffer.append("\n\t if(length < 5)\n\t\t return confirm('").append(message).append("');");
 			buffer.append("\n\t return true;");
 		}
 
-		
+
 		IWTimestamp stamp = new IWTimestamp();
 		int year = stamp.getYear();
 		int month = stamp.getMonth();
 		int day = stamp.getDay();
 		message = localize("child_care.no_date_back_in_time", "You cannot set a date back in time");
-		
+
 //		if ITEM_1 CHECK
 		buffer.append("\n\t if(" );
 		// rule 1 check year
         buffer.append("( (one!="+String.valueOf(this.provider_1)+") && ");
-		buffer.append("  (dateYearOne.options[dateYearOne.selectedIndex].value  < "+String.valueOf(year)+ ") )");		
+		buffer.append("  (dateYearOne.options[dateYearOne.selectedIndex].value  < "+String.valueOf(year)+ ") )");
 		// rule 2 check month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (one!="+String.valueOf(this.provider_1)+") && ");
 		buffer.append("  (dateYearOne.options[dateYearOne.selectedIndex].value == "+String.valueOf(year)+ ")   &&");
 		buffer.append("  (dateMonthOne.options[dateMonthOne.selectedIndex].value < "+String.valueOf(month)+ ") )");
 		// rule 3 check day + month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (one!="+String.valueOf(this.provider_1)+") && ");
 		buffer.append("  (dateYearOne.options[dateYearOne.selectedIndex].value == "+String.valueOf(year)+ ")    && ");
 		buffer.append("  (dateMonthOne.options[dateMonthOne.selectedIndex].value == "+String.valueOf(month)+ ") && ");
-		buffer.append("  (dateDayOne.options[dateDayOne.selectedIndex].value  < "+String.valueOf(day)+ ") )"); 
-		buffer.append("){");  
-		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("  (dateDayOne.options[dateDayOne.selectedIndex].value  < "+String.valueOf(day)+ ") )");
+		buffer.append("){");
+		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
-		buffer.append("\n\t} ");		
-		
+		buffer.append("\n\t} ");
+
 //		if ITEM_2 CHECK
 		buffer.append("\n\t if(" );
 		// rule 1 check year
         buffer.append("( (two!="+String.valueOf(this.provider_2)+") && ");
-		buffer.append("  (dateYearTwo.options[dateYearTwo.selectedIndex].value  < "   + String.valueOf(year)+ ") )");		
+		buffer.append("  (dateYearTwo.options[dateYearTwo.selectedIndex].value  < "   + String.valueOf(year)+ ") )");
 		// rule 2 check month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (two!="+String.valueOf(this.provider_2)+") && ");
 		buffer.append("  (dateYearTwo.options[dateYearTwo.selectedIndex].value == "   + String.valueOf(year)+ ")   &&");
 		buffer.append("  (dateMonthTwo.options[dateMonthTwo.selectedIndex].value  < " + String.valueOf(month)+ ") )");
 		// rule 3 check day + month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (two!="+String.valueOf(this.provider_2)+") && ");
 		buffer.append("  (dateYearTwo.options[dateYearTwo.selectedIndex].value == "   + String.valueOf(year)+ ")   && ");
 		buffer.append("  (dateMonthTwo.options[dateMonthTwo.selectedIndex].value == " + String.valueOf(month)+ ") && ");
-		buffer.append("  (dateDayTwo.options[dateDayTwo.selectedIndex].value  < "     + String.valueOf(day)+ ") )"); 
-		buffer.append("){");  
-		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("  (dateDayTwo.options[dateDayTwo.selectedIndex].value  < "     + String.valueOf(day)+ ") )");
+		buffer.append("){");
+		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
-		buffer.append("\n\t} ");		
+		buffer.append("\n\t} ");
 
 //		if ITEM_3 CHECK
 		buffer.append("\n\t if(" );
 		// rule 1 check year
         buffer.append("( (three!="+String.valueOf(this.provider_3)+") && ");
-		buffer.append("  (dateYearThree.options[dateYearThree.selectedIndex].value  < "   + String.valueOf(year)+ ") )");		
+		buffer.append("  (dateYearThree.options[dateYearThree.selectedIndex].value  < "   + String.valueOf(year)+ ") )");
 		// rule 2 check month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (three!="+String.valueOf(this.provider_3)+") && ");
 		buffer.append("  (dateYearThree.options[dateYearThree.selectedIndex].value == "   + String.valueOf(year)+ ")   &&");
 		buffer.append("  (dateMonthThree.options[dateMonthThree.selectedIndex].value  < " + String.valueOf(month)+ ") )");
 		// rule 3 check day + month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (three!="+String.valueOf(this.provider_3)+") && ");
 		buffer.append("  (dateYearThree.options[dateYearThree.selectedIndex].value == "   + String.valueOf(year)+ ")   && ");
 		buffer.append("  (dateMonthThree.options[dateMonthThree.selectedIndex].value == " + String.valueOf(month)+ ") && ");
-		buffer.append("  (dateDayThree.options[dateDayThree.selectedIndex].value  < "     + String.valueOf(day)+ ") )"); 
-		buffer.append("){");  
-		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("  (dateDayThree.options[dateDayThree.selectedIndex].value  < "     + String.valueOf(day)+ ") )");
+		buffer.append("){");
+		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
-		buffer.append("\n\t} ");		
+		buffer.append("\n\t} ");
 
 //		if ITEM_4 CHECK
 		buffer.append("\n\t if(" );
 		// rule 1 check year
         buffer.append("( (four!="+String.valueOf(this.provider_4)+") && ");
-		buffer.append("  (dateYearFour.options[dateYearFour.selectedIndex].value  < "   + String.valueOf(year)+ ") )");		
+		buffer.append("  (dateYearFour.options[dateYearFour.selectedIndex].value  < "   + String.valueOf(year)+ ") )");
 		// rule 2 check month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (four!="+String.valueOf(this.provider_4)+") && ");
 		buffer.append("  (dateYearFour.options[dateYearFour.selectedIndex].value == "   + String.valueOf(year)+ ")   &&");
 		buffer.append("  (dateMonthFour.options[dateMonthFour.selectedIndex].value  < " + String.valueOf(month)+ ") )");
 		// rule 3 check day + month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (four!="+String.valueOf(this.provider_4)+") && ");
 		buffer.append("  (dateYearFour.options[dateYearFour.selectedIndex].value == "   + String.valueOf(year)+ ")   && ");
 		buffer.append("  (dateMonthFour.options[dateMonthFour.selectedIndex].value == " + String.valueOf(month)+ ") && ");
-		buffer.append("  (dateDayFour.options[dateDayFour.selectedIndex].value  < "     + String.valueOf(day)+ ") )"); 
-		buffer.append("){");  
-		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("  (dateDayFour.options[dateDayFour.selectedIndex].value  < "     + String.valueOf(day)+ ") )");
+		buffer.append("){");
+		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
-		buffer.append("\n\t} ");		
+		buffer.append("\n\t} ");
 
 //		if ITEM_5 CHECK
 		buffer.append("\n\t if(" );
 		// rule 1 check year
         buffer.append("( (five!="+String.valueOf(this.provider_5)+") && ");
-		buffer.append("  (dateYearFive.options[dateYearFive.selectedIndex].value  < "   + String.valueOf(year)+ ") )");		
+		buffer.append("  (dateYearFive.options[dateYearFive.selectedIndex].value  < "   + String.valueOf(year)+ ") )");
 		// rule 2 check month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (five!="+String.valueOf(this.provider_5)+") && ");
 		buffer.append("  (dateYearFive.options[dateYearFive.selectedIndex].value == "   + String.valueOf(year)+ ")   &&");
 		buffer.append("  (dateMonthFive.options[dateMonthFive.selectedIndex].value  < " + String.valueOf(month)+ ") )");
 		// rule 3 check day + month + year
-		buffer.append("\n\t || ");		
+		buffer.append("\n\t || ");
         buffer.append("( (five!="+String.valueOf(this.provider_5)+") && ");
 		buffer.append("  (dateYearFive.options[dateYearFive.selectedIndex].value == "   + String.valueOf(year)+ ")   && ");
 		buffer.append("  (dateMonthFive.options[dateMonthFive.selectedIndex].value == " + String.valueOf(month)+ ") && ");
-		buffer.append("  (dateDayFive.options[dateDayFive.selectedIndex].value  < "     + String.valueOf(day)+ ") )"); 
-		buffer.append("){");  
-		buffer.append("\n\t\t alert('").append(message).append("');");		
+		buffer.append("  (dateDayFive.options[dateDayFive.selectedIndex].value  < "     + String.valueOf(day)+ ") )");
+		buffer.append("){");
+		buffer.append("\n\t\t alert('").append(message).append("');");
 		buffer.append("\n\t\t return false;");
-		buffer.append("\n\t} ");		
-		
-		
+		buffer.append("\n\t} ");
+
+
 		buffer.append("\n\n}");
 
-		
+
 		return buffer.toString();
 	}
 
@@ -861,36 +865,36 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		ProviderDropdownDouble dropdown = new ProviderDropdownDouble(primaryName, secondaryName);
 		String emptyString = localize("child_care.select_provider","Select provider...");
 		dropdown.addEmptyElement(localize("child_care.select_area","Select area..."), emptyString);
-		
+
 		try {
 			if (this.areas == null) {
-				this.areas = getBusiness().getSchoolBusiness().findAllSchoolAreas();
+				this.areas = getBusiness().getSchoolBusiness().getAllSchoolAreas();
 			}
 			if (this.providerMap == null) {
 				this.providerMap = getBusiness().getProviderAreaMap(this.areas,
                         this.currentProvider, locale, emptyString, false);
-			}			
-            
+			}
+
 			if (this.areas != null && this.providerMap != null) {
 				Iterator iter = this.areas.iterator();
 				while (iter.hasNext()) {
 					SchoolArea area = (SchoolArea) iter.next();
                     Map areaProviders = (Map) this.providerMap.get(area);
-                    
+
                     // if at least one provider has set order by birthdate property, then according
-                    // flag is set, so message about it will be shown to the user                    
-                    if ( (areaProviders != null) && (!this.showQueueSortedByBirthdateMessage) ) {                        
+                    // flag is set, so message about it will be shown to the user
+                    if ( (areaProviders != null) && (!this.showQueueSortedByBirthdateMessage) ) {
                         for (Iterator it = areaProviders.keySet().iterator(); it.hasNext();) {
-                            Object key = it.next(); 
+                            Object key = it.next();
                             School provider = (School) areaProviders.get(key);
-                            if (provider != null) {  
+                            if (provider != null) {
                                 if (provider.getSortByBirthdate()) {
-                                    this.showQueueSortedByBirthdateMessage = true; 
+                                    this.showQueueSortedByBirthdateMessage = true;
                                 }
                             }
-                        }                        
+                        }
                     }
-                     
+
 					dropdown.addMenuElement(area.getPrimaryKey().toString(), area.getSchoolAreaName(), areaProviders);
 				}
 			}
@@ -898,7 +902,7 @@ public class ChildCareChildApplication extends ChildCareBlock {
 		catch (RemoteException e) {
 			e.printStackTrace();
 		}
-		
+
 		return dropdown;
 	}
 

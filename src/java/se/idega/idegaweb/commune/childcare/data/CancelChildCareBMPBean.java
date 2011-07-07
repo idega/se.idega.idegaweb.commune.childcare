@@ -9,21 +9,26 @@
  */
 package se.idega.idegaweb.commune.childcare.data;
 
-import com.idega.block.process.data.AbstractCaseBMPBean;
-import com.idega.block.process.data.Case;
+import java.sql.Date;
+import java.util.Collection;
 
 import se.idega.idegaweb.commune.care.check.data.Check;
 import se.idega.idegaweb.commune.care.check.data.GrantedCheck;
 
-import java.sql.Date;
+import com.idega.block.process.data.AbstractCaseBMPBean;
+import com.idega.block.process.data.Case;
+import com.idega.data.IDOAddRelationshipException;
+import com.idega.data.IDORemoveRelationshipException;
+import com.idega.user.data.User;
 
 /**
  * This class does something very clever.....
- * 
+ *
  * @author <a href="palli@idega.is">Pall Helgason</a>
  * @version 1.0
  */
 public class CancelChildCareBMPBean extends AbstractCaseBMPBean implements CancelChildCare, Case {
+
 	private final static String ENTITY_NAME = "comm_cancel_care";
 	private final static String CASE_CODE_KEY = "MBANKOO";
 	private final static String CASE_CODE_KEY_DESC = "Cancel child care contract";
@@ -35,6 +40,7 @@ public class CancelChildCareBMPBean extends AbstractCaseBMPBean implements Cance
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
 	 */
+	@Override
 	public String getCaseCodeKey() {
 		return CASE_CODE_KEY;
 	}
@@ -42,6 +48,7 @@ public class CancelChildCareBMPBean extends AbstractCaseBMPBean implements Cance
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeDescription()
 	 */
+	@Override
 	public String getCaseCodeDescription() {
 		return CASE_CODE_KEY_DESC;
 	}
@@ -49,6 +56,7 @@ public class CancelChildCareBMPBean extends AbstractCaseBMPBean implements Cance
 	/**
 	 * @see com.idega.data.IDOEntity#getEntityName()
 	 */
+	@Override
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
@@ -56,46 +64,68 @@ public class CancelChildCareBMPBean extends AbstractCaseBMPBean implements Cance
 	/**
 	 * @see com.idega.data.IDOEntity#initializeAttributes()
 	 */
+	@Override
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(REASON,"",true,true,java.lang.String.class,1000);
 		addAttribute(CANCELLATION_DATE,"",true,true,java.sql.Date.class);
-		
-		addManyToOneRelationship(CHECK_ID,GrantedCheck.class);		
+
+		addManyToOneRelationship(CHECK_ID,GrantedCheck.class);
 	}
 
 	/**
 	 * A method to get the reason for the cancellation.
 	 */
+	@Override
 	public String getReason() {
-		return getStringColumnValue(REASON);	
+		return getStringColumnValue(REASON);
 	}
 
+	@Override
 	public Date getCancellationDate() {
-		return (Date)getColumnValue(CANCELLATION_DATE);	
+		return (Date)getColumnValue(CANCELLATION_DATE);
 	}
 
+	@Override
 	public int getCheckId() {
-		return getIntColumnValue(CHECK_ID);	
+		return getIntColumnValue(CHECK_ID);
 	}
-	
+
+	@Override
 	public GrantedCheck getCheck() {
-		return (GrantedCheck)getColumnValue(CHECK_ID);	
+		return (GrantedCheck)getColumnValue(CHECK_ID);
 	}
 
+	@Override
 	public void setReason(String reason) {
-		setColumn(REASON,reason);	
+		setColumn(REASON,reason);
 	}
 
+	@Override
 	public void setCancellationDate(Date date) {
-		setColumn(CANCELLATION_DATE,date);	
+		setColumn(CANCELLATION_DATE,date);
 	}
 
+	@Override
 	public void setCheckId(int checkId) {
-		setColumn(CHECK_ID,checkId);	
+		setColumn(CHECK_ID,checkId);
 	}
-	
+
+	@Override
 	public void setCheck(Check check) {
-		setColumn(CHECK_ID,check);	
-	}	
+		setColumn(CHECK_ID,check);
+	}
+
+	@Override
+	public void addSubscriber(User arg0) throws IDOAddRelationshipException {
+	}
+
+	@Override
+	public Collection<User> getSubscribers() {
+		return null;
+	}
+
+	@Override
+	public void removeSubscriber(User arg0)	throws IDORemoveRelationshipException {
+	}
 }

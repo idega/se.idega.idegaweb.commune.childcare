@@ -18,25 +18,27 @@ import com.idega.block.process.data.AbstractCaseBMPBean;
 import com.idega.block.process.data.Case;
 import com.idega.block.school.data.School;
 import com.idega.block.school.data.SchoolArea;
+import com.idega.data.IDOAddRelationshipException;
 import com.idega.data.IDOException;
 import com.idega.data.IDOQuery;
+import com.idega.data.IDORemoveRelationshipException;
 import com.idega.user.data.User;
 
 /**
  * Data bean holding the information about the children waiting in line to get a childcare position
- * This data is just an import of the data used in the old system where there was no limit on 
- * how many child care option one can sign up for. The system now only allows maximum five options 
+ * This data is just an import of the data used in the old system where there was no limit on
+ * how many child care option one can sign up for. The system now only allows maximum five options
  * per child.
- * 
+ *
  * @author Joakim
  * @version 1.0
  */
-public class ChildCareQueueBMPBean extends AbstractCaseBMPBean 
-	implements ChildCareQueue,Case {
+public class ChildCareQueueBMPBean extends AbstractCaseBMPBean implements ChildCareQueue,Case {
+
 	private final static String ENTITY_NAME = "comm_childcare_queue";
 	private final static String CASE_CODE_KEY = "MBANQUE";
 	private final static String CASE_CODE_KEY_DESC = "Old queue for child care";
-	
+
 	protected final static String CONTRACT_ID = "contract_id";
 	protected final static String CHILD_ID = "child_id";
 	protected final static String PROVIDER_NAME = "provider_name";
@@ -53,10 +55,11 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 
 	protected final int SORT_DATE_OF_BIRTH = 1;
 	protected final int SORT_QUEUE_DATE = 2;
-	
+
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeKey()
 	 */
+	@Override
 	public String getCaseCodeKey() {
 		return CASE_CODE_KEY;
 	}
@@ -64,6 +67,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	/**
 	 * @see com.idega.block.process.data.AbstractCaseBMPBean#getCaseCodeDescription()
 	 */
+	@Override
 	public String getCaseCodeDescription() {
 		return CASE_CODE_KEY_DESC;
 	}
@@ -71,6 +75,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	/**
 	 * @see com.idega.data.IDOEntity#getEntityName()
 	 */
+	@Override
 	public String getEntityName() {
 		return ENTITY_NAME;
 	}
@@ -78,6 +83,7 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 	/**
 	 * @see com.idega.data.IDOEntity#initializeAttributes()
 	 */
+	@Override
 	public void initializeAttributes() {
 		addAttribute(getIDColumnName());
 		addAttribute(CONTRACT_ID,"",true,true,java.lang.Integer.class);
@@ -95,124 +101,152 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		addAttribute(EXPORTED,"",true,true,java.lang.Boolean.class);
 
 	}
-	
+
+	@Override
 	public int getContractId() {
-		return getIntColumnValue(CONTRACT_ID);	
+		return getIntColumnValue(CONTRACT_ID);
 	}
 
+	@Override
 	public User getChild() {
-		return (User)getColumnValue(CHILD_ID);	
+		return (User)getColumnValue(CHILD_ID);
 	}
-	
+
+	@Override
 	public int getChildId() {
-		return getIntColumnValue(CHILD_ID);	
+		return getIntColumnValue(CHILD_ID);
 	}
 
+	@Override
 	public String getProviderName() {
-		return getStringColumnValue(PROVIDER_NAME);			
+		return getStringColumnValue(PROVIDER_NAME);
 	}
 
+	@Override
 	public int getProviderId() {
-		return getIntColumnValue(PROVIDER_ID);			
+		return getIntColumnValue(PROVIDER_ID);
 	}
 
+	@Override
 	public School getProvider() {
-		return (School) getColumnValue(PROVIDER_ID);			
+		return (School) getColumnValue(PROVIDER_ID);
 	}
 
+	@Override
 	public String getPriority() {
-		return getStringColumnValue(PRIORITY);			
+		return getStringColumnValue(PRIORITY);
 	}
 
+	@Override
 	public int getChoiceNumber() {
 		return getIntColumnValue(CHOICE_NUMBER);
 	}
-	
+
+	@Override
 	public String getSchoolAreaName() {
 		return getStringColumnValue(SCHOOL_AREA_NAME);
 	}
-	
+
+	@Override
 	public String getSchoolAreaId() {
 		return getStringColumnValue(SCHOOL_AREA_ID);
 	}
-	
+
+	@Override
 	public Date getQueueDate() {
-		return (Date)getColumnValue(QUEUE_DATE);	
+		return (Date)getColumnValue(QUEUE_DATE);
 	}
-	
+
+	@Override
 	public Date getStartDate() {
-		return (Date)getColumnValue(START_DATE);	
+		return (Date)getColumnValue(START_DATE);
 	}
-	
+
+	@Override
 	public Date getImportDate() {
-		return (Date)getColumnValue(IMPORT_DATE);	
+		return (Date)getColumnValue(IMPORT_DATE);
 	}
-	
+
+	@Override
 	public int getQueueType() {
 		return getIntColumnValue(QUEUE_TYPE);
 	}
-	
+
+	@Override
 	public boolean isExported() {
 		return getBooleanColumnValue(EXPORTED, false);
 	}
-	
 
+
+	@Override
 	public void setContractId(int id) {
-		setColumn(CONTRACT_ID,id);	
+		setColumn(CONTRACT_ID,id);
 	}
 
+	@Override
 	public void setChildId(int id) {
-		setColumn(CHILD_ID,id);	
+		setColumn(CHILD_ID,id);
 	}
 
+	@Override
 	public void setProviderName(String name) {
 		setColumn(PROVIDER_NAME,name);
 	}
-	
+
+	@Override
 	public void setProviderId(int id) {
 		setColumn(PROVIDER_ID,id);
 	}
-	
+
+	@Override
 	public void setPriority(String priority) {
 		setColumn(PRIORITY,priority);
 	}
-	
+
+	@Override
 	public void setChoiceNumber(int number) {
-		setColumn(CHOICE_NUMBER,number);	
+		setColumn(CHOICE_NUMBER,number);
 	}
-	
+
+	@Override
 	public void setSchoolAreaName(String area) {
-		setColumn(SCHOOL_AREA_NAME,area);	
+		setColumn(SCHOOL_AREA_NAME,area);
 	}
-	
+
+	@Override
 	public void setSchoolAreaId(int id) {
-		setColumn(SCHOOL_AREA_ID,id);	
+		setColumn(SCHOOL_AREA_ID,id);
 	}
-	
+
+	@Override
 	public void setQueueDate(Date date) {
-		setColumn(QUEUE_DATE,date);	
+		setColumn(QUEUE_DATE,date);
 	}
 
+	@Override
 	public void setStartDate(Date sDate) {
-		setColumn(START_DATE,sDate);	
+		setColumn(START_DATE,sDate);
 	}
 
+	@Override
 	public void setImportedDate(Date iDate) {
-		setColumn(IMPORT_DATE,iDate);	
+		setColumn(IMPORT_DATE,iDate);
 	}
 
+	@Override
 	public void setQueueType(int type) {
-		setColumn(QUEUE_TYPE,type);	
+		setColumn(QUEUE_TYPE,type);
 	}
-	
+
+	@Override
 	public void setExported(boolean exp) {
-		setColumn(EXPORTED,exp);	
+		setColumn(EXPORTED,exp);
 	}
-	
+
 	public Integer ejbFindQueueByChildAndChoiceNumber(User child, int choiceNumber) throws FinderException {
 		return ejbFindQueueByChildAndChoiceNumber(((Integer)child.getPrimaryKey()).intValue(), choiceNumber);
 	}
-	
+
 	//malin
 	public Integer ejbFindQueueByChildAndChoiceNumberAndProviderID(int childID, int choiceNumber, int providerID) throws FinderException {
 		IDOQuery sql = idoQuery();
@@ -225,42 +259,42 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		sql.appendSelectAllFrom(this).appendWhereEquals(CHOICE_NUMBER, choiceNumber).appendAndEquals(CHILD_ID,childID);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
-	
+
 	public Integer ejbFindQueueByChildChoiceNumberAndQueueType(int childID, int choiceNumber, int queueType) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(CHOICE_NUMBER, choiceNumber).
 		appendAndEquals(CHILD_ID,childID).appendAndEquals(QUEUE_TYPE,queueType);
 		return (Integer) idoFindOnePKByQuery(sql);
 	}
-	
+
 	public Collection ejbFindQueueByChild(int childID) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(CHILD_ID,childID);
 		sql.appendOrderBy(CHOICE_NUMBER + ", " + QUEUE_DATE);
 		return super.idoFindPKsByQuery(sql);
 	}
-	
+
 	public Collection ejbFindQueueByProviderAndDate(int providerID, Date queueDate) throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
 		sql.appendAndEquals(QUEUE_DATE,queueDate);
 		return super.idoFindPKsByQuery(sql);
 	}
-	
+
 	public int ejbHomeGetNumberInQueue(int providerID, Date queueDate) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this).appendWhereEquals(PROVIDER_ID, providerID);
 		sql.appendAnd().append(QUEUE_DATE).appendLessThanSign().append(queueDate);
 		return super.idoGetNumberOfRecords(sql);
 	}
-	
+
 	public int ejbHomeGetNumberOfNotExported(int childID) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectCountFrom(this).appendWhereEquals(CHILD_ID, childID);
 		sql.appendAndEqualsQuoted(EXPORTED, "N");
 		return super.idoGetNumberOfRecords(sql);
 	}
-	
+
 	public int ejbHomeGetTotalCount(String[] queueType, boolean exported) throws IDOException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelect().append("count(distinct ").append(CHILD_ID).append(") ").appendFrom().append(getEntityName());
@@ -279,12 +313,25 @@ public class ChildCareQueueBMPBean extends AbstractCaseBMPBean
 		}
 		return super.idoGetNumberOfRecords(sql);
 	}
-	
+
 	public Collection ejbHomeGetDistinctNotExportedChildIds() throws FinderException {
 		IDOQuery sql = idoQuery();
 		sql.appendSelectAllFrom(this);
 		sql.appendWhereEqualsQuoted(EXPORTED, "N");
-		
+
 		return super.idoFindPKsByQuery(sql);
+	}
+
+	@Override
+	public void addSubscriber(User arg0) throws IDOAddRelationshipException {
+	}
+
+	@Override
+	public Collection<User> getSubscribers() {
+		return null;
+	}
+
+	@Override
+	public void removeSubscriber(User arg0) throws IDORemoveRelationshipException {
 	}
 }

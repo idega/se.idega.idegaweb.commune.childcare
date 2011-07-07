@@ -11,16 +11,19 @@ package se.idega.idegaweb.commune.childcare.business;
 
 import java.rmi.RemoteException;
 import java.sql.Date;
+
+import se.idega.idegaweb.commune.business.CommuneUserBusiness;
 import se.idega.idegaweb.commune.user.business.DeceasedUserBusiness;
+
 import com.idega.business.IBOLookup;
 import com.idega.business.IBOLookupException;
 import com.idega.idegaweb.IWApplicationContext;
 
 
 /**
- * 
+ *
  *  Last modified: $Date: 2006/12/12 10:14:45 $ by $Author: laddi $
- * 
+ *
  * @author <a href="mailto:thomas@idega.com">thomas</a>
  * @version $Revision: 1.2 $
  */
@@ -40,6 +43,17 @@ public class ChildCareDeceasedUserBusiness implements DeceasedUserBusiness {
 		}
 		catch (RemoteException e) {
 			// empty
+		}
+		return false;
+	}
+
+	@Override
+	public boolean setUserAsDeceased(Integer userID, java.util.Date deceasedDate, IWApplicationContext iwac) {
+		try {
+			CommuneUserBusiness communeUserBusiness = IBOLookup.getServiceInstance(iwac, CommuneUserBusiness.class);
+			return communeUserBusiness.setUserAsDeceased(userID, deceasedDate);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		return false;
 	}

@@ -8,7 +8,6 @@ package se.idega.idegaweb.commune.childcare.presentation.inputhandler;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.idega.block.school.business.SchoolBusiness;
 import com.idega.block.school.data.SchoolArea;
@@ -28,21 +27,21 @@ public class SchoolAreaDropDownMenu extends DropDownMenuInputHandler  {
 
 	protected static String IW_BUNDLE_IDENTIFIER = "se.idega.idegaweb.commune";
 
+	@Override
 	public void main(IWContext iwc) throws Exception {
 		IWResourceBundle rb = this.getResourceBundle(iwc);
 
 		addMenuElement("-1", rb.getLocalizedString("child_care.all_areas", "All areas"));
-		Collection areas = getSchoolBusiness(iwc).findAllSchoolAreas();
-		Iterator iter = areas.iterator();
-		while (iter.hasNext()) {
-			SchoolArea area = (SchoolArea) iter.next();
+		Collection<SchoolArea> areas = getSchoolBusiness(iwc).getAllSchoolAreas();
+		for (SchoolArea area: areas) {
 			addMenuElement(area.getPrimaryKey().toString(), area.getSchoolAreaName());
 		}
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see com.idega.business.InputHandler#getResultingObject(java.lang.String[], com.idega.presentation.IWContext)
 	 */
+	@Override
 	public Object getResultingObject(String[] value, IWContext iwc) throws Exception {
 		if (value[0].equals("-1")) {
 			return null;
@@ -53,6 +52,7 @@ public class SchoolAreaDropDownMenu extends DropDownMenuInputHandler  {
 	/* (non-Javadoc)
 	 * @see com.idega.business.InputHandler#getDisplayNameOfValue(java.lang.Object, com.idega.presentation.IWContext)
 	 */
+	@Override
 	public String getDisplayForResultingObject(Object value, IWContext iwc) {
 		IWResourceBundle iwrb = getResourceBundle(iwc);
 		if (value == null) {
@@ -71,6 +71,7 @@ public class SchoolAreaDropDownMenu extends DropDownMenuInputHandler  {
 	/* (non-Javadoc)
 	 * @see com.idega.presentation.PresentationObject#getBundleIdentifier()
 	 */
+	@Override
 	public String getBundleIdentifier() {
 		return IW_BUNDLE_IDENTIFIER;
 	}

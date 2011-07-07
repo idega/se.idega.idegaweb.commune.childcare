@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
@@ -28,15 +27,16 @@ import com.idega.idegaweb.IWApplicationContext;
 import com.idega.idegaweb.IWBundle;
 import com.idega.idegaweb.IWResourceBundle;
 import com.idega.user.data.User;
+import com.idega.util.ListUtil;
 import com.idega.xml.XMLDocument;
 import com.idega.xml.XMLElement;
 import com.idega.xml.XMLOutput;
 
 /**
- * Used to create 
- * 
+ * Used to create
+ *
  * TODO: this and CancelFormContext should be refactored so both would use one parent class which both would than extend/implement maybe?
- * 
+ *
  * Properties that are added to context are:
  * iwb		IWBundle
  * iwrb 	IWResourceBundle
@@ -47,7 +47,7 @@ import com.idega.xml.XMLOutput;
  * postalCode	PostalCode	postal code of the abovementioned address
  * parent1	User
  * parent2	User
- * 
+ *
  * @author dainis
  */
 public class ChildCareContractFormContext extends PrintingContextImpl {
@@ -55,14 +55,12 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 	protected IWBundle iwb;
 	protected IWResourceBundle iwrb;
 
-	public ChildCareContractFormContext(IWApplicationContext iwac,
-			ChildCareApplication application, Locale locale, boolean isChange) {
+	public ChildCareContractFormContext(IWApplicationContext iwac, ChildCareApplication application, Locale locale, boolean isChange) {
 		init(iwac, application, locale, isChange);
 	}
 
-	private void init(IWApplicationContext iwac,
-			ChildCareApplication application, Locale locale, boolean isChange) {
-		Map props = new HashMap();
+	private void init(IWApplicationContext iwac, ChildCareApplication application, Locale locale, boolean isChange) {
+		Map<String, Object> props = new HashMap<String, Object>();
 
 		props.put("iwb", getBundle(iwac));
 		props.put("iwrb", getResourceBundle(iwac, locale));
@@ -102,19 +100,18 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 		props.put("address", address);
 		props.put("postalCode", code);
 		props.put("application", application);
-		
+
 		//parents
 		User parent1 = application.getOwner();
 		User parent2 = null;
-		
+
 		try {
-			CommuneUserBusiness userBusiness = getUserService(iwac);  
-			
-			Collection parents = userBusiness.getParentsForChild(child);
-			if (parents != null) {
-				Iterator iter = parents.iterator();
-				while (iter.hasNext()) {
-					User parent = (User) iter.next();
+			CommuneUserBusiness userBusiness = getUserService(iwac);
+
+			@SuppressWarnings("unchecked")
+			Collection<User> parents = userBusiness.getParentsForChild(child);
+			if (!ListUtil.isEmpty(parents)) {
+				for (User parent: parents) {
 					if (((Integer) parent.getPrimaryKey()).intValue() != ((Integer) parent1.getPrimaryKey()).intValue()) {
 						parent2 = parent;
 					}
@@ -122,35 +119,35 @@ public class ChildCareContractFormContext extends PrintingContextImpl {
 			}
 			props.put("parent1", parent1);
 			props.put("parent2", parent2);
-			
+
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-        
-        //to be able to retreive additional info about parents in cosy way, like phone 
-        //numbers and so on, we must use helper object ChildCareContractAdditonalInfo        
-        ChildCareContractAdditonalInfo additionalInfo;
-        try {            
+
+        //to be able to retreive additional info about parents in cosy way, like phone
+        //numbers and so on, we must use helper object ChildCareContractAdditonalInfo
+        ChildCareContractAdditonalInfo additionalInfo = null;
+        try {
             additionalInfo = new ChildCareContractAdditonalInfo(parent1, parent2, getUserService(iwac));
             props.put("additionalInfo", additionalInfo);
-        } catch (IBOLookupException e1) {            
+        } catch (IBOLookupException e1) {
             e1.printStackTrace();
         }
-        
+
         //care time
         String careTime = "...";
         String careTimeChange = "...";
-        String applicationCareTime = application.getCareTime();        
+        String applicationCareTime = application.getCareTime();
         if (applicationCareTime != null && !isChange) {
             careTime = applicationCareTime;
-        }        
+        }
         if (applicationCareTime != null && isChange) {
             careTimeChange = applicationCareTime;
-        }        
+        }
         props.put("careTime", careTime);
         props.put("careTimeChange", careTimeChange);
-        
-        
+
+
 		addDocumentProperties(props);
 		setResourceDirectory(new File(getResourcRealPath(getBundle(iwac),
 				locale)));
